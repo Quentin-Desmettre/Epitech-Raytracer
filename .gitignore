@@ -39,4 +39,4 @@ websockets
 *.app
 build
 
-__BINARY_NAME__
+raytracer

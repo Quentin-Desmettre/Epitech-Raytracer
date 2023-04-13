@@ -122,7 +122,7 @@ def setupGitignore(variables):
         exit(84)
     print(GREEN_BOLD_ON + ".gitignore setup successfully." + COLOR_OFF)
 
-def setupHooks(variables):
+def setupHooks():
     # Setup commit-msg hook (copy ./.github/commit_msg.sh to ./.git/hooks/commit-msg and chmod +x)
     if os.system("cp ./.github/commit_msg.sh ./.git/hooks/commit-msg") != 0 or os.system("chmod +x ./.git/hooks/commit-msg") != 0:
         print(RED_BOLD_ON + "Cannot setup commit-msg hook.")
