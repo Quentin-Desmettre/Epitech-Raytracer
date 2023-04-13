@@ -17,7 +17,7 @@ OBJ = $(SRC:.cpp=.o)
 
 NAME = raytracer
 
-CXXFLAGS = -Wall -Wextra -I ./include -std=c++20
+CXXFLAGS = -Wall -Wextra -I ./include -std=c++20 -lconfig++
 
 all: $(NAME)
 
