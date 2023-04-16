@@ -17,12 +17,21 @@ OBJ = $(SRC:.cpp=.o)
 
 NAME = raytracer
 
-CXXFLAGS = -Wall -Wextra -I ./include -std=c++20 -lconfig++
+CXXFLAGS = -Wall -Wextra -I ./include -std=c++20 -lconfig++ -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 all: $(NAME)
 
 $(NAME):   $(OBJ)
 	g++ -o $(NAME) $(OBJ) $(CXXFLAGS)
+
+debug: CXXFLAGS += -g
+debug: re
+
+run: all
+	./$(NAME)
+
+rrun: re
+	./$(NAME)
 
 tests_run:
 	cd tests && make && ./tests
