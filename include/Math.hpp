@@ -50,4 +50,7 @@ namespace Math
     sf::Vector3f lerp(sf::Vector3f vec1, sf::Vector3f vec2, float t) {
         return vec1 + t * (vec2 - vec1);
     }
+    float length(sf::Vector3f vec) {
+        return sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2));
+    }
 }

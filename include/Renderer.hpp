@@ -127,18 +127,14 @@ class Renderer {
                         handleMovement();
                 }
                 _window.clear();
-                std::vector<std::thread> threads;
-                const int subset_size = WINDOW_SIZE.x / NB_THREADS;
                 perThread(0, WINDOW_SIZE.x, pool);
-                // for (uint i = 0; i < NB_THREADS; i++)
+                // std::vector<std::thread> threads;
+                // const int subset_size = WINDOW_SIZE.x / NB_THREADS;
+                // for (uint i = 0; i < NB_THREADS; i++) {
                 //     threads.push_back(std::thread(&Renderer::perThread, this, i * subset_size,
-                //     (i + 1) * subset_size - subset_size / 2, std::ref(pool)));
-                // for (auto &thread : threads)
-                //     thread.join();
-                // threads.clear();
-                // for (uint i = 0; i < NB_THREADS; i++)
-                //     threads.push_back(std::thread(&Renderer::perThread, this, i * subset_size + subset_size / 2,
-                //     i + 1 >= NB_THREADS ? WINDOW_SIZE.x : (i + 1) * subset_size, std::ref(pool)));
+                //     (i + 1) * subset_size, std::ref(pool)));
+                //     std::cout << "start: " << i * subset_size << " end: " << (i + 1) * subset_size << std::endl;
+                // }
                 // for (auto &thread : threads)
                 //     thread.join();
                 draw();
@@ -167,48 +163,59 @@ class Renderer {
         Camera _camera;
         sf::RenderWindow _window;
         sf::VertexArray _vertexArray;
+        sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 0, 0));
         sf::Vector3f getPixelFColor(sf::Vector2f pos, ObjectPool &pool) {
             sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);
             sf::Vector3f light = NULL_VEC_3;
             Ray ray = Ray(_camera.getPos(), _camera.getRot() +
             sf::Vector3f(pos.x / WINDOW_SIZE.x - 0.5f, pos.y / WINDOW_SIZE.y - 0.5f, 1));
+
             for (int bounces = 0; bounces <= NB_BOUNCE; bounces++) {
                 Object *obj = pool.getClosest(ray);
                 if (obj) {
                     sf::Vector3f inter = obj->getIntersection(ray);
                     sf::Vector3f normal = obj->getNormal(inter);
-                    float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
-                    light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
+                    // float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
+                    // light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
                     rayColor *= obj->getColor();
                     ray.setOrigin(inter);
                     ray.reflect(normal);
-                    if (obj->getEmissionColor() != NULL_VEC_3)
-                        break;
+                    if (bounces == 0)
+                        light += addSunLight(normal, Math::normalize(inter), rayColor, pool);
+                    break;
                 } else {
-                    light += rayColor * getAmbientLight(pos);
                     break;
                 }
             }
+            light += rayColor * getAmbientLight(pos);
             return light;
         };
         sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
-            return sf::Vector3f(15 / 255.0f, 15 / 255.0f, 15 / 255.0f);
+            return sf::Vector3f(100 / 255.0f, 100 / 255.0f, 100 / 255.0f);
+        }
+        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, ObjectPool &pool) {
+            if (pool.getClosest(Ray(inter, -_sunLight)) != nullptr) {
+                std::cout << "shadow" << std::endl;
+                return NULL_VEC_3;
+            }
+            return color * std::max(Math::dot(normal, -_sunLight), 0.0f);
         }
         void addPixel(sf::Vector2f pos, sf::Vector3f color) {
             color *= 255.0f;
             color.x = std::min(color.x, 255.0f);
             color.y = std::min(color.y, 255.0f);
             color.z = std::min(color.z, 255.0f);
-            if (_nbFrames != 0) {
-                sf::Color old = _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].color;
-                sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
-                if (oldColor == NULL_VEC_3 || color == NULL_VEC_3)
-                    color += oldColor;
-                else {
-                    float weight = 1.0f / (_nbFrames + 1);
-                    color = oldColor * (1 - weight) + color * weight;
-                }
-            }
+            // if (_nbFrames != 0) {
+            //     sf::Color old = _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].color;
+            //     sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
+            //     if (oldColor == NULL_VEC_3 || color == NULL_VEC_3)
+            //         color += oldColor;
+            //     else {
+            //         float weight = 1.0f / (_nbFrames + 1);
+            //         color = oldColor * (1 - weight) + color * weight;
+            //     }
+            // }
+            _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].position = sf::Vector2f(pos.x, pos.y);
             _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].color = sf::Color(color.x, color.y, color.z);
         };
         void draw() {

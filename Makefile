@@ -17,7 +17,7 @@ OBJ = $(SRC:.cpp=.o)
 
 NAME = raytracer
 
-CXXFLAGS = -Wall -Wextra -I ./include -std=c++20 -lconfig++ -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+CXXFLAGS = -Wall -Wextra -I ./include -std=c++20 -lconfig++ -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -O3
 
 all: $(NAME)
 

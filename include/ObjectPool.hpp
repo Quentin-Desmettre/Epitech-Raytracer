@@ -76,12 +76,12 @@ class ObjectPool {
         std::vector<Object *> getPool() {return _pool;};
         Object *getClosest(Ray ray) {
             Object *closest = nullptr;
-            float dist = 0;
+            float dist = __FLT_MAX__;
 
             for (auto &obj : _pool) {
-                if (!obj->intersect(ray) || (dist != 0 && dist < obj->getPos().z))
+                if (!obj->intersect(ray) || dist < Math::length(ray.getOrigin() - obj->getPos()))
                     continue;
-                dist = obj->getPos().z;
+                dist = Math::length(ray.getOrigin() - obj->getPos());
                 closest = obj;
             }
             return closest;
