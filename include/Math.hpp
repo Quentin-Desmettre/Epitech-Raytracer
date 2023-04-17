@@ -53,4 +53,7 @@ namespace Math
     float length(sf::Vector3f vec) {
         return sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2));
     }
+    bool sameSign(sf::Vector3f a, sf::Vector3f b) {
+        return (a.x * b.x >= 0) && (a.y * b.y >= 0) && (a.z * b.z >= 0);
+    }
 }

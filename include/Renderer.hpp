@@ -18,8 +18,8 @@
 
 #define WINDOW_SIZE sf::Vector2f(800, 800)
 #define NULL_VEC_3 sf::Vector3f(0, 0, 0)
-#define NB_BOUNCE 5
-#define RAYS_PER_PIXEL 5.0f
+#define NB_BOUNCE 3
+#define RAYS_PER_PIXEL 20.0f
 #define NB_THREADS 2
 
 sf::Vector3f operator*(sf::Vector3f vec, sf::Vector3f vec2) {
@@ -163,7 +163,8 @@ class Renderer {
         Camera _camera;
         sf::RenderWindow _window;
         sf::VertexArray _vertexArray;
-        sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 0, 0));
+        sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
+        sf::Vector3f _sunColor = sf::Vector3f(1, 1, 1);
         sf::Vector3f getPixelFColor(sf::Vector2f pos, ObjectPool &pool) {
             sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);
             sf::Vector3f light = NULL_VEC_3;
@@ -175,14 +176,13 @@ class Renderer {
                 if (obj) {
                     sf::Vector3f inter = obj->getIntersection(ray);
                     sf::Vector3f normal = obj->getNormal(inter);
-                    // float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
-                    // light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
+                    float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
+                    light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
                     rayColor *= obj->getColor();
                     ray.setOrigin(inter);
                     ray.reflect(normal);
                     if (bounces == 0)
-                        light += addSunLight(normal, Math::normalize(inter), rayColor, pool);
-                    break;
+                        light += addSunLight(normal, inter, rayColor, pool, obj);
                 } else {
                     break;
                 }
@@ -191,30 +191,28 @@ class Renderer {
             return light;
         };
         sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
-            return sf::Vector3f(100 / 255.0f, 100 / 255.0f, 100 / 255.0f);
+            return sf::Vector3f(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
         }
-        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, ObjectPool &pool) {
-            if (pool.getClosest(Ray(inter, -_sunLight)) != nullptr) {
-                std::cout << "shadow" << std::endl;
+        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, ObjectPool &pool, Object *obj) {
+            if (pool.getClosest(Ray(inter, -_sunLight), obj) != nullptr)
                 return NULL_VEC_3;
-            }
-            return color * std::max(Math::dot(normal, -_sunLight), 0.0f);
+            return std::max(Math::dot(normal, -_sunLight), 0.0f) * color * _sunColor;
         }
         void addPixel(sf::Vector2f pos, sf::Vector3f color) {
             color *= 255.0f;
             color.x = std::min(color.x, 255.0f);
             color.y = std::min(color.y, 255.0f);
             color.z = std::min(color.z, 255.0f);
-            // if (_nbFrames != 0) {
-            //     sf::Color old = _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].color;
-            //     sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
-            //     if (oldColor == NULL_VEC_3 || color == NULL_VEC_3)
-            //         color += oldColor;
-            //     else {
-            //         float weight = 1.0f / (_nbFrames + 1);
-            //         color = oldColor * (1 - weight) + color * weight;
-            //     }
-            // }
+            if (_nbFrames != 0) {
+                sf::Color old = _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].color;
+                sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
+                if (oldColor == NULL_VEC_3 || color == NULL_VEC_3)
+                    color += oldColor;
+                else {
+                    float weight = 1.0f / (_nbFrames + 1);
+                    color = oldColor * (1 - weight) + color * weight;
+                }
+            }
             _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].position = sf::Vector2f(pos.x, pos.y);
             _vertexArray[pos.x * WINDOW_SIZE.x + pos.y].color = sf::Color(color.x, color.y, color.z);
         };

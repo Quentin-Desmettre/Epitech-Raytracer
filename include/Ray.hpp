@@ -23,7 +23,7 @@ class Ray {
             sf::Vector3f tmp = Math::randomDir();
             sf::Vector3f specular = _dir - 2.0f * Math::dot(_dir, normal) * normal;
             sf::Vector3f diffuse = tmp * Math::sign(Math::dot(normal, tmp));
-            _dir = diffuse;
+            _dir = Math::lerp(specular, diffuse, 0.5f);
         };
     protected:
     private:
