@@ -7,9 +7,11 @@
 
 rwildc = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildc,$d/,$2))
 
-SOURCEDIR = src
-
-SRC = $(call rwildc,$(SOURCEDIR),*.cpp)
+SRC = 	src/main.cpp 				\
+		src/Renderer.cpp 			\
+		src/Camera.cpp 				\
+		src/objects/Sphere.cpp 		\
+		src/objects/Triangle.cpp 	\
 
 CXX = g++
 
