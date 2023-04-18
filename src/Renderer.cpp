@@ -112,16 +112,16 @@ void Renderer::addPixel(sf::Vector2f pos, sf::Vector3f color)
     color.x = std::min(color.x, 255.0f);
     color.y = std::min(color.y, 255.0f);
     color.z = std::min(color.z, 255.0f);
-    // if (_nbFrames != 0) {
-    //     sf::Color old = _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color;
-    //     sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
-    //     if (oldColor == NULL_VEC_3 || color == NULL_VEC_3)
-    //         color += oldColor;
-    //     else {
-    //         float weight = 1.0f / (_nbFrames + 1);
-    //         color = oldColor * (1 - weight) + color * weight;
-    //     }
-    // }
+    if (_nbFrames != 0) {
+        sf::Color old = _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color;
+        sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
+        if (oldColor == NULL_VEC_3 || color == NULL_VEC_3)
+            color += oldColor;
+        else {
+            float weight = 1.0f / (_nbFrames + 1);
+            color = oldColor * (1 - weight) + color * weight;
+        }
+    }
     _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].position = sf::Vector2f(pos.x, pos.y);
     _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color = sf::Color(color.x, color.y, color.z);
 }

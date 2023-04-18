@@ -12,6 +12,7 @@ SRC = 	src/main.cpp 				\
 		src/Camera.cpp 				\
 		src/objects/Sphere.cpp 		\
 		src/objects/Triangle.cpp 	\
+		src/objects/Plane.cpp 		\
 
 CXX = g++
 

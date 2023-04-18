@@ -24,13 +24,11 @@ class Scene {
 
             for (auto &obj : _pool) {
                 if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != sf::Vector3f(0, 0, 0)
-                && obj->getEmissionIntensity() > 0))
-                    continue;
-                float len = Math::length(ray->getOrigin() - obj->getPos());
-                if (dist < len || !obj->intersect(ray))
+                && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
                     continue;
                 sf::Vector3f vec = obj->getIntersection(ray) - ray->getOrigin();
-                if (!Math::sameSign(vec, ray->getDir()))
+                float len = Math::length(vec);
+                if (dist < len || !Math::sameSign(vec, ray->getDir()))
                     continue;
                 dist = len;
                 closest = obj;

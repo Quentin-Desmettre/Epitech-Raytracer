@@ -19,7 +19,7 @@
 #define WINDOW_SIZE sf::Vector2f(800, 800)
 #define NULL_VEC_3 sf::Vector3f(0, 0, 0)
 #define NB_BOUNCE 3
-#define RAYS_PER_PIXEL 1.0f
+#define RAYS_PER_PIXEL 5.0f
 #define NB_THREADS 2
 
 inline sf::Vector3f operator*(sf::Vector3f vec, sf::Vector3f vec2) {

@@ -44,9 +44,19 @@ bool Triangle::intersect(Ray *ray)
 
 sf::Vector3f Triangle::getIntersection(Ray *ray)
 {
-    if (ray != _lastRay)
-        intersect(ray);
-    return ray->getOrigin() + ray->getDir() * 0.1f;
+    sf::Vector3f origin = ray->getOrigin();
+    sf::Vector3f dir = ray->getDir();
+    sf::Vector3f edge1 = _points[1] - _points[0];
+    sf::Vector3f edge2 = _points[2] - _points[0];
+    sf::Vector3f pvec = Math::cross(dir, edge2);
+    float det = Math::dot(edge1, pvec);
+
+    sf::Vector3f tvec = origin - _points[0];
+    float u = Math::dot(tvec, pvec);
+    sf::Vector3f qvec = Math::cross(tvec, edge1);
+    float v = Math::dot(dir, qvec);
+    float t = Math::dot(edge2, qvec) / det;
+    return origin + dir * t;
 }
 
 sf::Vector3f Triangle::getNormal(sf::Vector3f inter)
