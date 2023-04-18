@@ -100,7 +100,7 @@ sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, Scene *pool)
             ray.reflect(normal, obj->getReflectivity());
             if (bounces == 0) {
                 light += addSunLight(normal, inter, rayColor, pool, obj);
-                addLightOfPoints(light, normal, inter, rayColor, pool, obj);
+                addLightOfPoints(light, normal, inter, rayColor, pool, obj) * (1.0f - obj->getReflectivity());
             }
             old = obj;
         } else {
