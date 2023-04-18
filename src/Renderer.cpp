@@ -86,9 +86,9 @@ sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, Scene *pool)
             light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
             rayColor *= obj->getColor();
             ray.setOrigin(inter);
-            ray.reflect(normal);
+            ray.reflect(normal, obj->getReflectivity());
             if (bounces == 0)
-                light += addSunLight(normal, inter, rayColor, pool, obj);
+                light += addSunLight(normal, inter, rayColor, pool, obj) * (1.0f - obj->getReflectivity());
             old = obj;
         } else {
             break;

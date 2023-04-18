@@ -75,7 +75,7 @@ class Renderer {
         sf::RenderWindow _window;
         sf::VertexArray _vertexArray;
         sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
-        sf::Vector3f _sunColor = sf::Vector3f(1, 1, 1);
+        sf::Vector3f _sunColor = sf::Vector3f(0, 1, 0);
         sf::Vector3f getPixelFColor(sf::Vector2f pos, Scene *pool);
         sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
             return sf::Vector3f(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);

@@ -52,14 +52,12 @@ sf::Vector3f Triangle::getIntersection(Ray *ray)
     float det = Math::dot(edge1, pvec);
 
     sf::Vector3f tvec = origin - _points[0];
-    float u = Math::dot(tvec, pvec);
     sf::Vector3f qvec = Math::cross(tvec, edge1);
-    float v = Math::dot(dir, qvec);
     float t = Math::dot(edge2, qvec) / det;
     return origin + dir * t;
 }
 
-sf::Vector3f Triangle::getNormal(sf::Vector3f inter)
+sf::Vector3f Triangle::getNormal(__attribute_maybe_unused__ sf::Vector3f inter)
 {
     sf::Vector3f edge1 = _points[1] - _points[0];
     sf::Vector3f edge2 = _points[2] - _points[0];
