@@ -9,6 +9,7 @@
 
 #include "Math.hpp"
 #include "Scene.hpp"
+#include "lightPoint.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -75,7 +76,7 @@ class Renderer {
         sf::RenderWindow _window;
         sf::VertexArray _vertexArray;
         sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
-        sf::Vector3f _sunColor = sf::Vector3f(0, 1, 0);
+        sf::Vector3f _sunColor = sf::Vector3f(1, 1, 1);
         sf::Vector3f getPixelFColor(sf::Vector2f pos, Scene *pool);
         sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
             return sf::Vector3f(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
@@ -94,4 +95,5 @@ class Renderer {
             texture.update(_window);
             texture.copyToImage().saveToFile("renders/render.png");
         };
+        void addLightOfPoints(sf::Vector3f &light ,sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, Scene *pool, Object *obj);
 };

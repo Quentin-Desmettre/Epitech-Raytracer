@@ -1,3 +1,4 @@
+
 ##
 ## EPITECH PROJECT, 2023
 ## helloworld
@@ -10,6 +11,7 @@ rwildc = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildc,$d/,$2))
 SRC = 	src/main.cpp 				\
 		src/Renderer.cpp 			\
 		src/Camera.cpp 				\
+		src/lightPoint.cpp 			\
 		src/objects/Sphere.cpp 		\
 		src/objects/Triangle.cpp 	\
 		src/objects/Plane.cpp 		\

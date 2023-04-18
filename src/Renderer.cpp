@@ -69,6 +69,17 @@ void Renderer::perThread(int startX, int endX, Scene *pool)
         }
 }
 
+void Renderer::addLightOfPoints(sf::Vector3f &light, sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, Scene *pool, Object *obj)
+{
+    for (auto &lightPoint : pool->getLightPoints()) {
+        Ray ray(inter, Math::normalize(lightPoint.getPos() - inter));
+        if (pool->getBetween(&ray, Math::length(lightPoint.getPos() - inter), obj, true) == nullptr) {
+            sf::Vector3f test = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * lightPoint.getColorF();
+            light += test;
+        }
+    }
+}
+
 sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, Scene *pool)
 {
     sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);
@@ -87,8 +98,10 @@ sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, Scene *pool)
             rayColor *= obj->getColor();
             ray.setOrigin(inter);
             ray.reflect(normal, obj->getReflectivity());
-            if (bounces == 0)
-                light += addSunLight(normal, inter, rayColor, pool, obj) * (1.0f - obj->getReflectivity());
+            if (bounces == 0) {
+                light += addSunLight(normal, inter, rayColor, pool, obj);
+                addLightOfPoints(light, normal, inter, rayColor, pool, obj) * (1.0f - obj->getReflectivity());
+            }
             old = obj;
         } else {
             break;
