@@ -19,6 +19,7 @@ class Scene {
         ~Scene() = default;
         void addObject(Object *obj) {_pool.push_back(obj);};
         void addLightPoint(lightPoint light) {_lightsPoints.push_back(light);};
+        std::vector<lightPoint> getLightPoints() {return _lightsPoints;};
         std::vector<Object *> getPool() {return _pool;};
         Object *getClosest(Ray *ray, Object *ignore = nullptr, bool ignoreLightSources = false) {
             Object *closest = nullptr;
@@ -37,10 +38,7 @@ class Scene {
             }
             return closest;
         };
-    protected:
-    private:
-        std::vector<Object *> _pool;
-        std::vector<lightPoint> _lightsPoints;
+
         Object *getBetween(Ray *ray, float dst, Object *ignore = nullptr, bool ignoreLightSources = false) {
             Object *closest = nullptr;
             float dist = __FLT_MAX__;
@@ -58,5 +56,8 @@ class Scene {
             }
             return closest;
         };
-        std::vector<lightPoint> getLightPoints() {return _lightsPoints;};
+    protected:
+    private:
+        std::vector<Object *> _pool;
+        std::vector<lightPoint> _lightsPoints;
 };
