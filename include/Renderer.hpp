@@ -9,6 +9,7 @@
 
 #include "Math.hpp"
 #include "Scene.hpp"
+#include "lightPoint.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -94,4 +95,5 @@ class Renderer {
             texture.update(_window);
             texture.copyToImage().saveToFile("renders/render.png");
         };
+        void addLightOfPoints(sf::Vector3f &light ,sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene *pool, Object *obj);
 };

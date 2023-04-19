@@ -51,9 +51,7 @@ sf::Vector3f Triangle::getIntersection(const Ray *ray) const
     float det = Math::dot(edge1, pvec);
 
     sf::Vector3f tvec = origin - _points[0];
-//    float u = Math::dot(tvec, pvec);
     sf::Vector3f qvec = Math::cross(tvec, edge1);
-//    float v = Math::dot(dir, qvec);
     float t = Math::dot(edge2, qvec) / det;
     return origin + dir * t;
 }

@@ -20,11 +20,11 @@ class Ray {
         void setDir(sf::Vector3f dir) {_dir = dir;};
         sf::Vector3f getOrigin() const {return _origin;};
         sf::Vector3f getDir() const {return _dir;};
-        void reflect(sf::Vector3f normal) {
+        void reflect(sf::Vector3f normal, float reflectivity) {
             sf::Vector3f tmp = Math::randomDir();
             sf::Vector3f specular = _dir - 2.0f * Math::dot(_dir, normal) * normal;
             sf::Vector3f diffuse = tmp * Math::sign(Math::dot(normal, tmp));
-            _dir = Math::lerp(specular, diffuse, 0.5f);
+            _dir = specular * reflectivity + diffuse * (1.0f - reflectivity);
         };
     protected:
     private:

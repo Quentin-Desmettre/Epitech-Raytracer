@@ -13,8 +13,8 @@
 class Object {
     public:
         Object(sf::Vector3f pos = sf::Vector3f(0, 0, 0), sf::Color color = sf::Color::Red,
-        sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f):
-        _pos(pos), _intensity(intensity) {
+        sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f, float reflectivity = 0.0f) :
+        _pos(pos), _intensity(intensity), _reflectivity(reflectivity) {
             _color = sf::Vector3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
             _emmsionColor = sf::Vector3f(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
         };
@@ -23,6 +23,8 @@ class Object {
         sf::Vector3f getColor() const {return _color;};
         sf::Vector3f getEmissionColor() const {return _emmsionColor;};
         float getEmissionIntensity() const {return _intensity;};
+        float getReflectivity() const {return _reflectivity;};
+        void setReflectivity(float reflectivity) {_reflectivity = reflectivity;};
         virtual bool intersect(const Ray *ray) const = 0;
         virtual sf::Vector3f getIntersection(const Ray *ray) const = 0;
         virtual sf::Vector3f getNormal(sf::Vector3f inter) const = 0;
@@ -31,5 +33,6 @@ class Object {
         sf::Vector3f _color;
         sf::Vector3f _emmsionColor;
         float _intensity = 1.0f;
+        float _reflectivity = 0.0f;
     private:
 };
