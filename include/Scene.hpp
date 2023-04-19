@@ -18,7 +18,7 @@ class Scene {
         ~Scene() = default;
         void addObject(Object *obj) {_pool.push_back(obj);};
         std::vector<Object *> getPool() {return _pool;};
-        Object *getClosest(Ray *ray, Object *ignore = nullptr, bool ignoreLightSources = false) {
+        Object *getClosest(const Ray *ray, const Object *ignore = nullptr, bool ignoreLightSources = false) const {
             Object *closest = nullptr;
             float dist = __FLT_MAX__;
 

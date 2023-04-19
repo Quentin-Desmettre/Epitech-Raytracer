@@ -12,31 +12,44 @@ Object(pos, color, emmsionColor, intensity), _radius(radius)
 {
 }
 
-bool Sphere::intersect(Ray *ray)
+float Sphere::getDelta(const Ray *ray) const
 {
     sf::Vector3f origin = ray->getOrigin();
     sf::Vector3f dir = ray->getDir();
+    float a = Math::dot(dir, dir);
+    float b = 2 * Math::dot(dir, origin - _pos);
+    float c = Math::dot(origin - _pos, origin - _pos) - _radius * _radius;
 
-    a = Math::dot(dir, dir);
-    b = 2 * Math::dot(dir, origin - _pos);
-    c = Math::dot(origin - _pos, origin - _pos) - _radius * _radius;
-    _delta = b * b - 4.0f * a * c;
-    _lastRay = ray;
-    return _delta >= 0;
+    return b * b - 4.0f * a * c;
 }
 
-sf::Vector3f Sphere::getIntersection(Ray *ray)
+float Sphere::getIntersections(const Ray *ray) const
 {
-    if (ray != _lastRay)
-        intersect(ray);
-    float t = (-b - sqrt(_delta)) / (2.0f * a);
+    sf::Vector3f origin = ray->getOrigin();
+    sf::Vector3f dir = ray->getDir();
+    float a = Math::dot(dir, dir);
+    float b = 2 * Math::dot(dir, origin - _pos);
+    float c = Math::dot(origin - _pos, origin - _pos) - _radius * _radius;
+    float delta = b * b - 4.0f * a * c;
 
-    if (t < 0)
+    return (-b - sqrt(delta)) / (2.0f * a);
+}
+
+bool Sphere::intersect(const Ray *ray) const
+{
+    return getDelta(ray) >= 0;
+}
+
+sf::Vector3f Sphere::getIntersection(const Ray *ray) const
+{
+    float t = getIntersections(ray);
+
+    if (t < 0 || t != t) // t != t is a check for NaN
         return sf::Vector3f(0, 0, 0);
     return ray->getOrigin() + ray->getDir() * t;
 }
 
-sf::Vector3f Sphere::getNormal(sf::Vector3f inter)
+sf::Vector3f Sphere::getNormal(sf::Vector3f inter) const
 {
     return Math::normalize(inter - _pos);
 }

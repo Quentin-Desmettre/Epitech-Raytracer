@@ -20,7 +20,6 @@
 #define NULL_VEC_3 sf::Vector3f(0, 0, 0)
 #define NB_BOUNCE 3
 #define RAYS_PER_PIXEL 5.0f
-#define NB_THREADS 2
 
 inline sf::Vector3f operator*(sf::Vector3f vec, sf::Vector3f vec2) {
     return sf::Vector3f(vec.x * vec2.x, vec.y * vec2.y, vec.z * vec2.z);
@@ -76,11 +75,12 @@ class Renderer {
         sf::VertexArray _vertexArray;
         sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
         sf::Vector3f _sunColor = sf::Vector3f(1, 1, 1);
-        sf::Vector3f getPixelFColor(sf::Vector2f pos, Scene *pool);
+
+        sf::Vector3f getPixelFColor(sf::Vector2f pos, const Scene *pool);
         sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
             return sf::Vector3f(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
         }
-        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, Scene *pool, Object *obj);
+        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene *pool, Object *obj);
         void addPixel(sf::Vector2f pos, sf::Vector3f color);
         void draw() {
             _window.draw(_vertexArray);

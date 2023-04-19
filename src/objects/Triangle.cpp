@@ -16,7 +16,7 @@ Object(point1, color, emmsionColor, intensity)
     _points[2] = point3;
 }
 
-bool Triangle::intersect(Ray *ray)
+bool Triangle::intersect(const Ray *ray) const
 {
     sf::Vector3f origin = ray->getOrigin();
     sf::Vector3f dir = ray->getDir();
@@ -38,11 +38,10 @@ bool Triangle::intersect(Ray *ray)
     float t = Math::dot(edge2, qvec) / det;
     if (t < 0.0f)
         return false;
-    _lastRay = ray;
     return true;
 }
 
-sf::Vector3f Triangle::getIntersection(Ray *ray)
+sf::Vector3f Triangle::getIntersection(const Ray *ray) const
 {
     sf::Vector3f origin = ray->getOrigin();
     sf::Vector3f dir = ray->getDir();
@@ -52,14 +51,14 @@ sf::Vector3f Triangle::getIntersection(Ray *ray)
     float det = Math::dot(edge1, pvec);
 
     sf::Vector3f tvec = origin - _points[0];
-    float u = Math::dot(tvec, pvec);
+//    float u = Math::dot(tvec, pvec);
     sf::Vector3f qvec = Math::cross(tvec, edge1);
-    float v = Math::dot(dir, qvec);
+//    float v = Math::dot(dir, qvec);
     float t = Math::dot(edge2, qvec) / det;
     return origin + dir * t;
 }
 
-sf::Vector3f Triangle::getNormal(sf::Vector3f inter)
+sf::Vector3f Triangle::getNormal(__attribute_maybe_unused__ sf::Vector3f inter) const
 {
     sf::Vector3f edge1 = _points[1] - _points[0];
     sf::Vector3f edge2 = _points[2] - _points[0];

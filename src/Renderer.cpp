@@ -6,6 +6,9 @@
 */
 
 #include "Renderer.hpp"
+#include "objects/Plane.hpp"
+#include <numeric>
+#define NB_THREADS 2
 
 Renderer::Renderer()
 {
@@ -50,7 +53,16 @@ void Renderer::run(Scene *pool)
                 handleMovement();
         }
         _window.clear();
-        perThread(0, WINDOW_SIZE.x, pool);
+//        perThread(0, WINDOW_SIZE.x, pool);
+        std::vector<std::thread *> threads;
+        for (int i = 0; i < NB_THREADS; i++) {
+            threads.push_back(new std::thread(&Renderer::perThread, this, i * WINDOW_SIZE.x / NB_THREADS,
+                                          (i + 1) * WINDOW_SIZE.x / NB_THREADS, pool));
+        }
+        for (int i = 0; i < NB_THREADS; i++) {
+            threads[i]->join();
+            delete threads[i];
+        }
         draw();
         drawToFile();
         _window.display();
@@ -59,7 +71,7 @@ void Renderer::run(Scene *pool)
 
 void Renderer::perThread(int startX, int endX, Scene *pool)
 {
-    for (int x = startX; x < endX; x++)
+    for (int x = startX; x < endX; x++) {
         for (int y = 0; y < WINDOW_SIZE.y; y++) {
             sf::Vector3f colors = sf::Vector3f(0, 0, 0);
             for (float i = 0; i < RAYS_PER_PIXEL; i++)
@@ -67,9 +79,10 @@ void Renderer::perThread(int startX, int endX, Scene *pool)
             colors /= RAYS_PER_PIXEL;
             addPixel(sf::Vector2f(x, y), colors);
         }
+    }
 }
 
-sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, Scene *pool)
+sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, const Scene *pool)
 {
     sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);
     sf::Vector3f light = NULL_VEC_3;
@@ -79,26 +92,32 @@ sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, Scene *pool)
 
     for (int bounces = 0; bounces <= NB_BOUNCE; bounces++) {
         Object *obj = pool->getClosest(&ray, old);
-        if (obj) {
-            sf::Vector3f inter = obj->getIntersection(&ray);
-            sf::Vector3f normal = obj->getNormal(inter);
-            float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
-            light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
-            rayColor *= obj->getColor();
-            ray.setOrigin(inter);
-            ray.reflect(normal);
-            if (bounces == 0)
-                light += addSunLight(normal, inter, rayColor, pool, obj);
-            old = obj;
-        } else {
+
+        if (!obj)
             break;
-        }
+        sf::Vector3f inter = obj->getIntersection(&ray);
+        sf::Vector3f normal = obj->getNormal(inter);
+        float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
+
+        light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
+        rayColor *= obj->getColor();
+
+        // Bounc ray
+        ray.setOrigin(inter);
+        ray.reflect(normal);
+
+        // Apply ambient light
+        if (bounces == 0)
+            light += addSunLight(normal, inter, rayColor, pool, obj);
+        old = obj;
     }
+
+    // Lumière ambiante
     light += rayColor * getAmbientLight(pos);
     return light;
 }
 
-sf::Vector3f Renderer::addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, Scene *pool, Object *obj)
+sf::Vector3f Renderer::addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene *pool, Object *obj)
 {
     Ray ray(inter, -_sunLight);
     if (pool->getClosest(&ray, obj, true) != nullptr)
