@@ -17,14 +17,9 @@ Mat4::Mat4()
     };
 }
 
-Mat4::Mat4(float matrix[16])
+Mat4::Mat4(std::array<float, 16> matrix)
 {
-    _matrix = {
-        matrix[0], matrix[1], matrix[2], matrix[3],
-        matrix[4], matrix[5], matrix[6], matrix[7],
-        matrix[8], matrix[9], matrix[10], matrix[11],
-        matrix[12], matrix[13], matrix[14], matrix[15]
-    };
+    _matrix = matrix;
 }
 
 Mat4 Mat4::operator*(const Mat4 &other) const
@@ -100,4 +95,39 @@ Mat4 Mat4::inverse() const
     inv._matrix[15] = det * inv._matrix[15];
 
     return inv;
+}
+
+Vec3 Matrix::rotate(Vec3 vec, Vec3 dir, Vec3 pos)
+{
+    Mat4 mat = Mat4({
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        -pos.x, -pos.y, -pos.z, 1
+    });
+    Mat4 mat2 = Mat4({
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        pos.x, pos.y, pos.z, 1
+    });
+    Mat4 mat3 = Mat4({
+        1, 0, 0, 0,
+        0, static_cast<float>(cos(dir.x)), static_cast<float>(-sin(dir.x)), 0,
+        0, static_cast<float>(sin(dir.x)), static_cast<float>(cos(dir.x)), 0,
+        0, 0, 0, 1
+    });
+    Mat4 mat4 = Mat4({
+        static_cast<float>(cos(dir.y)), 0, static_cast<float>(sin(dir.y)), 0,
+        0, 1, 0, 0,
+        static_cast<float>(-sin(dir.y)), 0, static_cast<float>(cos(dir.y)), 0,
+        0, 0, 0, 1
+    });
+    Mat4 mat5 = Mat4({
+        static_cast<float>(cos(dir.z)), static_cast<float>(-sin(dir.z)), 0, 0,
+        static_cast<float>(sin(dir.z)), static_cast<float>(cos(dir.z)), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    });
+    return mat5 * mat4 * mat3 * mat2 * mat * vec;
 }

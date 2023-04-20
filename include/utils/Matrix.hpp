@@ -8,12 +8,18 @@
 #pragma once
 
 #include "Sfml.hpp"
+#include "Math.hpp"
 #include <array>
+
+namespace Matrix
+{
+    Vec3 rotate(Vec3 vec, Vec3 dir, Vec3 pos);
+}
 
 class Mat4 {
     public:
         Mat4();
-        Mat4(float matrix[16]);
+        Mat4(std::array<float, 16> matrix);
         ~Mat4() = default;
         Mat4 operator*(const Mat4 &other) const;
         Vec3 operator*(const Vec3 &vec) const;

@@ -7,32 +7,56 @@
 
 #include "Camera.hpp"
 
-void Camera::move(Direction dir, float speed)
+void Camera::move(Direction movement, float speed, bool &reset)
 {
-    switch (dir) {
+    Vec3 dir = _rayDirs[WINDOW_SIZE.x * WINDOW_SIZE.y / 2];
+
+    switch (movement) {
         case FORWARD:
-            _pos += _dir * speed;
+            _pos += dir * speed;
+            reset = true;
             break;
         case BACKWARD:
-            _pos -= _dir * speed;
+            _pos -= dir * speed;
+            reset = true;
             break;
         case LEFT:
-            _pos += Math::cross(_dir, Vec3(0, 1, 0)) * speed;
+            _pos += Math::cross(dir, Vec3(0, 1, 0)) * speed;
+            reset = true;
             break;
         case RIGHT:
-            _pos -= Math::cross(_dir, Vec3(0, 1, 0)) * speed;
+            _pos -= Math::cross(dir, Vec3(0, 1, 0)) * speed;
+            reset = true;
             break;
         case UP:
-            _pos += Vec3(0, 1, 0) * speed;
+            _pos -= Vec3(0, 1, 0) * speed;
+            reset = true;
             break;
         case DOWN:
-            _pos -= Vec3(0, 1, 0) * speed;
+            _pos += Vec3(0, 1, 0) * speed;
+            reset = true;
+            break;
+        default:
             break;
     }
 }
 
-void Camera::turn(float x, float y)
+void Camera::turn(float x, float y, bool &reset)
 {
-    _dir.x += x;
-    _dir.y += y;
+    _rot.x += x;
+    _rot.y += y;
+    updateRayDirs();
+    reset = true;
 }
+
+void Camera::updateRayDirs() {
+    _rayDirs.clear();
+    for (int i = 0; i < WINDOW_SIZE.x; i++) {
+        for (int j = 0; j < WINDOW_SIZE.y; j++) {
+            Vec3 rayDir = Math::normalize(Vec3(i - WINDOW_SIZE.x / 2,
+            j - WINDOW_SIZE.y / 2, WINDOW_SIZE.x / 2));
+            _rayDirs.push_back(Math::normalize(Matrix::rotate(rayDir, _rot, _pos)));
+        }
+    }
+};
+
