@@ -5,22 +5,22 @@
 ** Camera
 */
 
-#include "Renderer.hpp"
+#include "Camera.hpp"
 
-void Renderer::Camera::move(Direction dir, float speed)
+void Camera::move(Direction dir, float speed)
 {
     switch (dir) {
         case FORWARD:
-            _pos += _rot * speed;
+            _pos += _dir * speed;
             break;
         case BACKWARD:
-            _pos -= _rot * speed;
+            _pos -= _dir * speed;
             break;
         case LEFT:
-            _pos += Math::cross(_rot, sf::Vector3f(0, 1, 0)) * speed;
+            _pos += Math::cross(_dir, sf::Vector3f(0, 1, 0)) * speed;
             break;
         case RIGHT:
-            _pos -= Math::cross(_rot, sf::Vector3f(0, 1, 0)) * speed;
+            _pos -= Math::cross(_dir, sf::Vector3f(0, 1, 0)) * speed;
             break;
         case UP:
             _pos += sf::Vector3f(0, 1, 0) * speed;
@@ -31,8 +31,8 @@ void Renderer::Camera::move(Direction dir, float speed)
     }
 }
 
-void Renderer::Camera::turn(float x, float y)
+void Camera::turn(float x, float y)
 {
-    _rot.x += x;
-    _rot.y += y;
+    _dir.x += x;
+    _dir.y += y;
 }

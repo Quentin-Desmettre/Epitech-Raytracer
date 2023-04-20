@@ -2,34 +2,34 @@
 ** EPITECH PROJECT, 2023
 ** Epitech-Raytracer
 ** File description:
-** lightPoint
+** LightPoint
 */
 
-#include "lightPoint.hpp"
+#include "LightPoint.hpp"
 #include <iostream>
 
-lightPoint::lightPoint(sf::Vector3f pos, sf::Color color, float intensity)
+LightPoint::LightPoint(sf::Vector3f pos, sf::Color color, float intensity)
 {
     _pos = pos;
     _color = color;
     _intensity = intensity;
 }
 
-lightPoint::~lightPoint()
+LightPoint::~LightPoint()
 {
 }
 
-sf::Vector3f lightPoint::getPos()
+sf::Vector3f LightPoint::getPos()
 {
     return _pos;
 }
 
-sf::Color lightPoint::getColor()
+sf::Color LightPoint::getColor()
 {
     return _color;
 }
 
-sf::Vector3f lightPoint::getColorF()
+sf::Vector3f LightPoint::getColorF()
 {
     sf::Vector3f colorF;
     colorF.x = _color.r / 255.0f;
@@ -38,17 +38,17 @@ sf::Vector3f lightPoint::getColorF()
     return colorF;
 }
 
-float lightPoint::getIntensity()
+float LightPoint::getIntensity()
 {
     return _intensity;
 }
 
-void lightPoint::setPos(sf::Vector3f pos)
+void LightPoint::setPos(sf::Vector3f pos)
 {
     pos = _pos;
 }
 
-void lightPoint::setColor(sf::Color color)
+void LightPoint::setColor(sf::Color color)
 {
     color = _color;
 }

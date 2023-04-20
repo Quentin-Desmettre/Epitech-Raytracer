@@ -13,10 +13,11 @@
 class Object {
     public:
         Object(sf::Vector3f pos = sf::Vector3f(0, 0, 0), sf::Color color = sf::Color::Red,
-        sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f, float reflectivity = 0.0f) :
+        sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f, float reflectivity = 0.0f) :
         _pos(pos), _intensity(intensity), _reflectivity(reflectivity) {
             _color = sf::Vector3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-            _emmsionColor = sf::Vector3f(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
+            if (emmsionColor != sf::Color::Transparent)
+                _emmsionColor = sf::Vector3f(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
         };
         virtual ~Object() = default;
         sf::Vector3f getPos() const {return _pos;};

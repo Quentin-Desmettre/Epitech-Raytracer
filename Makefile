@@ -6,12 +6,13 @@
 ## Makefile
 ##
 
-rwildc = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildc,$d/,$2))
-
 SRC = 	src/main.cpp 				\
 		src/Renderer.cpp 			\
+		src/Scene.cpp 				\
 		src/Camera.cpp 				\
-		src/lightPoint.cpp 			\
+		src/LightPoint.cpp 			\
+		src/utils/Math.cpp			\
+		src/utils/Matrix.cpp		\
 		src/objects/Sphere.cpp 		\
 		src/objects/Triangle.cpp 	\
 		src/objects/Plane.cpp 		\

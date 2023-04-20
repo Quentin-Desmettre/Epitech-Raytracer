@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "Math.hpp"
 #include "Scene.hpp"
-#include "lightPoint.hpp"
+#include "LightPoint.hpp"
+#include "Camera.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -17,7 +17,6 @@
 #include <iostream>
 #include <thread>
 
-#define WINDOW_SIZE sf::Vector2f(800, 800)
 #define NULL_VEC_3 sf::Vector3f(0, 0, 0)
 #define NB_BOUNCE 3
 #define RAYS_PER_PIXEL 5.0f
@@ -33,56 +32,42 @@ inline void operator*=(sf::Vector3f &vec, sf::Vector3f vec2) {
 }
 
 class Renderer {
-    class Camera {
-        public:
-            enum Direction {
-                FORWARD,
-                BACKWARD,
-                LEFT,
-                RIGHT,
-                UP,
-                DOWN
-            };
-            Camera(sf::Vector3f pos = sf::Vector3f(0, 0, -2.0f), sf::Vector3f rot = sf::Vector3f(0, 0, 1)):
-            _pos(pos), _rot(rot) {};
-            ~Camera() = default;
-            void setPos(sf::Vector3f pos) {_pos = pos;};
-            void setRot(sf::Vector3f rot) {_rot = rot;};
-            sf::Vector3f getPos() {return _pos;};
-            sf::Vector3f getRot() {return _rot;};
-            void move(Direction dir, float speed);
-            void turn(float x, float y);
-        protected:
-        private:
-            sf::Vector3f _pos;
-            sf::Vector3f _rot;
-    };
     public:
         Renderer();
         ~Renderer() = default;
-        void handleMovement();
         void run(Scene *pool);
-        void perThread(int startX, int endX, Scene *pool);
-        void setCamera(sf::Vector3f pos = NULL_VEC_3, sf::Vector3f rot = sf::Vector3f(0, 0, 1)) {
+        void smoothImage(bool smooth = true) {_smooth = smooth;};
+        void setCamera(sf::Vector3f pos = NULL_VEC_3, sf::Vector3f dir = sf::Vector3f(0, 0, 1)) {
             _camera.setPos(pos);
-            _camera.setRot(rot);
+            _camera.setDir(dir);
         };
     protected:
     private:
-        sf::Clock _clock;
-        size_t _nbFrames = 0;
         Camera _camera;
         sf::RenderWindow _window;
         sf::VertexArray _vertexArray;
-        sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
         sf::Vector3f _sunColor = sf::Vector3f(1, 1, 1);
+        sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
+        sf::Clock _clock;
+        bool _smooth = true;
+        size_t _nbFrames = 0;
 
+        // Getters
         sf::Vector3f getPixelFColor(sf::Vector2f pos, const Scene *pool);
         sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
             return sf::Vector3f(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
         }
-        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene *pool, Object *obj);
+
+        // Setters
+        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter,
+        sf::Vector3f color, const Scene *pool, const Object *obj);
+        void addLightOfPoints(sf::Vector3f &light ,sf::Vector3f normal,
+        sf::Vector3f inter, sf::Vector3f color, const Scene *pool, const Object *obj);
         void addPixel(sf::Vector2f pos, sf::Vector3f color);
+
+        // Others
+        void handleMovement();
+        void perThread(int startX, int endX, Scene *pool);
         void draw() {
             _window.draw(_vertexArray);
             _nbFrames++;
@@ -95,5 +80,4 @@ class Renderer {
             texture.update(_window);
             texture.copyToImage().saveToFile("renders/render.png");
         };
-        void addLightOfPoints(sf::Vector3f &light ,sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene *pool, Object *obj);
 };

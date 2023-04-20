@@ -82,27 +82,16 @@ void Renderer::perThread(int startX, int endX, Scene *pool)
     }
 }
 
-void Renderer::addLightOfPoints(sf::Vector3f &light, sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene *pool, Object *obj)
-{
-    for (auto &lightPoint : pool->getLightPoints()) {
-        Ray ray(inter, Math::normalize(lightPoint.getPos() - inter));
-        if (pool->getBetween(&ray, Math::length(lightPoint.getPos() - inter), obj, true) == nullptr) {
-            sf::Vector3f test = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * lightPoint.getColorF();
-            light += test;
-        }
-    }
-}
-
 sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, const Scene *pool)
 {
     sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);
     sf::Vector3f light = NULL_VEC_3;
-    Ray ray = Ray(_camera.getPos(), _camera.getRot() +
+    Ray ray = Ray(_camera.getPos(), _camera.getDir() +
     sf::Vector3f(pos.x / WINDOW_SIZE.x - 0.5f, pos.y / WINDOW_SIZE.y - 0.5f, 1));
-    Object *old = nullptr;
+    const Object *old = nullptr;
 
     for (int bounces = 0; bounces <= NB_BOUNCE; bounces++) {
-        Object *obj = pool->getClosest(&ray, old);
+        const Object *obj = pool->getClosest(&ray, old);
 
         if (!obj)
             break;
@@ -115,7 +104,7 @@ sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, const Scene *pool)
         ray.reflect(normal, obj->getReflectivity());
         if (bounces == 0) {
             light += addSunLight(normal, inter, rayColor, pool, obj);
-            addLightOfPoints(light, normal, inter, rayColor, pool, obj);// * (1.0f - obj->getReflectivity());
+            addLightOfPoints(light, normal, inter, rayColor, pool, obj);
         }
         old = obj;
     }
@@ -125,12 +114,25 @@ sf::Vector3f Renderer::getPixelFColor(sf::Vector2f pos, const Scene *pool)
     return light;
 }
 
-sf::Vector3f Renderer::addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene *pool, Object *obj)
+sf::Vector3f Renderer::addSunLight(sf::Vector3f normal, sf::Vector3f inter,
+sf::Vector3f color, const Scene *pool, const Object *obj)
 {
     Ray ray(inter, -_sunLight);
     if (pool->getClosest(&ray, obj, true) != nullptr)
         return NULL_VEC_3;
     return std::max(Math::dot(normal, -_sunLight), 0.0f) * color * _sunColor;
+}
+
+void Renderer::addLightOfPoints(sf::Vector3f &light, sf::Vector3f normal,
+sf::Vector3f inter, sf::Vector3f color, const Scene *pool, const Object *obj)
+{
+    for (auto &LightPoint : pool->getLightPoints()) {
+        Ray ray(inter, Math::normalize(LightPoint.getPos() - inter));
+        if (pool->getBetween(&ray, Math::length(LightPoint.getPos() - inter), obj, true) == nullptr) {
+            sf::Vector3f tmp = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * LightPoint.getColorF();
+            light += tmp;
+        }
+    }
 }
 
 void Renderer::addPixel(sf::Vector2f pos, sf::Vector3f color)
@@ -139,7 +141,7 @@ void Renderer::addPixel(sf::Vector2f pos, sf::Vector3f color)
     color.x = std::min(color.x, 255.0f);
     color.y = std::min(color.y, 255.0f);
     color.z = std::min(color.z, 255.0f);
-    if (_nbFrames != 0) {
+    if (_nbFrames != 0 && _smooth) {
         sf::Color old = _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color;
         sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
         if (oldColor == NULL_VEC_3 || color == NULL_VEC_3)

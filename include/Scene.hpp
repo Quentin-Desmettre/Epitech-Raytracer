@@ -9,7 +9,7 @@
 
 #include "Ray.hpp"
 #include "objects/Object.hpp"
-#include "lightPoint.hpp"
+#include "LightPoint.hpp"
 #include <iostream>
 #include <vector>
 
@@ -17,47 +17,19 @@ class Scene {
     public:
         Scene() = default;
         ~Scene() = default;
+
+        // Setters
         void addObject(Object *obj) {_pool.push_back(obj);};
-        void addLightPoint(lightPoint light) {_lightsPoints.push_back(light);};
+        void addLightPoint(LightPoint light) {_lightsPoints.push_back(light);};
+        void clear() {_pool.clear(); _lightsPoints.clear();};
+
+        // Getters
         std::vector<Object *> getPool() {return _pool;};
-        Object *getClosest(const Ray *ray, const Object *ignore = nullptr, bool ignoreLightSources = false) const {
-            Object *closest = nullptr;
-            float dist = __FLT_MAX__;
-
-            for (auto &obj : _pool) {
-                if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != sf::Vector3f(0, 0, 0)
-                && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
-                    continue;
-                sf::Vector3f vec = obj->getIntersection(ray) - ray->getOrigin();
-                float len = Math::length(vec);
-                if (dist < len || !Math::sameSign(vec, ray->getDir()))
-                    continue;
-                dist = len;
-                closest = obj;
-            }
-            return closest;
-        };
-        std::vector<lightPoint> getLightPoints() const {return _lightsPoints;};
-        Object *getBetween(Ray *ray, float dst, Object *ignore = nullptr, bool ignoreLightSources = false) const {
-            Object *closest = nullptr;
-            float dist = __FLT_MAX__;
-
-            for (auto &obj : _pool) {
-                if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != sf::Vector3f(0, 0, 0)
-                                      && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
-                    continue;
-                sf::Vector3f vec = obj->getIntersection(ray) - ray->getOrigin();
-                float len = Math::length(vec);
-                if (dist < len || !Math::sameSign(vec, ray->getDir()) || len > dst)
-                    continue;
-                dist = len;
-                closest = obj;
-            }
-            return closest;
-        };
-
+        std::vector<LightPoint> getLightPoints() const {return _lightsPoints;};
+        const Object *getClosest(const Ray *ray, const Object *ignore = nullptr, bool ignoreLightSources = false) const;
+        const Object *getBetween(const Ray *ray, float dst, const Object *ignore = nullptr, bool ignoreLightSources = false) const;
     protected:
     private:
         std::vector<Object *> _pool;
-        std::vector<lightPoint> _lightsPoints;
+        std::vector<LightPoint> _lightsPoints;
 };
