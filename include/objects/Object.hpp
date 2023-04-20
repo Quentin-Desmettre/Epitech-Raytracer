@@ -12,27 +12,27 @@
 
 class Object {
     public:
-        Object(sf::Vector3f pos = sf::Vector3f(0, 0, 0), sf::Color color = sf::Color::Red,
+        Object(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red,
         sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f, float reflectivity = 0.0f) :
         _pos(pos), _intensity(intensity), _reflectivity(reflectivity) {
-            _color = sf::Vector3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+            _color = Vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
             if (emmsionColor != sf::Color::Transparent)
-                _emmsionColor = sf::Vector3f(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
+                _emmsionColor = Vec3(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
         };
         virtual ~Object() = default;
-        sf::Vector3f getPos() const {return _pos;};
-        sf::Vector3f getColor() const {return _color;};
-        sf::Vector3f getEmissionColor() const {return _emmsionColor;};
+        Vec3 getPos() const {return _pos;};
+        Vec3 getColor() const {return _color;};
+        Vec3 getEmissionColor() const {return _emmsionColor;};
         float getEmissionIntensity() const {return _intensity;};
         float getReflectivity() const {return _reflectivity;};
         void setReflectivity(float reflectivity) {_reflectivity = reflectivity;};
         virtual bool intersect(const Ray *ray) const = 0;
-        virtual sf::Vector3f getIntersection(const Ray *ray) const = 0;
-        virtual sf::Vector3f getNormal(sf::Vector3f inter) const = 0;
+        virtual Vec3 getIntersection(const Ray *ray) const = 0;
+        virtual Vec3 getNormal(Vec3 inter) const = 0;
     protected:
-        sf::Vector3f _pos;
-        sf::Vector3f _color;
-        sf::Vector3f _emmsionColor;
+        Vec3 _pos;
+        Vec3 _color;
+        Vec3 _emmsionColor;
         float _intensity = 1.0f;
         float _reflectivity = 0.0f;
     private:

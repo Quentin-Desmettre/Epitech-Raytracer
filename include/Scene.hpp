@@ -24,8 +24,8 @@ class Scene {
         void clear() {_pool.clear(); _lightsPoints.clear();};
 
         // Getters
-        std::vector<Object *> getPool() {return _pool;};
-        std::vector<LightPoint> getLightPoints() const {return _lightsPoints;};
+        const std::vector<Object *> &getPool() const {return _pool;};
+        const std::vector<LightPoint> &getLightPoints() const {return _lightsPoints;};
         const Object *getClosest(const Ray *ray, const Object *ignore = nullptr, bool ignoreLightSources = false) const;
         const Object *getBetween(const Ray *ray, float dst, const Object *ignore = nullptr, bool ignoreLightSources = false) const;
     protected:

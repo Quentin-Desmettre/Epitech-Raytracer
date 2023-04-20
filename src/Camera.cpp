@@ -17,16 +17,16 @@ void Camera::move(Direction dir, float speed)
             _pos -= _dir * speed;
             break;
         case LEFT:
-            _pos += Math::cross(_dir, sf::Vector3f(0, 1, 0)) * speed;
+            _pos += Math::cross(_dir, Vec3(0, 1, 0)) * speed;
             break;
         case RIGHT:
-            _pos -= Math::cross(_dir, sf::Vector3f(0, 1, 0)) * speed;
+            _pos -= Math::cross(_dir, Vec3(0, 1, 0)) * speed;
             break;
         case UP:
-            _pos += sf::Vector3f(0, 1, 0) * speed;
+            _pos += Vec3(0, 1, 0) * speed;
             break;
         case DOWN:
-            _pos -= sf::Vector3f(0, 1, 0) * speed;
+            _pos -= Vec3(0, 1, 0) * speed;
             break;
     }
 }
