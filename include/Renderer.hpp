@@ -10,6 +10,7 @@
 #include "Sfml.hpp"
 #include "Scene.hpp"
 #include "LightPoint.hpp"
+#include "objects/Sphere.hpp"
 #include "Camera.hpp"
 #include <iostream>
 #include <thread>
@@ -49,6 +50,7 @@ class Renderer {
         Vec3 addLightOfPoints(Vec3 normal, Vec3 inter,
         Vec3 color, const Scene *pool, const Object *obj) const;
         void addPixel(sf::Vector2f pos, Vec3 color);
+        void addSphereAtPos(sf::Vector2f pos, Scene *pool);
 
         // Others
         void handleMovement();

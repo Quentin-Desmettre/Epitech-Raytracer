@@ -20,12 +20,19 @@ class Object {
                 _emmsionColor = Vec3(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
         };
         virtual ~Object() = default;
+
+        // Getters
         Vec3 getPos() const {return _pos;};
         Vec3 getColor() const {return _color;};
         Vec3 getEmissionColor() const {return _emmsionColor;};
         float getEmissionIntensity() const {return _intensity;};
         float getReflectivity() const {return _reflectivity;};
+
+        // Setters
+        void setPos(Vec3 pos) {_pos = pos;};
         void setReflectivity(float reflectivity) {_reflectivity = reflectivity;};
+
+        // Methods
         virtual bool intersect(const Ray *ray) const = 0;
         virtual Vec3 getIntersection(const Ray *ray) const = 0;
         virtual Vec3 getNormal(Vec3 inter) const = 0;

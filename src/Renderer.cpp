@@ -58,7 +58,12 @@ void Renderer::run(Scene *pool, Camera &camera)
             if (event.type == sf::Event::Closed) {
                 _window.close();
                 return;
-            } else
+            } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+                _window.close();
+                return;
+            } else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+                addSphereAtPos(sf::Vector2f(event.mouseButton.x, event.mouseButton.y), pool);
+            else
                 handleMovement();
         }
         _window.clear();
@@ -164,4 +169,17 @@ void Renderer::addPixel(sf::Vector2f pos, Vec3 color)
     }
     _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].position = sf::Vector2f(pos.x, pos.y);
     _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color = sf::Color(color.x, color.y, color.z);
+}
+
+void Renderer::addSphereAtPos(sf::Vector2f pos, Scene *pool)
+{
+    Ray ray = Ray(_camera.getPos(), _camera.getRayDir(pos));
+    Vec3 inter = ray.getOrigin() + Math::normalize(ray.getDir()) * 10.0f;
+    const Object *obj = pool->getClosest(&ray);
+    Sphere *sphere = new Sphere(inter, sf::Color(255, 64, 64), 0.5f);
+
+    if (obj != nullptr)
+        sphere->setPos(obj->getIntersection(&ray));
+    pool->addObject(sphere);
+    _nbFrames = 0;
 }
