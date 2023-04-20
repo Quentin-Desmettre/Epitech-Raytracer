@@ -7,37 +7,24 @@
 
 #pragma once
 
+#include "Sfml.hpp"
 #include "Scene.hpp"
 #include "LightPoint.hpp"
 #include "Camera.hpp"
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Audio.hpp>
 #include <iostream>
 #include <thread>
 
-#define NULL_VEC_3 sf::Vector3f(0, 0, 0)
 #define NB_BOUNCE 3
 #define RAYS_PER_PIXEL 5.0f
-
-inline sf::Vector3f operator*(sf::Vector3f vec, sf::Vector3f vec2) {
-    return sf::Vector3f(vec.x * vec2.x, vec.y * vec2.y, vec.z * vec2.z);
-}
-
-inline void operator*=(sf::Vector3f &vec, sf::Vector3f vec2) {
-    vec.x *= vec2.x;
-    vec.y *= vec2.y;
-    vec.z *= vec2.z;
-}
 
 class Renderer {
     public:
         Renderer();
         ~Renderer() = default;
         void run(Scene *pool);
+        void useThreads(bool use = false) {_threads = use;};
         void smoothImage(bool smooth = true) {_smooth = smooth;};
-        void setCamera(sf::Vector3f pos = NULL_VEC_3, sf::Vector3f dir = sf::Vector3f(0, 0, 1)) {
+        void setCamera(Vec3 pos = VEC_NULL, Vec3 dir = Vec3(0, 0, 1)) {
             _camera.setPos(pos);
             _camera.setDir(dir);
         };
@@ -46,24 +33,25 @@ class Renderer {
         Camera _camera;
         sf::RenderWindow _window;
         sf::VertexArray _vertexArray;
-        sf::Vector3f _sunColor = sf::Vector3f(1, 1, 1);
-        sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
+        Vec3 _sunColor = Vec3(1, 1, 1);
+        Vec3 _sunLight = Math::normalize(Vec3(-1, 1, 0));
         sf::Clock _clock;
         bool _smooth = true;
+        bool _threads = false;
         size_t _nbFrames = 0;
 
         // Getters
-        sf::Vector3f getPixelFColor(sf::Vector2f pos, const Scene *pool);
-        sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
-            return sf::Vector3f(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
+        Vec3 getPixelFColor(sf::Vector2f pos, const Scene *pool) const ;
+        Vec3 getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) const {
+            return Vec3(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
         }
 
         // Setters
-        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter,
-        sf::Vector3f color, const Scene *pool, const Object *obj);
-        void addLightOfPoints(sf::Vector3f &light ,sf::Vector3f normal,
-        sf::Vector3f inter, sf::Vector3f color, const Scene *pool, const Object *obj);
-        void addPixel(sf::Vector2f pos, sf::Vector3f color);
+        Vec3 addSunLight(Vec3 normal, Vec3 inter,
+        Vec3 color, const Scene *pool, const Object *obj) const;
+        Vec3 addLightOfPoints(Vec3 normal, Vec3 inter,
+        Vec3 color, const Scene *pool, const Object *obj) const;
+        void addPixel(sf::Vector2f pos, Vec3 color);
 
         // Others
         void handleMovement();

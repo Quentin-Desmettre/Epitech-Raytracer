@@ -12,14 +12,14 @@
 
 class Triangle : public Object {
     public:
-        Triangle(sf::Vector3f point1 = sf::Vector3f(0, 0, 0), sf::Vector3f point2 = sf::Vector3f(1, 0, 0), sf::Vector3f point3 = sf::Vector3f(0, 0, 1),
+        Triangle(Vec3 point1 = Vec3(0, 0, 0), Vec3 point2 = Vec3(1, 0, 0), Vec3 point3 = Vec3(0, 0, 1),
         sf::Color color = sf::Color::Red, sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
         ~Triangle() = default;
         bool intersect(const Ray *ray) const override;
-        sf::Vector3f getIntersection(const Ray *ray) const override;
-        sf::Vector3f getNormal(sf::Vector3f inter) const override;
+        Vec3 getIntersection(const Ray *ray) const override;
+        Vec3 getNormal(Vec3 inter) const override;
 
     protected:
     private:
-        std::array<sf::Vector3f, 3> _points;
+        std::array<Vec3, 3> _points;
 };

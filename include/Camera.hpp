@@ -23,23 +23,23 @@ class Camera {
             UP,
             DOWN
         };
-        Camera(sf::Vector3f pos = sf::Vector3f(0, 0, -2.0f), sf::Vector3f dir = sf::Vector3f(0, 0, 1)):
+        Camera(Vec3 pos = Vec3(0, 0, -2.0f), Vec3 dir = Vec3(0, 0, 1)):
         _pos(pos), _dir(dir) {};
         ~Camera() = default;
 
         // Setters
-        void setPos(sf::Vector3f pos) {_pos = pos;};
-        void setDir(sf::Vector3f dir) {_dir = dir;};
+        void setPos(Vec3 pos) {_pos = pos;};
+        void setDir(Vec3 dir) {_dir = dir;};
 
         // Getters
-        sf::Vector3f getPos() {return _pos;};
-        sf::Vector3f getDir() {return _dir;};
+        Vec3 getPos() const {return _pos;};
+        Vec3 getDir() const {return _dir;};
 
         // Methods
         void move(Direction dir, float speed);
         void turn(float x, float y);
     protected:
     private:
-        sf::Vector3f _pos;
-        sf::Vector3f _dir;
+        Vec3 _pos;
+        Vec3 _dir;
 };

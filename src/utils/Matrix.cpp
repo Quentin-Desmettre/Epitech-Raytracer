@@ -43,9 +43,9 @@ Mat4 Mat4::operator*(const Mat4 &other) const
     return result;
 }
 
-sf::Vector3f Mat4::operator*(const sf::Vector3f &vec) const
+Vec3 Mat4::operator*(const Vec3 &vec) const
 {
-    sf::Vector3f result;
+    Vec3 result;
 
     result.x = _matrix[0] * vec.x + _matrix[1] * vec.y + _matrix[2] * vec.z + _matrix[3];
     result.y = _matrix[4] * vec.x + _matrix[5] * vec.y + _matrix[6] * vec.z + _matrix[7];

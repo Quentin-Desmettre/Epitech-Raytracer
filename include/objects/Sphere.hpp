@@ -11,13 +11,13 @@
 
 class Sphere : public Object {
     public:
-        Sphere(sf::Vector3f pos = sf::Vector3f(0, 0, 0), sf::Color color = sf::Color::Red, float radius = 1.0f,
+        Sphere(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red, float radius = 1.0f,
         sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
         ~Sphere() = default;
         float getRadius() const {return _radius;};
         bool intersect(const Ray *ray) const override;
-        sf::Vector3f getIntersection(const Ray *ray) const override;
-        sf::Vector3f getNormal(sf::Vector3f inter) const override;
+        Vec3 getIntersection(const Ray *ray) const override;
+        Vec3 getNormal(Vec3 inter) const override;
 
     protected:
     private:

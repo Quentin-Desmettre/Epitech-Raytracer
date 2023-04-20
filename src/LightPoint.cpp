@@ -8,7 +8,7 @@
 #include "LightPoint.hpp"
 #include <iostream>
 
-LightPoint::LightPoint(sf::Vector3f pos, sf::Color color, float intensity)
+LightPoint::LightPoint(Vec3 pos, sf::Color color, float intensity)
 {
     _pos = pos;
     _color = color;
@@ -19,31 +19,31 @@ LightPoint::~LightPoint()
 {
 }
 
-sf::Vector3f LightPoint::getPos()
+Vec3 LightPoint::getPos() const
 {
     return _pos;
 }
 
-sf::Color LightPoint::getColor()
+sf::Color LightPoint::getColor() const
 {
     return _color;
 }
 
-sf::Vector3f LightPoint::getColorF()
+Vec3 LightPoint::getColorF() const
 {
-    sf::Vector3f colorF;
+    Vec3 colorF;
     colorF.x = _color.r / 255.0f;
     colorF.y = _color.g / 255.0f;
     colorF.z = _color.b / 255.0f;
     return colorF;
 }
 
-float LightPoint::getIntensity()
+float LightPoint::getIntensity() const
 {
     return _intensity;
 }
 
-void LightPoint::setPos(sf::Vector3f pos)
+void LightPoint::setPos(Vec3 pos)
 {
     pos = _pos;
 }
