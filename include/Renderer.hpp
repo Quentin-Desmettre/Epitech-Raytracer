@@ -8,7 +8,7 @@
 #pragma once
 
 #include "Math.hpp"
-#include "Scene.hpp"
+#include "scene/Scene.hpp"
 #include "lightPoint.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -16,6 +16,7 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <thread>
+#include <memory>
 
 #define WINDOW_SIZE sf::Vector2f(800, 800)
 #define NULL_VEC_3 sf::Vector3f(0, 0, 0)
@@ -33,36 +34,37 @@ inline void operator*=(sf::Vector3f &vec, sf::Vector3f vec2) {
 }
 
 class Renderer {
-    class Camera {
-        public:
-            enum Direction {
-                FORWARD,
-                BACKWARD,
-                LEFT,
-                RIGHT,
-                UP,
-                DOWN
-            };
-            Camera(sf::Vector3f pos = sf::Vector3f(0, 0, -2.0f), sf::Vector3f rot = sf::Vector3f(0, 0, 1)):
-            _pos(pos), _rot(rot) {};
-            ~Camera() = default;
-            void setPos(sf::Vector3f pos) {_pos = pos;};
-            void setRot(sf::Vector3f rot) {_rot = rot;};
-            sf::Vector3f getPos() {return _pos;};
-            sf::Vector3f getRot() {return _rot;};
-            void move(Direction dir, float speed);
-            void turn(float x, float y);
-        protected:
-        private:
-            sf::Vector3f _pos;
-            sf::Vector3f _rot;
-    };
     public:
-        Renderer();
+    class Camera {
+    public:
+        enum Direction {
+            FORWARD,
+            BACKWARD,
+            LEFT,
+            RIGHT,
+            UP,
+            DOWN
+        };
+        Camera(sf::Vector3f pos = sf::Vector3f(0, 0, -2.0f), sf::Vector3f rot = sf::Vector3f(0, 0, 1)):
+                _pos(pos), _rot(rot) {};
+        ~Camera() = default;
+        void setPos(sf::Vector3f pos) {_pos = pos;};
+        void setRot(sf::Vector3f rot) {_rot = rot;};
+        sf::Vector3f getPos() {return _pos;};
+        sf::Vector3f getRot() {return _rot;};
+        void move(Direction dir, float speed);
+        void turn(float x, float y);
+    protected:
+    private:
+        sf::Vector3f _pos;
+        sf::Vector3f _rot;
+    };
+    typedef std::shared_ptr<Renderer::Camera> SharedCamera;
+    Renderer();
         ~Renderer() = default;
         void handleMovement();
-        void run(Scene *pool);
-        void perThread(int startX, int endX, Scene *pool);
+        void run(const Scene &pool);
+        void perThread(int startX, int endX, const Scene *pool);
         void setCamera(sf::Vector3f pos = NULL_VEC_3, sf::Vector3f rot = sf::Vector3f(0, 0, 1)) {
             _camera.setPos(pos);
             _camera.setRot(rot);
