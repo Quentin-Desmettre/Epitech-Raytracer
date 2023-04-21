@@ -78,7 +78,7 @@ int main(void)
     addObjects(scene, camera);
     // addSolarSystem(scene, camera);
     // r.smoothImage(false);
-    // r.useThreads(true);
+    r.useThreads(true);
     r.run(&scene, camera);
     return 0;
 }

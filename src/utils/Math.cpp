@@ -6,6 +6,7 @@
 */
 
 #include "utils/Math.hpp"
+#include <random>
 
 Vec3 Math::normalize(Vec3 vec)
 {
@@ -20,21 +21,17 @@ float Math::dot(Vec3 vec1, Vec3 vec2)
 
 float Math::random(float min, float max)
 {
-    return min + (rand() / (RAND_MAX / (max - min)));
-}
+    thread_local std::mt19937 generator(std::random_device{}());
+    std::normal_distribution<float> distribution(min, max);
 
-float Math::randomNormDistrib()
-{
-    float u1 = random(0, 1);
-    float u2 = random(0, 1);
-    return sqrt(-2.0f * log(u1)) * cos(2.0f * M_PI * u2);
+    return distribution(generator);
 }
 
 Vec3 Math::randomDir()
 {
-    float x = randomNormDistrib();
-    float y = randomNormDistrib();
-    float z = randomNormDistrib();
+    float x = random(0, 1);
+    float y = random(0, 1);
+    float z = random(0, 1);
 
     return normalize(Vec3(x, y, z));
 }

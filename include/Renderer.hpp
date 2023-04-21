@@ -17,6 +17,7 @@
 
 #define NB_BOUNCE 3
 #define RAYS_PER_PIXEL 1.0f
+#define NB_THREADS std::thread::hardware_concurrency()
 
 class Renderer {
     public:
@@ -54,7 +55,7 @@ class Renderer {
 
         // Others
         void handleMovement();
-        void perThread(int startX, int endX, Scene *pool);
+        void perThread(int startX, int endX, const Scene *pool);
         void draw() {
             _window.draw(_vertexArray);
             _nbFrames++;

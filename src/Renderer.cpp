@@ -9,8 +9,6 @@
 #include "objects/Plane.hpp"
 #include <numeric>
 
-#define NB_THREADS std::thread::hardware_concurrency()
-
 Renderer::Renderer()
 {
     for (int i = 0; i < WINDOW_SIZE.x; i++)
@@ -83,7 +81,7 @@ void Renderer::run(Scene *pool, Camera &camera)
     }
 }
 
-void Renderer::perThread(int startX, int endX, Scene *pool)
+void Renderer::perThread(int startX, int endX, const Scene *pool)
 {
     for (int x = startX; x < endX; x++) {
         for (int y = 0; y < WINDOW_SIZE.y; y++) {
