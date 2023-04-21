@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** Epitech-Raytracer
 ** File description:
-** ObjectFactory
+** ConeBuilder
 */
 
-#include "ObjectFactory.hpp"
+#include "objects/builders/ConeBuilder.hpp"

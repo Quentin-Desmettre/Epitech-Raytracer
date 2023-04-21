@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** Epitech-Raytracer
 ** File description:
-** ATransformation
+** Cone
 */
 
-#include "ATransformation.hpp"
+#include "Cone.hpp"

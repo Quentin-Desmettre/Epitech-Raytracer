@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** Epitech-Raytracer
 ** File description:
-** TransformationFactory
+** TriangleBuilder
 */
 
-#include "TransformationFactory.hpp"
+#include "objects/builders/TriangleBuilder.hpp"

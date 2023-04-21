@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** Epitech-Raytracer
 ** File description:
-** SceneBuilder
+** Cylinder
 */
 
-#include "SceneBuilder.hpp"
+#include "Cylinder.hpp"
