@@ -1,0 +1,11 @@
+/*
+** EPITECH PROJECT, 2023
+** Epitech-Raytracer
+** File description:
+** IBuilder
+*/
+
+#ifndef EPITECH_RAYTRACER_IBUILDER_HPP
+#define EPITECH_RAYTRACER_IBUILDER_HPP
+
+#endif //EPITECH_RAYTRACER_IBUILDER_HPP
