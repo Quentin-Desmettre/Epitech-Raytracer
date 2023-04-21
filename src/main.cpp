@@ -10,7 +10,7 @@
 #include "objects/Triangle.hpp"
 #include "objects/Plane.hpp"
 
-void addSolarSystem(Renderer &r, Scene &scene)
+void addSolarSystem(Scene &scene, Camera &camera)
 {
     scene.clear();
 
@@ -41,15 +41,17 @@ void addSolarSystem(Renderer &r, Scene &scene)
     Sphere *Neptune = new Sphere(Vec3(45.55, 0, 0), sf::Color(100, 182, 233), 1.95);
     scene.addObject(Neptune);
 
-    r.setCamera(Vec3(13, -15, -80), Vec3(0, 0.25, 0));
+
+    camera.setPos(Vec3(13, -15, -80));
+    camera.setRot(Vec3(0, 0.25, 0));
 }
 
-void addObjects(Renderer &r, Scene &scene)
+void addObjects(Scene &scene, Camera &camera)
 {
-    Sphere *sphere1 = new Sphere(Vec3(-1.5, -0.5, 10), sf::Color(64, 255, 64), 1);
+    Sphere *sphere1 = new Sphere(Vec3(-1, -0.5, 10), sf::Color(64, 255, 64), 1);
     scene.addObject(sphere1);
 
-    Sphere *sphere2 = new Sphere(Vec3(-0.5, -2, 10), sf::Color(64, 64, 255), 0.3);
+    Sphere *sphere2 = new Sphere(Vec3(0, -2, 10), sf::Color(64, 64, 255), 0.3);
     scene.addObject(sphere2);
 
     Sphere *sphere3 = new Sphere(Vec3(1, 0, 10), sf::Color(255, 64, 64), 0.5, sf::Color(255, 255, 255), 5.0f);
@@ -62,19 +64,21 @@ void addObjects(Renderer &r, Scene &scene)
     plane->setReflectivity(1);
     scene.addObject(plane);
 
-    r.setCamera(Vec3(-1, -2, 0), Vec3(0, 0.25, 0.5));
+    camera.setPos(Vec3(0, -1, 6));
+    camera.setRot(Vec3(0, 0, 0));
 }
 
 int main(void)
 {
     Renderer r;
     Scene scene;
+    Camera camera;
 
     srand(time(NULL));
-    addObjects(r, scene);
-    // addSolarSystem(r, scene);
+    addObjects(scene, camera);
+    // addSolarSystem(scene, camera);
     // r.smoothImage(false);
     r.useThreads(true);
-    r.run(&scene);
+    r.run(&scene, camera);
     return 0;
 }

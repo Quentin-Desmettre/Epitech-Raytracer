@@ -24,7 +24,4 @@ namespace Math
     Vec3 lerp(Vec3 vec1, Vec3 vec2, float t);
     float length(Vec3 vec);
     bool sameSign(Vec3 a, Vec3 b);
-    Vec3 rotate(Vec3 vec, Vec3 axis, float angle);
-    Mat4 lookAt(Vec3 eye, Vec3 center, Vec3 up);
-    Mat4 perspective(float radFov, float x, float y, float near, float far);
 }

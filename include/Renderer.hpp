@@ -10,24 +10,23 @@
 #include "Sfml.hpp"
 #include "Scene.hpp"
 #include "LightPoint.hpp"
+#include "objects/Sphere.hpp"
 #include "Camera.hpp"
 #include <iostream>
 #include <thread>
 
 #define NB_BOUNCE 3
-#define RAYS_PER_PIXEL 5.0f
+#define RAYS_PER_PIXEL 1.0f
+#define NB_THREADS std::thread::hardware_concurrency()
 
 class Renderer {
     public:
         Renderer();
         ~Renderer() = default;
-        void run(Scene *pool);
+        void run(Scene *pool, Camera &camera);
         void useThreads(bool use = false) {_threads = use;};
         void smoothImage(bool smooth = true) {_smooth = smooth;};
-        void setCamera(Vec3 pos = VEC_NULL, Vec3 dir = Vec3(0, 0, 1)) {
-            _camera.setPos(pos);
-            _camera.setDir(dir);
-        };
+        void setCamera(Camera camera) {_camera = camera;};
     protected:
     private:
         Camera _camera;
@@ -52,10 +51,11 @@ class Renderer {
         Vec3 addLightOfPoints(Vec3 normal, Vec3 inter,
         Vec3 color, const Scene *pool, const Object *obj) const;
         void addPixel(sf::Vector2f pos, Vec3 color);
+        void addSphereAtPos(sf::Vector2f pos, Scene *pool);
 
         // Others
         void handleMovement();
-        void perThread(int startX, int endX, Scene *pool);
+        void perThread(int startX, int endX, const Scene *pool);
         void draw() {
             _window.draw(_vertexArray);
             _nbFrames++;
@@ -64,7 +64,7 @@ class Renderer {
         };
         void drawToFile() {
             sf::Texture texture;
-            texture.create(WINDOW_SIZE.x, WINDOW_SIZE.y);
+            texture.create(_window.getSize().x, _window.getSize().y);
             texture.update(_window);
             texture.copyToImage().saveToFile("renders/render.png");
         };
