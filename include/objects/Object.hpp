@@ -19,12 +19,19 @@ class Object {
             _emmsionColor = sf::Vector3f(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
         };
         virtual ~Object() = default;
+
+        void setPosition(const sf::Vector3f &pos) {_pos = pos;};
+        void setEmissionColor(const sf::Color &color) {_emmsionColor = sf::Vector3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);};
+        void setTransparency(const float &transparency) {};
+        void setReflectivity(const float &reflectivity) {_reflectivity = reflectivity;};
+        void setEmissionIntensity(const float &intensity) {_intensity = intensity;};
+        void setTransformations(const std::vector<sf::Transform> &transformations) {};
+
         sf::Vector3f getPos() const {return _pos;};
         sf::Vector3f getColor() const {return _color;};
         sf::Vector3f getEmissionColor() const {return _emmsionColor;};
         float getEmissionIntensity() const {return _intensity;};
         float getReflectivity() const {return _reflectivity;};
-        void setReflectivity(float reflectivity) {_reflectivity = reflectivity;};
         virtual bool intersect(const Ray *ray) const = 0;
         virtual sf::Vector3f getIntersection(const Ray *ray) const = 0;
         virtual sf::Vector3f getNormal(sf::Vector3f inter) const = 0;

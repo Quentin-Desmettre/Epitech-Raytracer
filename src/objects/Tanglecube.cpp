@@ -5,4 +5,4 @@
 ** Tanglecube
 */
 
-#include "Tanglecube.hpp"
+#include "objects/Tanglecube.hpp"

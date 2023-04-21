@@ -5,4 +5,4 @@
 ** Torus
 */
 
-#include "Torus.hpp"
+#include "objects/Torus.hpp"

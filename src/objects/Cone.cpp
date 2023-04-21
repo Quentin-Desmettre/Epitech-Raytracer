@@ -5,4 +5,4 @@
 ** Cone
 */
 
-#include "Cone.hpp"
+#include "objects/Cone.hpp"
