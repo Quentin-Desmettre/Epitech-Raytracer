@@ -15,6 +15,7 @@
 typedef sf::Glsl::Vec3 Vec3;
 
 #define VEC_NULL Vec3(0, 0, 0)
+#define unused __attribute_maybe_unused__
 
 #define WHITE Vec3(1, 1, 1)
 #define RED Vec3(1, 0, 0)

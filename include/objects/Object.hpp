@@ -35,7 +35,7 @@ class Object {
         // Methods
         virtual bool intersect(const Ray *ray) const = 0;
         virtual Vec3 getIntersection(const Ray *ray) const = 0;
-        virtual Vec3 getNormal(Vec3 inter) const = 0;
+        virtual Vec3 getNormal(const Vec3 &inter, const Ray &ray) const = 0;
     protected:
         Vec3 _pos;
         Vec3 _color;

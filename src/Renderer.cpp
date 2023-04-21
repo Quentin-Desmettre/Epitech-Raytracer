@@ -6,8 +6,9 @@
 */
 
 #include "Renderer.hpp"
-#include "objects/Plane.hpp"
+#include "objects/Square.hpp"
 #include <numeric>
+#include <mutex>
 
 Renderer::Renderer()
 {
@@ -16,29 +17,29 @@ Renderer::Renderer()
             _vertexArray.append(sf::Vertex(sf::Vector2f(i, j), sf::Color::Black));
 }
 
-void Renderer::handleMovement()
+void Renderer::handleMovement(sf::Event event)
 {
     bool reset = false;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+    if (event.key.code == sf::Keyboard::Z)
         _camera.move(Camera::FORWARD, 0.1f, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    if (event.key.code == sf::Keyboard::S)
         _camera.move(Camera::BACKWARD, 0.1f, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+    if (event.key.code == sf::Keyboard::Q)
         _camera.move(Camera::LEFT, 0.1f, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    if (event.key.code == sf::Keyboard::D)
         _camera.move(Camera::RIGHT, 0.1f, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    if (event.key.code == sf::Keyboard::A)
         _camera.move(Camera::UP, 0.1f, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+    if (event.key.code == sf::Keyboard::E)
         _camera.move(Camera::DOWN, 0.1f, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    if (event.key.code == sf::Keyboard::Up)
         _camera.turn(0.1f, 0, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    if (event.key.code == sf::Keyboard::Down)
         _camera.turn(-0.1f, 0, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    if (event.key.code == sf::Keyboard::Left)
         _camera.turn(0, -0.1f, reset);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    if (event.key.code == sf::Keyboard::Right)
         _camera.turn(0, 0.1f, reset);
 
     if (reset)
@@ -53,16 +54,14 @@ void Renderer::run(Scene *pool, Camera &camera)
     while (_window.isOpen()) {
         sf::Event event;
         while (_window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                _window.close();
-                return;
-            } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+            if (event.type == sf::Event::Closed ||
+            (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
                 _window.close();
                 return;
             } else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
                 addSphereAtPos(sf::Vector2f(event.mouseButton.x, event.mouseButton.y), pool);
-            else
-                handleMovement();
+            else if (event.type == sf::Event::KeyPressed)
+                handleMovement(event);
         }
         _window.clear();
         if (!_threads)
@@ -107,16 +106,14 @@ Vec3 Renderer::getPixelFColor(sf::Vector2f pos, const Scene *pool) const
         if (!obj)
             break;
         Vec3 inter = obj->getIntersection(&ray);
-        Vec3 normal = obj->getNormal(inter);
+        Vec3 normal = obj->getNormal(inter, ray);
         float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
         light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
         rayColor *= obj->getColor();
         ray.setOrigin(inter);
         ray.reflect(normal, obj->getReflectivity());
-        if (bounces == 0) {
-            light += addSunLight(normal, inter, rayColor, pool, obj);
-            light += addLightOfPoints(normal, inter, rayColor, pool, obj);
-        }
+        light += addSunLight(normal, inter, rayColor, pool, obj);
+        light += addLightOfPoints(normal, inter, rayColor, pool, obj);
         old = obj;
     }
 

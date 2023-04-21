@@ -41,7 +41,7 @@ class Renderer {
 
         // Getters
         Vec3 getPixelFColor(sf::Vector2f pos, const Scene *pool) const ;
-        Vec3 getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) const {
+        Vec3 getAmbientLight(unused sf::Vector2f pos) const {
             return Vec3(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
         }
 
@@ -54,7 +54,7 @@ class Renderer {
         void addSphereAtPos(sf::Vector2f pos, Scene *pool);
 
         // Others
-        void handleMovement();
+        void handleMovement(sf::Event event);
         void perThread(int startX, int endX, const Scene *pool);
         void draw() {
             _window.draw(_vertexArray);

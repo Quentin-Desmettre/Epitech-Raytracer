@@ -10,7 +10,7 @@
 
 Vec3 Math::normalize(Vec3 vec)
 {
-    float len = sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2));
+    float len = sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
     return Vec3(vec.x / len, vec.y / len, vec.z / len);
 }
 
@@ -44,8 +44,8 @@ float Math::sign(float val)
 Vec3 Math::cross(Vec3 vec1, Vec3 vec2)
 {
     return Vec3(vec1.y * vec2.z - vec1.z * vec2.y,
-                        vec1.z * vec2.x - vec1.x * vec2.z,
-                        vec1.x * vec2.y - vec1.y * vec2.x);
+                vec1.z * vec2.x - vec1.x * vec2.z,
+                vec1.x * vec2.y - vec1.y * vec2.x);
 }
 
 double Math::toRad(double deg)

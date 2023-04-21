@@ -17,8 +17,7 @@ class Triangle : public Object {
         ~Triangle() = default;
         bool intersect(const Ray *ray) const override;
         Vec3 getIntersection(const Ray *ray) const override;
-        Vec3 getNormal(Vec3 inter) const override;
-
+        Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
     protected:
     private:
         std::array<Vec3, 3> _points;

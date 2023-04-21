@@ -8,13 +8,14 @@
 #include "Renderer.hpp"
 #include "objects/Sphere.hpp"
 #include "objects/Triangle.hpp"
+#include "objects/Square.hpp"
 #include "objects/Plane.hpp"
 
 void addSolarSystem(Scene &scene, Camera &camera)
 {
     scene.clear();
 
-    Sphere *Sun = new Sphere(Vec3(-120, 0, 0), sf::Color(255, 64, 64), 100, sf::Color(255, 255, 255), 5.0f);
+    Sphere *Sun = new Sphere(Vec3(-120, 0, 0), sf::Color(255, 64, 64), 100, sf::Color(255, 255, 255), 3.0f);
     scene.addObject(Sun);
 
     Sphere *Mercure = new Sphere(Vec3(-4.95, 0, 0), sf::Color(140, 92, 42), 0.2);
@@ -41,31 +42,35 @@ void addSolarSystem(Scene &scene, Camera &camera)
     Sphere *Neptune = new Sphere(Vec3(45.55, 0, 0), sf::Color(100, 182, 233), 1.95);
     scene.addObject(Neptune);
 
-
     camera.setPos(Vec3(13, -15, -80));
     camera.setRot(Vec3(0, 0.25, 0));
 }
 
 void addObjects(Scene &scene, Camera &camera)
 {
-    Sphere *sphere1 = new Sphere(Vec3(-1, -0.5, 10), sf::Color(64, 255, 64), 1);
+    Sphere *sphere1 = new Sphere(Vec3(-1, -0.5, 6), sf::Color(64, 255, 64), 1);
+    sphere1->setReflectivity(1);
     scene.addObject(sphere1);
 
-    Sphere *sphere2 = new Sphere(Vec3(0, -2, 10), sf::Color(64, 64, 255), 0.3);
+    Sphere *sphere2 = new Sphere(Vec3(0, -2, 6), sf::Color(64, 64, 255), 0.3);
     scene.addObject(sphere2);
 
-    Sphere *sphere3 = new Sphere(Vec3(1, 0, 10), sf::Color(255, 64, 64), 0.5, sf::Color(255, 255, 255), 5.0f);
+    Sphere *sphere3 = new Sphere(Vec3(1, 0, 6), sf::Color::White, 0.5, sf::Color::White, 5.0f);
     scene.addObject(sphere3);
 
     // LightPoint *light1 = new LightPoint(Vec3(1, 0, 10), sf::Color(255, 255, 255), 5.0f);
     // scene.addLightPoint(*light1);
 
-    Plane *plane = new Plane(Vec3(-10, 0.5, 0), Vec3(10, 0.5, 20), sf::Color(64, 64, 255));
+    // Square *square = new Square(Vec3(-10, 0.5, 0), Vec3(10, 0.5, 20), sf::Color(103, 103, 103));
+    // square->setReflectivity(1);
+    // scene.addObject(square);
+
+    Plane *plane = new Plane(Vec3(0, 0.5, 0), Vec3(0, -1, 0), sf::Color(100, 100, 100));
     plane->setReflectivity(1);
     scene.addObject(plane);
 
-    camera.setPos(Vec3(0, -1, 6));
-    camera.setRot(Vec3(0, 0, 0));
+    camera.setPos(Vec3(0, -2.5, 0));
+    camera.setRot(Vec3(-0.4, 0, 0));
 }
 
 int main(void)

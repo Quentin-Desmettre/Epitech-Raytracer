@@ -49,7 +49,7 @@ Vec3 Sphere::getIntersection(const Ray *ray) const
     return ray->getOrigin() + ray->getDir() * t;
 }
 
-Vec3 Sphere::getNormal(Vec3 inter) const
+Vec3 Sphere::getNormal(const Vec3 &inter, unused const Ray &ray) const
 {
     return Math::normalize(inter - _pos);
 }

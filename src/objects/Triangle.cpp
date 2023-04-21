@@ -56,7 +56,7 @@ Vec3 Triangle::getIntersection(const Ray *ray) const
     return origin + dir * t;
 }
 
-Vec3 Triangle::getNormal(__attribute_maybe_unused__ Vec3 inter) const
+Vec3 Triangle::getNormal(unused const Vec3 &inter, unused const Ray &ray) const
 {
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];

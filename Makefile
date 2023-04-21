@@ -1,4 +1,3 @@
-
 ##
 ## EPITECH PROJECT, 2023
 ## helloworld
@@ -15,6 +14,7 @@ SRC = 	src/main.cpp 				\
 		src/utils/Matrix.cpp		\
 		src/objects/Sphere.cpp 		\
 		src/objects/Triangle.cpp 	\
+		src/objects/Square.cpp 		\
 		src/objects/Plane.cpp 		\
 
 CXX = g++
