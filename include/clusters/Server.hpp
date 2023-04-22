@@ -14,6 +14,7 @@ namespace Raytracer::Clustering {
         enum PacketType {
             UPDATE_SCENE,
             RENDER,
+            RENDER_DONE
         };
         /**
          * @brief Server class
