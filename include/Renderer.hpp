@@ -11,6 +11,7 @@
 #include "Scene.hpp"
 #include "LightPoint.hpp"
 #include "objects/Sphere.hpp"
+#include "lights/ILight.hpp"
 #include "Camera.hpp"
 #include <thread>
 
@@ -58,11 +59,7 @@ class Renderer {
         void addSphereAtPos(sf::Vector2f pos, Scene *pool);
 
         // Others
-        void resetPixels() {
-            for (size_t i = 0; i < _pixels.size(); i++)
-                _pixels[i] = Vec3(0, 0, 0);
-            _nbFrames = 1;
-        };
+        void resetPixels() {_nbFrames = 1;};
         void handleMovement(sf::Event event);
         void perThread(int startX, int endX, const Scene *pool);
         void draw();

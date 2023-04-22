@@ -57,6 +57,7 @@ void Renderer::run(Scene *pool, Camera &camera)
         while (_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed ||
             (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
+                drawToFile();
                 _window.close();
                 return;
             } else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left
@@ -138,7 +139,9 @@ void Renderer::addPixel(sf::Vector2f pos, Vec3 color)
     Vec3 trueColor = color;
 
     // averaging color if smooth is enabled
-    if (_smooth) {
+    if (_nbFrames == 1)
+        _pixels[pos.y * WINDOW_SIZE.x + pos.x] = color;
+    else if (_smooth) {
         _pixels[pos.y * WINDOW_SIZE.x + pos.x] += color;
         trueColor = _pixels[pos.y * WINDOW_SIZE.x + pos.x] / _nbFrames;
     }
