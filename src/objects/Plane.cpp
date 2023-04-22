@@ -13,17 +13,17 @@ Object(pos, color, emmsionColor, intensity)
     _dir = dir;
 }
 
-bool Plane::intersect(const Ray *ray) const
+bool Plane::intersect(const Ray &ray) const
 {
-    float dot = Math::dot(ray->getDir(), _dir);
+    float dot = Math::dot(ray.getDir(), _dir);
     return dot != 0;
 }
 
-Vec3 Plane::getIntersection(const Ray *ray) const
+Vec3 Plane::getIntersection(const Ray &ray) const
 {
-    float dot = Math::dot(ray->getDir(), _dir);
-    float t = Math::dot(_pos - ray->getOrigin(), _dir) / dot;
-    return ray->getOrigin() + ray->getDir() * t;
+    float dot = Math::dot(ray.getDir(), _dir);
+    float t = Math::dot(_pos - ray.getOrigin(), _dir) / dot;
+    return ray.getOrigin() + ray.getDir() * t;
 }
 
 Vec3 Plane::getNormal(unused const Vec3 &inter, unused const Ray &ray) const

@@ -10,7 +10,7 @@
 #include "utils/Math.hpp"
 #include "utils/Matrix.hpp"
 
-#define WINDOW_SIZE sf::Vector2f(1920, 1080)
+#define WINDOW_SIZE sf::Vector2f(800, 800)
 
 class Camera {
     public:

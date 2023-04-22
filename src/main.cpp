@@ -10,6 +10,7 @@
 #include "objects/Triangle.hpp"
 #include "objects/Square.hpp"
 #include "objects/Plane.hpp"
+#include "objects/Cone.hpp"
 
 void addSolarSystem(Scene &scene, Camera &camera)
 {
@@ -48,15 +49,18 @@ void addSolarSystem(Scene &scene, Camera &camera)
 
 void addObjects(Scene &scene, Camera &camera)
 {
-    Sphere *sphere1 = new Sphere(Vec3(-1, -0.5, 6), sf::Color(64, 255, 64), 1);
-    sphere1->setReflectivity(1);
+    Sphere *sphere1 = new Sphere(Vec3(-1, -0.5, 4), sf::Color(64, 255, 64), 1);
+    // sphere1->setReflectivity(1);
     scene.addObject(sphere1);
 
-    Sphere *sphere2 = new Sphere(Vec3(0, -2, 6), sf::Color(64, 64, 255), 0.3);
+    Sphere *sphere2 = new Sphere(Vec3(0, -2, 4), sf::Color(64, 64, 255), 0.3);
     scene.addObject(sphere2);
 
-    Sphere *sphere3 = new Sphere(Vec3(1, 0, 6), sf::Color::White, 0.5, sf::Color::White, 5.0f);
+    Sphere *sphere3 = new Sphere(Vec3(1, 0, 4), sf::Color::White, 0.5, sf::Color::White, 5.0f);
     scene.addObject(sphere3);
+
+    Sphere *sphere4 = new Sphere(Vec3(-3, 0, 4), sf::Color::White, 0.5);
+    scene.addObject(sphere4);
 
     // LightPoint *light1 = new LightPoint(Vec3(1, 0, 10), sf::Color(255, 255, 255), 5.0f);
     // scene.addLightPoint(*light1);
@@ -66,8 +70,12 @@ void addObjects(Scene &scene, Camera &camera)
     // scene.addObject(square);
 
     Plane *plane = new Plane(Vec3(0, 0.5, 0), Vec3(0, -1, 0), sf::Color(100, 100, 100));
-    plane->setReflectivity(1);
+    plane->setReflectivity(0.5);
     scene.addObject(plane);
+
+    // Cone *cone = new Cone(Vec3(5, 0, 6), Vec3(0, 0, 1), sf::Color(255, 64, 64));
+    // cone->setReflectivity(1);
+    // scene.addObject(cone);
 
     camera.setPos(Vec3(0, -2.5, 0));
     camera.setRot(Vec3(-0.4, 0, 0));

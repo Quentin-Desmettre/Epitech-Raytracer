@@ -12,10 +12,10 @@ Object(pos, color, emmsionColor, intensity), _radius(radius)
 {
 }
 
-float Sphere::getDelta(const Ray *ray) const
+float Sphere::getDelta(const Ray &ray) const
 {
-    Vec3 origin = ray->getOrigin();
-    Vec3 dir = ray->getDir();
+    Vec3 origin = ray.getOrigin();
+    Vec3 dir = ray.getDir();
     float a = Math::dot(dir, dir);
     float b = 2 * Math::dot(dir, origin - _pos);
     float c = Math::dot(origin - _pos, origin - _pos) - _radius * _radius;
@@ -23,10 +23,10 @@ float Sphere::getDelta(const Ray *ray) const
     return b * b - 4.0f * a * c;
 }
 
-float Sphere::getIntersections(const Ray *ray) const
+float Sphere::getIntersections(const Ray &ray) const
 {
-    Vec3 origin = ray->getOrigin();
-    Vec3 dir = ray->getDir();
+    Vec3 origin = ray.getOrigin();
+    Vec3 dir = ray.getDir();
     float a = Math::dot(dir, dir);
     float b = 2 * Math::dot(dir, origin - _pos);
     float c = Math::dot(origin - _pos, origin - _pos) - _radius * _radius;
@@ -35,18 +35,18 @@ float Sphere::getIntersections(const Ray *ray) const
     return (-b - sqrt(delta)) / (2.0f * a);
 }
 
-bool Sphere::intersect(const Ray *ray) const
+bool Sphere::intersect(const Ray &ray) const
 {
     return getDelta(ray) >= 0;
 }
 
-Vec3 Sphere::getIntersection(const Ray *ray) const
+Vec3 Sphere::getIntersection(const Ray &ray) const
 {
     float t = getIntersections(ray);
 
     if (t < 0 || t != t) // t != t is a check for NaN
         return Vec3(0, 0, 0);
-    return ray->getOrigin() + ray->getDir() * t;
+    return ray.getOrigin() + ray.getDir() * t;
 }
 
 Vec3 Sphere::getNormal(const Vec3 &inter, unused const Ray &ray) const

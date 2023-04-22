@@ -33,8 +33,8 @@ class Object {
         void setReflectivity(float reflectivity) {_reflectivity = reflectivity;};
 
         // Methods
-        virtual bool intersect(const Ray *ray) const = 0;
-        virtual Vec3 getIntersection(const Ray *ray) const = 0;
+        virtual bool intersect(const Ray &ray) const = 0;
+        virtual Vec3 getIntersection(const Ray &ray) const = 0;
         virtual Vec3 getNormal(const Vec3 &inter, const Ray &ray) const = 0;
     protected:
         Vec3 _pos;

@@ -15,13 +15,13 @@ class Sphere : public Object {
         sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
         ~Sphere() = default;
         float getRadius() const {return _radius;};
-        bool intersect(const Ray *ray) const override;
-        Vec3 getIntersection(const Ray *ray) const override;
+        bool intersect(const Ray &ray) const override;
+        Vec3 getIntersection(const Ray &ray) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
     protected:
     private:
-        float getDelta(const Ray *ray) const;
-        float getIntersections(const Ray *ray) const;
+        float getDelta(const Ray &ray) const;
+        float getIntersections(const Ray &ray) const;
 
         float _radius;
 };

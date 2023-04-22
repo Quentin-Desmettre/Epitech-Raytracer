@@ -6,15 +6,13 @@
 */
 
 #include "Renderer.hpp"
-#include "objects/Square.hpp"
-#include <numeric>
-#include <mutex>
 
 Renderer::Renderer()
 {
-    for (int i = 0; i < WINDOW_SIZE.x; i++)
-        for (int j = 0; j < WINDOW_SIZE.y; j++)
-            _vertexArray.append(sf::Vertex(sf::Vector2f(i, j), sf::Color::Black));
+    _vertexArray.resize(WINDOW_SIZE.x * WINDOW_SIZE.y);
+    for (size_t i = 0; i < _vertexArray.getVertexCount(); i++)
+        _vertexArray[i].position = sf::Vector2f(i % (int)WINDOW_SIZE.x, i / WINDOW_SIZE.x);
+    _pixels.reserve(WINDOW_SIZE.x * WINDOW_SIZE.y);
 }
 
 void Renderer::handleMovement(sf::Event event)
@@ -41,15 +39,18 @@ void Renderer::handleMovement(sf::Event event)
         _camera.turn(0, -0.1f, reset);
     if (event.key.code == sf::Keyboard::Right)
         _camera.turn(0, 0.1f, reset);
+    if (event.key.code == sf::Keyboard::Enter)
+        drawToFile();
 
     if (reset)
-        _nbFrames = 0;
+        resetPixels();
 }
 
 void Renderer::run(Scene *pool, Camera &camera)
 {
     _camera = camera;
     _camera.updateRayDirs();
+    // creating window of size WINDOW_SIZE (change WINDOW_SIZE in Camera.hpp)
     _window.create(sf::VideoMode(WINDOW_SIZE.x, WINDOW_SIZE.y), "RayTracer");
     while (_window.isOpen()) {
         sf::Event event;
@@ -58,25 +59,24 @@ void Renderer::run(Scene *pool, Camera &camera)
             (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
                 _window.close();
                 return;
-            } else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+            } else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left
+            && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
                 addSphereAtPos(sf::Vector2f(event.mouseButton.x, event.mouseButton.y), pool);
             else if (event.type == sf::Event::KeyPressed)
                 handleMovement(event);
         }
-        _window.clear();
+        // using threads or not to render
         if (!_threads)
             perThread(0, WINDOW_SIZE.x, pool);
         else {
-            std::vector<std::thread> threads;
             for (uint i = 0; i < NB_THREADS; i++)
-                threads.push_back(std::thread(&Renderer::perThread, this,
+                _threadPool.push_back(std::thread(&Renderer::perThread, this,
                 i * WINDOW_SIZE.x / NB_THREADS, (i + 1) * WINDOW_SIZE.x / NB_THREADS, pool));
             for (uint i = 0; i < NB_THREADS; i++)
-                threads[i].join();
+                _threadPool[i].join();
+            _threadPool.clear();
         }
         draw();
-        drawToFile();
-        _window.display();
     }
 }
 
@@ -85,6 +85,8 @@ void Renderer::perThread(int startX, int endX, const Scene *pool)
     for (int x = startX; x < endX; x++) {
         for (int y = 0; y < WINDOW_SIZE.y; y++) {
             Vec3 colors = Vec3(0, 0, 0);
+            // calculating averabe between multiple rays for better precision
+            // (change RAYS_PER_PIXEL in Renderer.hpp)
             for (float i = 0; i < RAYS_PER_PIXEL; i++)
                 colors += getPixelFColor(sf::Vector2f(x, y), pool);
             colors /= RAYS_PER_PIXEL;
@@ -96,85 +98,90 @@ void Renderer::perThread(int startX, int endX, const Scene *pool)
 Vec3 Renderer::getPixelFColor(sf::Vector2f pos, const Scene *pool) const
 {
     Vec3 rayColor = Vec3(1, 1, 1);
-    Vec3 light = VEC_NULL;
+    Vec3 light = VEC3_ZERO;
     Ray ray = Ray(_camera.getPos(), _camera.getRayDir(pos));
     const Object *old = nullptr;
+    float lightIntensity = 1;
 
     for (int bounces = 0; bounces <= NB_BOUNCE; bounces++) {
-        const Object *obj = pool->getClosest(&ray, old);
+        const Object *obj = pool->getClosest(ray, old);
 
         if (!obj)
             break;
-        Vec3 inter = obj->getIntersection(&ray);
+        Vec3 inter = obj->getIntersection(ray);
         Vec3 normal = obj->getNormal(inter, ray);
+        // calcualte light angle with object
         float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
-        light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity();
+        // add light of object according to its color and other parameters
+        light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity() * lightIntensity;
+
+        // updating ray for next iteration
         rayColor *= obj->getColor();
         ray.setOrigin(inter);
         ray.reflect(normal, obj->getReflectivity());
-        light += addSunLight(normal, inter, rayColor, pool, obj);
-        light += addLightOfPoints(normal, inter, rayColor, pool, obj);
+
+        // adding light of sun and light points
+        light += addSunLight(normal, inter, rayColor, pool, obj) * lightIntensity;
+        light += addLightOfPoints(normal, inter, rayColor, pool, obj) * lightIntensity;
+
+        // reducing light intensity for next iteration
+        lightIntensity *= 0.6;
         old = obj;
     }
-
-    // Lumière ambiante
+    // adding ambient light
     light += rayColor * getAmbientLight(pos);
-    return light;
-}
-
-Vec3 Renderer::addSunLight(Vec3 normal, Vec3 inter,
-Vec3 color, const Scene *pool, const Object *obj) const
-{
-    Ray ray(inter, -_sunLight);
-    if (pool->getClosest(&ray, obj, true) != nullptr)
-        return VEC_NULL;
-    return std::max(Math::dot(normal, -_sunLight), 0.0f) * color * _sunColor;
-}
-
-Vec3 Renderer::addLightOfPoints(Vec3 normal, Vec3 inter,
-Vec3 color, const Scene *pool, const Object *obj) const
-{
-    Vec3 light = VEC_NULL;
-
-    for (auto &LightPoint : pool->getLightPoints()) {
-        Ray ray(inter, Math::normalize(LightPoint.getPos() - inter));
-        if (pool->getBetween(&ray, Math::length(LightPoint.getPos() - inter), obj, true) == nullptr) {
-            Vec3 tmp = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * LightPoint.getColorF();
-            light += tmp;
-        }
-    }
     return light;
 }
 
 void Renderer::addPixel(sf::Vector2f pos, Vec3 color)
 {
-    color *= 255.0f;
-    color.x = std::min(color.x, 255.0f);
-    color.y = std::min(color.y, 255.0f);
-    color.z = std::min(color.z, 255.0f);
-    if (_nbFrames != 0 && _smooth) {
-        sf::Color old = _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color;
-        Vec3 oldColor = Vec3(old.r, old.g, old.b);
-        if (oldColor == VEC_NULL || color == VEC_NULL)
-            color += oldColor;
-        else {
-            float weight = 1.0f / (_nbFrames + 1);
-            color = oldColor * (1 - weight) + color * weight;
-        }
+    Vec3 trueColor = color;
+
+    // averaging color if smooth is enabled
+    if (_smooth) {
+        _pixels[pos.y * WINDOW_SIZE.x + pos.x] += color;
+        trueColor = _pixels[pos.y * WINDOW_SIZE.x + pos.x] / _nbFrames;
     }
-    _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].position = sf::Vector2f(pos.x, pos.y);
-    _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color = sf::Color(color.x, color.y, color.z);
+
+    // converting trueColor (0-1) to sf::Color (0-255)
+    trueColor *= 255.0f;
+    trueColor.x = std::min(trueColor.x, 255.0f);
+    trueColor.y = std::min(trueColor.y, 255.0f);
+    trueColor.z = std::min(trueColor.z, 255.0f);
+
+    // adding color to vertex array
+    _vertexArray[pos.y * WINDOW_SIZE.x + pos.x].color = sf::Color(trueColor.x, trueColor.y, trueColor.z);
 }
 
 void Renderer::addSphereAtPos(sf::Vector2f pos, Scene *pool)
 {
+    // calculating sphere position
     Ray ray = Ray(_camera.getPos(), _camera.getRayDir(pos));
     Vec3 inter = ray.getOrigin() + Math::normalize(ray.getDir()) * 10.0f;
-    const Object *obj = pool->getClosest(&ray);
+    const Object *obj = pool->getClosest(ray);
     Sphere *sphere = new Sphere(inter, sf::Color(255, 64, 64), 0.5f);
 
+    // setting sphere position if there is an intersection
     if (obj != nullptr)
-        sphere->setPos(obj->getIntersection(&ray));
+        sphere->setPos(obj->getIntersection(ray));
     pool->addObject(sphere);
-    _nbFrames = 0;
+    resetPixels();
+}
+
+void Renderer::draw() {
+    #if DEBUG
+        static float avgPerfs = 0;
+
+        if (_nbFrames == 0)
+            avgPerfs = clock.getElapsedTime().asSeconds();
+        else
+            avgPerfs = (avgPerfs * _nbFrames + clock.getElapsedTime().asSeconds()) / (_nbFrames + 1);
+        std::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
+        << "\t(avg: " << avgPerfs << "s)" << std::endl;
+        clock.restart();
+    #endif
+    _window.clear();
+    _window.draw(_vertexArray);
+    _window.display();
+    _nbFrames++;
 }
