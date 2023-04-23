@@ -188,3 +188,10 @@ void Renderer::draw() {
     _window.display();
     _nbFrames++;
 }
+
+void Renderer::drawToFile() {
+    sf::Texture texture;
+    texture.create(_window.getSize().x, _window.getSize().y);
+    texture.update(_window);
+    texture.copyToImage().saveToFile("renders/render.png");
+};

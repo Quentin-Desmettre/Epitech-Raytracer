@@ -70,3 +70,8 @@ bool Math::sameSign(const Vec3 &a, const Vec3 &b)
 {
     return (a.x * b.x >= 0) && (a.y * b.y >= 0) && (a.z * b.z >= 0);
 }
+
+Vec3 Math::proj(const Vec3 &vec1, const Vec3 &vec2)
+{
+    return dot(vec1, vec2) / dot(vec2, vec2) * vec2;
+}

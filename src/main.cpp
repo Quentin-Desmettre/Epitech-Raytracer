@@ -11,6 +11,7 @@
 #include "objects/Square.hpp"
 #include "objects/Plane.hpp"
 #include "objects/Cone.hpp"
+#include "objects/Cylinder.hpp"
 
 void addSolarSystem(Scene &scene, Camera &camera)
 {
@@ -49,6 +50,8 @@ void addSolarSystem(Scene &scene, Camera &camera)
 
 void addObjects(Scene &scene, Camera &camera)
 {
+    scene.clear();
+
     Sphere *sphere1 = new Sphere(Vec3(-1, -0.5, 4), sf::Color(64, 255, 64), 1);
     // sphere1->setReflectivity(1);
     scene.addObject(sphere1);
@@ -69,6 +72,14 @@ void addObjects(Scene &scene, Camera &camera)
     // square->setReflectivity(1);
     // scene.addObject(square);
 
+    Cylinder *cylinder = new Cylinder(Vec3(-1, 0, 2), Vec3(1, 0, 0), 0.3, 2, sf::Color(255, 64, 64));
+    // cylinder->setReflectivity(1);
+    scene.addObject(cylinder);
+
+    Cone *cone = new Cone(Vec3(3, 0, 4), Vec3(0, 1, 0), 1, true, sf::Color(255, 64, 64));
+    // cone->setReflectivity(1);
+    scene.addObject(cone);
+
     Plane *plane = new Plane(Vec3(0, 0.5, 0), Vec3(0, -1, 0), sf::Color(100, 100, 100));
     plane->setReflectivity(0.5);
     scene.addObject(plane);
@@ -81,6 +92,33 @@ void addObjects(Scene &scene, Camera &camera)
     camera.setRot(Vec3(-0.4, 0, 0));
 }
 
+void infiniteCylinders(Scene &scene, Camera &camera)
+{
+    scene.clear();
+
+    for (int i = -10; i < 10; i++) {
+        for (int j = -10; j < 10; j++) {
+            Cylinder *cylinder = new Cylinder(Vec3(i * 10, -10, j * 10), Vec3(0, 1, 0), 0.5, 160, sf::Color(0, 0, 255));
+            scene.addObject(cylinder);
+        }
+    }
+    for (int i = 0; i < 15; i++) {
+        for (int j = -10; j < 10; j++) {
+            Cylinder *cylinder = new Cylinder(Vec3(50, i * 10 + 10, j * 10), Vec3(-1, 0, 0), 0.5, 150, sf::Color(0, 255, 0));
+            scene.addObject(cylinder);
+        }
+    }
+    for (int i = 0; i < 15; i++) {
+        for (int j = -10; j < 10; j++) {
+            Cylinder *cylinder = new Cylinder(Vec3(j * 10, i * 10 + 10, 50), Vec3(0, 0, -1), 0.5, 150, sf::Color(255, 0, 0));
+            scene.addObject(cylinder);
+        }
+    }
+
+    camera.setPos(Vec3(-2, -2.5, 0.5));
+    camera.setRot(Vec3(-1.25, -0.75, 0));
+}
+
 int main(void)
 {
     Renderer r;
@@ -89,6 +127,7 @@ int main(void)
 
     srand(time(NULL));
     addObjects(scene, camera);
+    // infiniteCylinders(scene, camera);
     // addSolarSystem(scene, camera);
     // r.smoothImage(false);
     r.useThreads(true);

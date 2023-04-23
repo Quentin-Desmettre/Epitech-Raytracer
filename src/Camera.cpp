@@ -9,7 +9,7 @@
 
 void Camera::move(Direction movement, float speed, bool &reset)
 {
-    Vec3 dir = _rayDirs[WINDOW_SIZE.x * WINDOW_SIZE.y / 2];
+    Vec3 dir = _rayDirs[WINDOW_SIZE.y * 0.5 + WINDOW_SIZE.x * 0.5 * WINDOW_SIZE.y];
 
     switch (movement) {
         case FORWARD:

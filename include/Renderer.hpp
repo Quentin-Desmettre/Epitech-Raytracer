@@ -63,10 +63,5 @@ class Renderer {
         void handleMovement(sf::Event event);
         void perThread(int startX, int endX, const Scene *pool);
         void draw();
-        void drawToFile() {
-            sf::Texture texture;
-            texture.create(_window.getSize().x, _window.getSize().y);
-            texture.update(_window);
-            texture.copyToImage().saveToFile("renders/render.png");
-        };
+        void drawToFile();
 };

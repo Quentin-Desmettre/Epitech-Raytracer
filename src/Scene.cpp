@@ -10,7 +10,7 @@
 const AObject *Scene::getClosest(const Ray &ray, const AObject *ignore, bool ignoreLightSources) const
 {
     AObject *closest = nullptr;
-    float dist = __FLT_MAX__;
+    float dist = INF;
 
     for (const auto &obj : _pool) {
         if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)
@@ -29,7 +29,7 @@ const AObject *Scene::getClosest(const Ray &ray, const AObject *ignore, bool ign
 const AObject *Scene::getBetween(const Ray &ray, float dst, const AObject *ignore, bool ignoreLightSources) const
 {
     AObject *closest = nullptr;
-    float dist = __FLT_MAX__;
+    float dist = INF;
 
     for (auto &obj : _pool) {
         if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)

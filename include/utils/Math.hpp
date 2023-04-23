@@ -23,4 +23,5 @@ namespace Math
     Vec3 lerp(const Vec3 &vec1, const Vec3 &vec2, const float t);
     float length(const Vec3 &vec);
     bool sameSign(const Vec3 &a, const Vec3 &b);
+    Vec3 proj(const Vec3 &vec1, const Vec3 &vec2);
 }

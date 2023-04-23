@@ -12,6 +12,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
+#include <cmath>
 
 typedef sf::Glsl::Vec3 Vec3;
 
@@ -29,6 +30,8 @@ typedef sf::Glsl::Vec3 Vec3;
 #define YELLOW Vec3(1, 1, 0)
 #define MAGENTA Vec3(1, 0, 1)
 #define CYAN Vec3(0, 1, 1)
+
+#define INF __FLT_MAX__
 
 inline Vec3 operator*(Vec3 vec, Vec3 vec2) {
     return Vec3(vec.x * vec2.x, vec.y * vec2.y, vec.z * vec2.z);
