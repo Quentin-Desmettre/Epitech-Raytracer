@@ -7,9 +7,9 @@
 
 #include "Scene.hpp"
 
-const Object *Scene::getClosest(const Ray &ray, const Object *ignore, bool ignoreLightSources) const
+const AObject *Scene::getClosest(const Ray &ray, const AObject *ignore, bool ignoreLightSources) const
 {
-    Object *closest = nullptr;
+    AObject *closest = nullptr;
     float dist = __FLT_MAX__;
 
     for (const auto &obj : _pool) {
@@ -26,9 +26,9 @@ const Object *Scene::getClosest(const Ray &ray, const Object *ignore, bool ignor
     return closest;
 }
 
-const Object *Scene::getBetween(const Ray &ray, float dst, const Object *ignore, bool ignoreLightSources) const
+const AObject *Scene::getBetween(const Ray &ray, float dst, const AObject *ignore, bool ignoreLightSources) const
 {
-    Object *closest = nullptr;
+    AObject *closest = nullptr;
     float dist = __FLT_MAX__;
 
     for (auto &obj : _pool) {

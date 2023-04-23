@@ -101,11 +101,11 @@ Vec3 Renderer::getPixelFColor(sf::Vector2f pos, const Scene *pool) const
     Vec3 rayColor = Vec3(1, 1, 1);
     Vec3 light = VEC3_ZERO;
     Ray ray = Ray(_camera.getPos(), _camera.getRayDir(pos));
-    const Object *old = nullptr;
+    const AObject *old = nullptr;
     float lightIntensity = 1;
 
     for (int bounces = 0; bounces <= NB_BOUNCE; bounces++) {
-        const Object *obj = pool->getClosest(ray, old);
+        const AObject *obj = pool->getClosest(ray, old);
 
         if (!obj)
             break;
@@ -161,7 +161,7 @@ void Renderer::addSphereAtPos(sf::Vector2f pos, Scene *pool)
     // calculating sphere position
     Ray ray = Ray(_camera.getPos(), _camera.getRayDir(pos));
     Vec3 inter = ray.getOrigin() + Math::normalize(ray.getDir()) * 10.0f;
-    const Object *obj = pool->getClosest(ray);
+    const AObject *obj = pool->getClosest(ray);
     Sphere *sphere = new Sphere(inter, sf::Color(255, 64, 64), 0.5f);
 
     // setting sphere position if there is an intersection

@@ -10,7 +10,7 @@
 #include "Object.hpp"
 #include <array>
 
-class Triangle : public Object {
+class Triangle : public AObject {
     public:
         Triangle(Vec3 point1 = Vec3(0, 0, 0), Vec3 point2 = Vec3(1, 0, 0), Vec3 point3 = Vec3(0, 0, 1),
         sf::Color color = sf::Color::Red, sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);

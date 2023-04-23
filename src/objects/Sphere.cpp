@@ -8,7 +8,7 @@
 #include "objects/Sphere.hpp"
 
 Sphere::Sphere(Vec3 pos, sf::Color color, float radius, sf::Color emmsionColor, float intensity) :
-Object(pos, color, emmsionColor, intensity), _radius(radius)
+AObject(pos, color, emmsionColor, intensity), _radius(radius)
 {
 }
 

@@ -9,7 +9,7 @@
 
 #include "Object.hpp"
 
-class Sphere : public Object {
+class Sphere : public AObject {
     public:
         Sphere(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red, float radius = 1.0f,
         sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);

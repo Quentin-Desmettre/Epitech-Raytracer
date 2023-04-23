@@ -8,7 +8,7 @@
 #include "objects/Plane.hpp"
 
 Plane::Plane(Vec3 pos, Vec3 dir, sf::Color color, sf::Color emmsionColor, float intensity) :
-Object(pos, color, emmsionColor, intensity)
+AObject(pos, color, emmsionColor, intensity)
 {
     _dir = dir;
 }

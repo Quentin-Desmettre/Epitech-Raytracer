@@ -9,7 +9,7 @@
 
 Triangle::Triangle(Vec3 point1, Vec3 point2, Vec3 point3,
 sf::Color color, sf::Color emmsionColor, float intensity) :
-Object(point1, color, emmsionColor, intensity)
+AObject(point1, color, emmsionColor, intensity)
 {
     _points[0] = point1;
     _points[1] = point2;

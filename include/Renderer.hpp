@@ -52,9 +52,9 @@ class Renderer {
 
         // Setters
         Vec3 addSunLight(Vec3 normal, Vec3 inter,
-        Vec3 color, const Scene *pool, const Object *obj) const;
+        Vec3 color, const Scene *pool, const AObject *obj) const;
         Vec3 addLightOfPoints(Vec3 normal, Vec3 inter,
-        Vec3 color, const Scene *pool, const Object *obj) const;
+        Vec3 color, const Scene *pool, const AObject *obj) const;
         void addPixel(sf::Vector2f pos, Vec3 color);
         void addSphereAtPos(sf::Vector2f pos, Scene *pool);
 

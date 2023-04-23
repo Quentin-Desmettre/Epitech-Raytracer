@@ -8,7 +8,7 @@
 #include "objects/Square.hpp"
 
 Square::Square(Vec3 corner1, Vec3 corner2, sf::Color color, sf::Color emmsionColor, float intensity) :
-Object(corner1, color, emmsionColor, intensity)
+AObject(corner1, color, emmsionColor, intensity)
 {
     _triangles[0] = Triangle(corner1, corner2, Vec3(corner1.x, corner1.y, corner2.z), color, emmsionColor, intensity);
     _triangles[1] = Triangle(corner1, Vec3(corner2.x, corner1.y, corner1.z), corner2, color, emmsionColor, intensity);

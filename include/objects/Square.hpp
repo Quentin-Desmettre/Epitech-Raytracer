@@ -10,7 +10,7 @@
 #include "Triangle.hpp"
 #include <array>
 
-class Square : public Object {
+class Square : public AObject {
     public:
         Square(Vec3 corner1 = Vec3(0, 0, 0), Vec3 corner2 = Vec3(1, 0, 1),
         sf::Color color = sf::Color::Red, sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);

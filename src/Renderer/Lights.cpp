@@ -8,7 +8,7 @@
 #include "Renderer.hpp"
 
 Vec3 Renderer::addSunLight(Vec3 normal, Vec3 inter,
-Vec3 color, const Scene *pool, const Object *obj) const
+Vec3 color, const Scene *pool, const AObject *obj) const
 {
     static float length = Math::length(_sunLight);
     const Ray ray(inter, -_sunLight);
@@ -23,7 +23,7 @@ Vec3 color, const Scene *pool, const Object *obj) const
 }
 
 Vec3 Renderer::addLightOfPoints(Vec3 normal, Vec3 inter,
-Vec3 color, const Scene *pool, const Object *obj) const
+Vec3 color, const Scene *pool, const AObject *obj) const
 {
     Vec3 light = VEC3_ZERO;
 
