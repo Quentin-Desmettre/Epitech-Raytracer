@@ -12,6 +12,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <iostream>
 
 void Network::TcpListener::listen(unsigned short port)
 {
@@ -26,8 +27,7 @@ void Network::TcpListener::listen(unsigned short port)
         throw std::runtime_error("Failed to create socket. Reason: " + std::string(strerror(errno)));
 
     // Bind & Listen
-    sockaddr_in address = {0};
-
+    sockaddr_in address = {0, 0, 0, 0};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
@@ -36,6 +36,7 @@ void Network::TcpListener::listen(unsigned short port)
         throw std::runtime_error("Failed to bind socket. Reason: " + std::string(strerror(errno)));
     if (::listen(_socket, 3) < 0)
         throw std::runtime_error("Failed to listen on socket. Reason: " + std::string(strerror(errno)));
+    std::cout << "Listening on port " << port << std::endl;
     _listening = true;
 }
 
@@ -46,21 +47,39 @@ void Network::TcpListener::close()
     ::close(_socket);
     _listening = false;
 }
-
+#include <sys/ioctl.h>
 void Network::TcpListener::accept(Network::TcpSocket &socket)
 {
     if (!_listening)
         throw std::runtime_error("Listener is not listening. Use listen() first.");
 
     // Accept client, getting the socket and connection data
-    sockaddr_in address = {0};
+    sockaddr_in address = {0, 0, 0, 0};
     socklen_t addressSize = sizeof(address);
     int clientSocket = ::accept(_socket, (struct sockaddr *)&address, &addressSize);
     if (clientSocket < 0)
         throw std::runtime_error("Failed to accept client. Reason: " + std::string(strerror(errno)));
 
     // Set the socket using private constructor
-    socket = TcpSocket(std::string(inet_ntoa(address.sin_addr)), ntohs(address.sin_port), clientSocket);
+    std::cout << "Client connected: " << inet_ntoa(address.sin_addr) << ":" << ntohs(address.sin_port) << std::endl;
+    std::cout << "fd: " << clientSocket << std::endl;
+    std::cout <<" === pre-ioctl ===" << std::endl;
+    int val = 0;
+    std::cout << ioctl(clientSocket, FIONREAD, &val) << std::endl;
+    std::cout << "val: " << val << std::endl;
+    std::cout << "errno: " << strerror(errno) << std::endl;
+    std::cout << "=================" << std::endl;
+    ::close(socket._socket);
+    socket._socket = clientSocket;
+    socket._remoteAddress = std::string(inet_ntoa(address.sin_addr));
+    socket._remotePort = ntohs(address.sin_port);
+    socket._connected = true;
+    std::cout <<" === post-ioctl ===" << std::endl;
+    val = 0;
+    std::cout << ioctl(clientSocket, FIONREAD, &val) << std::endl;
+    std::cout << "val: " << val << std::endl;
+    std::cout << "errno: " << strerror(errno) << std::endl;
+    std::cout << "=================" << std::endl;
 }
 
 Network::TcpListener::~TcpListener()

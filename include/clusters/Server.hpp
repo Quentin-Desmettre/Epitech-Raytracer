@@ -12,9 +12,17 @@
 
 namespace Raytracer::Clustering {
         enum PacketType {
+            // Requests
             UPDATE_SCENE,
+            UPDATE_RANGE,
             RENDER,
-            RENDER_DONE
+            GET_THREAD_COUNT,
+
+            // Answers
+            UPDATE_SCENE_DONE,
+            UPDATE_RANGE_DONE,
+            RENDER_DONE,
+            THREAD_COUNT,
         };
         /**
          * @brief Server class
@@ -29,7 +37,7 @@ namespace Raytracer::Clustering {
              * It will initialize the connections with the clusters.         *
              * @param clusters The list of clusters to connect to.
              */
-            explicit Server(const std::vector<std::string> &clusters, unsigned xStart, unsigned xEnd, unsigned yStart, unsigned yEnd);
+            explicit Server(const std::vector<std::string> &clusters, sf::Vector2u start, sf::Vector2u end);
 
             /**
              * @brief Render the scene
@@ -41,23 +49,56 @@ namespace Raytracer::Clustering {
             void render(const Scene &scene) override;
             sf::VertexArray getVertexArray() const override;
 
+            void setRange(sf::Vector2u start, sf::Vector2u end) override;
+
+            int getThreadsCount() const override;
+
         private:
-            std::vector<std::string> _clusters;
-            std::vector<Network::TcpSocket> _sockets;
-            unsigned _xStart, _xEnd, _yStart, _yEnd;
+            class NetworkRenderer: public IRenderer {
+            public:
+                explicit NetworkRenderer(const std::string &ipPort);
 
+                /**
+                 * @brief Sends the RENDER request to the cluster.
+                 * @param scene
+                 */
+                void render(const Scene &scene) override;
+
+                /**
+                 * @brief Fetch the answer from the cluster.
+                 */
+                void fetchAnswer();
+
+                /**
+                 * @see IRenderer::getVertexArray()
+                 */
+                sf::VertexArray getVertexArray() const override;
+
+                /**
+                 * @brief Sends the request to update the range of the renderer.
+                 * @see IRenderer::setRange()
+                 */
+                void setRange(sf::Vector2u start, sf::Vector2u end) override;
+
+                /**
+                 * @brief Get the number of threads of the cluster.
+                 * @see IRenderer::getThreadsCount()
+                 */
+                int getThreadsCount() const override;
+
+            private:
+                int _nbThreads;
+                Network::TcpSocket _socket;
+                sf::VertexArray _vertexArray;
+                Scene _scene;
+                sf::Vector2u _start, _end;
+            };
+
+            std::vector<std::unique_ptr<IRenderer>> _renderers;
+            sf::Vector2u _start, _end;
             sf::VertexArray _vertexArray;
-            const Scene *_scene;
-            std::vector<std::byte> _encodedScene;
 
-            /**
-             * @brief Encode the scene
-             *
-             * This method will encode the scene into a buffer that can be sent to the clusters.
-             */
-            void encodeScene();
-            void updateVertexArrays(const std::vector<Network::Packet> &packets);
-            void appendToVertexArray(const std::vector<std::byte> &data);
+            void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         };
     } // Raytracer
 

@@ -69,11 +69,11 @@ namespace Network {
          */
         unsigned short getRemotePort() const;
 
+        void checkDisconnect();
     private:
         bool send(const void *data, std::size_t size) const;
         bool receive(void *data, std::size_t size) const;
 
-        void checkDisconnect();
         void waitForData(std::size_t size) const;
 
         TcpSocket(const std::string &address, unsigned short port, int socket);

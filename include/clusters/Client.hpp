@@ -21,11 +21,16 @@ namespace Raytracer::Clustering {
         void run();
 
     private:
+        void buildRendererPool();
         void handleUpdateScene(Network::Packet &data, Network::TcpSocket &socket);
         void handleRender(Network::Packet &data, Network::TcpSocket &socket);
+        void handleUpdateRange(Network::Packet &data, Network::TcpSocket &socket);
+        void handleGetThreadCount(Network::Packet &data, Network::TcpSocket &socket);
+
         Network::TcpListener _listener;
-        RendererPool _renderers;
-        Scene _scene;
+        std::unique_ptr<RendererPool> _renderers;
+        std::unique_ptr<Scene> _scene;
+        sf::Vector2u _startPoint, _endPoint;
 
         const static std::map<std::byte, void (Client::*)(Network::Packet &, Network::TcpSocket &)> _handlers;
     };

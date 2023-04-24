@@ -6,66 +6,35 @@
 */
 
 #include "clusters/Server.hpp"
+#include "RendererPool.hpp"
+#include "network/PacketReader.hpp"
+#include "network/PacketWriter.hpp"
+#include <thread>
 
-Raytracer::Clustering::Server::Server(const std::vector<std::string> &clusters, unsigned xStart, unsigned xEnd, unsigned yStart, unsigned yEnd)
-    : _clusters(clusters),
-    _sockets(),
-    _xStart(xStart), _xEnd(xEnd), _yStart(yStart), _yEnd(yEnd),
-    _vertexArray(), _scene(nullptr), _encodedScene()
+Raytracer::Clustering::Server::Server(const std::vector<std::string> &clusters, sf::Vector2u start, sf::Vector2u end)
 {
     // Connect to clusters
-    int port;
-    for (const auto &cluster : clusters) {
-        port = std::stoi(cluster.substr(cluster.find(':') + 1));
-        _sockets.emplace_back();
-        _sockets.back().connect(cluster, port);
-    }
+    for (const auto &cluster : clusters)
+        _renderers.push_back(std::make_unique<NetworkRenderer>(cluster));
+    internalSetRange(start, end);
 }
 
 void Raytracer::Clustering::Server::render(const Scene &scene)
 {
-    // Update scene if needed
-    if (_scene != &scene) {
-        _scene = &scene;
-        encodeScene();
-
-        // Divide range of pixels to render into columns, that have the same height
-        std::vector<std::pair<sf::Vector2u, sf::Vector2u>> ranges;
-        ranges.reserve(_sockets.size());
-        unsigned width = (_xEnd - _xStart) / _sockets.size();
-        unsigned xStart = _xStart;
-        unsigned xEnd = _xStart + width;
-        for (unsigned i = 0; i < _sockets.size() - 1; ++i) {
-            ranges.emplace_back(sf::Vector2u(xStart, _yStart), sf::Vector2u(xStart + width, _yEnd));
-            xStart += width;
-            xEnd += width;
-        }
-        ranges.emplace_back(sf::Vector2u(xStart, _yStart), sf::Vector2u(_xEnd, _yEnd));
-
-        // Tell clusters to update their scene
-        Network::Packet packet({std::byte(UPDATE_SCENE)});
-        packet.append(_encodedScene);
-        for (int i = 0; i < _sockets.size(); ++i) {
-            Network::Packet tmp = packet;
-            tmp.append(ranges[i].first);
-            tmp.append(ranges[i].second);
-            _sockets[i].send(tmp);
-        }
-    }
-
-    // Send render request to clusters
-    Network::Packet packet({std::byte(RENDER)});
-    for (auto &socket : _sockets)
-        socket.send(packet);
-
-    // Wait for clusters to finish
-    std::vector<Network::Packet> answers;
-    answers.reserve(_sockets.size());
-    for (auto &socket : _sockets)
-        answers.push_back(socket.receive());
+    // Render
+    for (auto &renderer : _renderers)
+        renderer->render(scene);
+    for (auto &renderer : _renderers)
+        dynamic_cast<NetworkRenderer *>(renderer.get())->fetchAnswer();
 
     // Update vertex array
-    updateVertexArrays(answers);
+    sf::VertexArray arr;
+    _vertexArray.clear();
+    for (auto &renderer : _renderers) {
+        arr = renderer->getVertexArray();
+        for (std::size_t i = 0; i < arr.getVertexCount(); i++)
+            _vertexArray.append(arr[i]);
+    }
 }
 
 sf::VertexArray Raytracer::Clustering::Server::getVertexArray() const
@@ -73,18 +42,95 @@ sf::VertexArray Raytracer::Clustering::Server::getVertexArray() const
     return _vertexArray;
 }
 
-void Raytracer::Clustering::Server::updateVertexArrays(const std::vector<Network::Packet> &packets)
+int Raytracer::Clustering::Server::getThreadsCount() const
 {
-    for (const auto &packet : packets)
-        appendToVertexArray(packet.getData());
+    int count = 0;
+
+    for (const auto &renderer : _renderers)
+        count += renderer->getThreadsCount();
+    return count;
 }
 
-void Raytracer::Clustering::Server::encodeScene()
+void Raytracer::Clustering::Server::setRange(sf::Vector2u start, sf::Vector2u end)
 {
-    // TODO
+    internalSetRange(start, end);
 }
 
-void Raytracer::Clustering::Server::appendToVertexArray(const std::vector<std::byte> &data)
+void Raytracer::Clustering::Server::internalSetRange(sf::Vector2u start, sf::Vector2u end)
 {
-    // TODO
+    _start = start;
+    _end = end;
+
+    auto ranges = RendererPool::splitRange(start, end, _renderers);
+    for (auto &renderer : _renderers)
+        renderer->setRange(ranges[renderer.get()].first, ranges[renderer.get()].second);
+}
+
+//==============================================================================
+// NetworkRenderer
+//==============================================================================
+Raytracer::Clustering::Server::NetworkRenderer::NetworkRenderer(const std::string &ipPort)
+{
+    // Connect
+    _nbThreads = 0;
+    int port = std::stoi(ipPort.substr(ipPort.find(':') + 1));
+    _socket.connect(ipPort.substr(0, ipPort.find(':')), port);
+
+    // Query thread count
+    Network::Packet packet({std::byte(GET_THREAD_COUNT)});
+    _socket.send(packet);
+    packet = _socket.receive();
+    Network::PacketReader reader(packet);
+    reader >> _nbThreads;
+}
+
+void Raytracer::Clustering::Server::NetworkRenderer::render(const Scene &scene)
+{
+    Network::Packet packet;
+
+    std::cout << "rendering" << std::endl;
+    if (&_scene != &scene) {// TODO: fix
+        // Encode scene
+        Network::PacketWriter writer(packet);
+        writer << std::byte(UPDATE_SCENE) << scene.getRawConfiguration();
+        _socket.send(packet);
+        // Wait for answer
+        packet = _socket.receive();
+    }
+
+    std::cout << "sending render" << std::endl;
+    // Render
+    packet = Network::Packet({std::byte(RENDER)});
+    _socket.send(packet);
+}
+
+void Raytracer::Clustering::Server::NetworkRenderer::fetchAnswer()
+{
+    Network::Packet packet = _socket.receive();
+    Network::PacketReader reader(packet);
+    std::byte type;
+
+    reader >> type >> _vertexArray;
+}
+
+void Raytracer::Clustering::Server::NetworkRenderer::setRange(sf::Vector2u start, sf::Vector2u end)
+{
+    Network::Packet packet;
+    Network::PacketWriter writer(packet);
+
+    writer << std::byte(UPDATE_RANGE) << start.x << start.y << end.x << end.y;
+    _socket.send(packet);
+
+    // Wait for answer
+    packet = _socket.receive();
+}
+
+int Raytracer::Clustering::Server::NetworkRenderer::getThreadsCount() const
+{
+    return _nbThreads;
+}
+
+sf::VertexArray Raytracer::Clustering::Server::NetworkRenderer::getVertexArray() const
+{
+    return _vertexArray;
 }

@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include <algorithm>
 #include <sys/ioctl.h>
+#include <iostream>
 
 Network::TcpSocket::TcpSocket()
 {
@@ -33,11 +34,12 @@ void Network::TcpSocket::connect(const std::string &address, unsigned short port
         throw std::runtime_error("Failed to create socket. Reason: " + std::string(strerror(errno)));
 
     // Setup connection
-    sockaddr_in addr = {0};
+    sockaddr_in addr;
+    bzero(&addr, sizeof(addr));
     addr.sin_family = AF_INET;
+    std::cout << address << std::endl;
+    addr.sin_addr.s_addr = inet_addr(address.c_str());
     addr.sin_port = htons(port);
-    if (inet_pton(AF_INET, address.c_str(), &addr.sin_addr) <= 0)
-        throw std::runtime_error("Failed to convert address. Reason: " + std::string(strerror(errno)));
 
     // Connect
     if (::connect(_socket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
@@ -49,10 +51,20 @@ void Network::TcpSocket::connect(const std::string &address, unsigned short port
 
 Network::TcpSocket::TcpSocket(const std::string &address, unsigned short port, int socket)
 {
+    std::cout <<" === nik ===" << std::endl;
+    int val = 0;
+    std::cout << ioctl(socket, FIONREAD, &val) << std::endl;
+    std::cout << "val: " << val << std::endl;
+    std::cout << "errno: " << strerror(errno) << std::endl;
+    std::cout << "=================" << std::endl;
     _connected = true;
-    _remoteAddress = address;
-    _remotePort = port;
     _socket = socket;
+    std::cout <<" === ta race ===" << std::endl;
+    val = 0;
+    std::cout << ioctl(socket, FIONREAD, &val) << std::endl;
+    std::cout << "val: " << val << std::endl;
+    std::cout << "errno: " << strerror(errno) << std::endl;
+    std::cout << "=================" << std::endl;
 }
 
 Network::TcpSocket::~TcpSocket()
@@ -73,20 +85,30 @@ void Network::TcpSocket::send(const Packet &data)
     if (!_connected)
         throw std::runtime_error("Socket is not connected. Use connect() first.");
 
+    // Send size
+    std::size_t size = data.getSize();
+    if (!send(&size, sizeof(size)))
+        throw std::runtime_error("Failed to send data. Reason: " + std::string(strerror(errno)));
+    // Send data
     if (!send(data.getData().data(), data.getSize()))
         throw std::runtime_error("Failed to send data. Reason: " + std::string(strerror(errno)));
 }
 
 bool Network::TcpSocket::send(const void *data, std::size_t size) const
 {
+    // Get infos
+    sockaddr_in addr;
+    socklen_t len = sizeof(addr);
+    getpeername(_socket, (struct sockaddr *)&addr, &len);
+    std::cout << "Sending " << size << " bytes to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << std::endl;
     std::size_t sent = 0;
-
     while (sent < size) {
         ssize_t res = write(_socket, static_cast<const char *>(data) + sent, size - sent);
         if (res < 0)
             return false;
         sent += res;
     }
+    std::cout << "sent " << size << " bytes" << std::endl;
     return true;
 }
 
@@ -96,11 +118,14 @@ Network::Packet Network::TcpSocket::receive()
         throw std::runtime_error("Socket is not connected. Use connect() first.");
 
     // Get size
+    std::cout << "Waiting for data" << std::endl;
     waitForData(sizeof(std::size_t));
     std::size_t size = 0;
     if (!receive(static_cast<void *>(&size), sizeof(std::size_t)))
         throw std::runtime_error("Failed to receive data. Reason: " + std::string(strerror(errno)));
 
+    std::cout << "Received size: " << size << std::endl;
+    std::cout << "Waiting for data" << std::endl;
     // Get data
     waitForData(size);
     std::vector<std::byte> data(size);
@@ -128,10 +153,11 @@ void Network::TcpSocket::waitForData(std::size_t size) const
         int bytes = bytesAvailable(_socket);
         if (bytes < 0)
             throw std::runtime_error("Failed to get bytes available. Reason: " + std::string(strerror(errno)));
-        if (bytes >= size)
+        std::cout << "Bytes available on fd " << _socket << ": " << bytes << std::endl;
+        if (static_cast<std::size_t>(bytes) >= size)
             return;
         // Wait 1ms
-        usleep(1000);
+        usleep(100000);
     }
 }
 
@@ -153,8 +179,15 @@ void Network::TcpSocket::checkDisconnect()
 {
     if (!_connected)
         return;
-    if (bytesAvailable(_socket) == 0)
+    fd_set set;
+    FD_ZERO(&set);
+    FD_SET(_socket, &set);
+    if (select(_socket + 1, &set, nullptr, nullptr, nullptr) < 0)
+        throw std::runtime_error("Failed to check disconnect. Reason: " + std::string(strerror(errno)));
+    if (bytesAvailable(_socket) == 0) {
         disconnect();
+        throw std::runtime_error("Disconnected from server.");
+    }
 }
 
 // Functions
@@ -183,6 +216,6 @@ bool Network::isIpPortValid(const std::string &ipPort)
 int Network::bytesAvailable(int socket)
 {
     int bytes = 0;
-    ioctl(socket, FIONREAD, &bytes);
+    std::cout << "ioctl: " << ioctl(socket, FIONREAD, &bytes) << "// " << strerror(errno) << std::endl;
     return bytes;
 }

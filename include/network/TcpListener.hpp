@@ -19,6 +19,10 @@ namespace Network {
          */
         ~TcpListener();
 
+        int bytesAvailable() const {
+            return Network::bytesAvailable(_socket);
+        }
+
         /**
          * @brief Start listening for incoming connections. Listens on all interfaces.
          * @param port The port to listen on.
@@ -43,8 +47,8 @@ namespace Network {
         void accept(TcpSocket &socket);
 
     private:
-        int _socket;
-        bool _listening;
+        int _socket = -1;
+        bool _listening = false;
     };
 } // Network
 

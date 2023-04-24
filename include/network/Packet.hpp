@@ -28,21 +28,9 @@ namespace Network {
          */
         std::vector<std::byte> getData() const;
 
-        /**
-         * @brief Add data to the packet.
-         * @param data The data to add.
-         */
-        template<class T>
-        void append(const T &data) {
-            append(reinterpret_cast<const std::byte *>(&data), sizeof(T));
-        }
+        void append(std::byte data);
 
-        /**
-         * @brief Add data to the packet.
-         * @param data The data to add.
-         */
-        void append(const std::vector<std::byte> &data);
-        void append(const std::byte *data, std::size_t size);
+        void resize(std::size_t size);
 
     private:
         std::vector<std::byte> _data;
