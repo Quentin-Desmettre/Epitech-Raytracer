@@ -18,11 +18,17 @@
 class SceneBuilder: public ABuilder<Scene> {
 public:
     SceneBuilder(int ac, char **av);
+    explicit SceneBuilder(const std::string &path);
     ~SceneBuilder() override = default;
 
     std::unique_ptr<Scene> build();
 
 private:
+    std::string _file;
+
+    // Constructor utility
+    void setSetters();
+
     libconfig::Config _config;
     libconfig::Setting *_settings;
 

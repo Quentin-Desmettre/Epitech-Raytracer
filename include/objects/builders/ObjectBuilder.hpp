@@ -27,16 +27,19 @@ class ObjectBuilder: public ABuilder<T> {
             // Objects
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
-            this->_objSetters.push_back({"type",            {Type::TypeString,  nullptr,                                                        false}});
-            this->_objSetters.push_back({"position",        {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setPosition),          false}});
-            this->_objSetters.push_back({"color",           {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setEmissionColor),     true}});
-            this->_objSetters.push_back({"transparency",    {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&Object::setTransparency),      true}});
-            this->_objSetters.push_back({"reflection",      {Type::TypeBoolean, reinterpret_cast<ObjSetterFunc>(&Object::setReflectivity),      true}});
-            this->_objSetters.push_back({"transformations", {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&Object::setTransformations),   true}});
+            this->_objSetters.push_back({"type",                {Type::TypeString,  nullptr,                                                        false}});
+            this->_objSetters.push_back({"position",            {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setPosition),          false}});
+            this->_objSetters.push_back({"color",               {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setColor),             true}});
+            this->_objSetters.push_back({"transparency",        {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&Object::setTransparency),      true}});
+            this->_objSetters.push_back({"reflection",          {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&Object::setReflectivity),      true}});
+            this->_objSetters.push_back({"transformations",     {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&Object::setTransformations),   true}});
+            this->_objSetters.push_back({"emission-color",      {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setEmissionColor),     true}});
+            this->_objSetters.push_back({"emission-intensity",  {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&Object::setEmissionIntensity), true}});
 
             // Groups
             this->_objGroupSetters.push_back({"position",   static_cast<ABuilder<T>::BuilderSetterFunc>(&ObjectBuilder::setPosition)});
             this->_objGroupSetters.push_back({"color",      static_cast<ABuilder<T>::BuilderSetterFunc>(&ObjectBuilder::setColor)});
+            this->_objGroupSetters.push_back({"emission-color", static_cast<ABuilder<T>::BuilderSetterFunc>(&ObjectBuilder::setEmissionColor)});
 
             // Lists
             // transformations MUST BE AFTER POSITION
@@ -65,26 +68,34 @@ class ObjectBuilder: public ABuilder<T> {
             ABuilder<T>::setParameter(obj, argName, pos);
         }
 
-        void setColor(T &obj, const std::string &argName, const libconfig::Setting &setting)
+        sf::Color getColor(const libconfig::Setting &setting)
         {
             // Check presence
             if (!setting.exists("r") || !setting.exists("g") || !setting.exists("b"))
-                throw MissingParameterException(argName + " (r, g, b)");
+                throw MissingParameterException("color (r, g, b)");
             int r = setting["r"],
                 g = setting["g"],
                 b = setting["b"];
 
             // Check value
             if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-                throw InvalidParameterValueException(argName + " (r, g, b) must be between 0 and 255");
+                throw InvalidParameterValueException("color (r, g, b) must be between 0 and 255");
 
             // Set values
-            sf::Color color = {
+            return sf::Color(
                     static_cast<sf::Uint8>(r),
                     static_cast<sf::Uint8>(g),
                     static_cast<sf::Uint8>(b)
-            };
-            ABuilder<T>::setParameter(obj, argName, color);
+            );
+        }
+        void setColor(T &obj, const std::string &argName, const libconfig::Setting &setting)
+        {
+            ABuilder<T>::setParameter(obj, argName, getColor(setting));
+        }
+
+        void setEmissionColor(T &obj, const std::string &argName, const libconfig::Setting &setting)
+        {
+            ABuilder<T>::setParameter(obj, argName, getColor(setting));
         }
 
         void setTransformations(T &obj, const std::string &argName, const libconfig::Setting &setting)

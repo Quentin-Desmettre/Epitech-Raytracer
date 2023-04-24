@@ -11,8 +11,37 @@
 #include "objects/Object.hpp"
 #include "lightPoint.hpp"
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <memory>
+
+class Camera {
+public:
+    enum Direction {
+        FORWARD,
+        BACKWARD,
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    };
+    Camera(sf::Vector3f pos = sf::Vector3f(0, 0, -2.0f), sf::Vector3f rot = sf::Vector3f(0, 0, 1), sf::Vector2u size = sf::Vector2u(800, 800)):
+            _pos(pos), _rot(rot), _size(size) {};
+    ~Camera() = default;
+    void setPos(sf::Vector3f pos) {_pos = pos;};
+    void setRot(sf::Vector3f rot) {_rot = rot;};
+    sf::Vector3f getPos() const {return _pos;};
+    sf::Vector3f getRot() const {return _rot;};
+    sf::Vector2u getResolution() const {return _size;};
+    void move(Direction dir, float speed);
+    void turn(float x, float y);
+
+protected:
+private:
+    sf::Vector3f _pos;
+    sf::Vector3f _rot;
+    sf::Vector2u _size;
+};
 
 class Scene {
 public:
@@ -24,25 +53,11 @@ public:
     bool _hotReloadEnabled = false;
     int _numberOfBounces = 0;
     int _raysPerPixel = 0;
-    std::vector<std::shared_ptr<Object>> _objects;
+    sf::VertexArray _vertexArray;
 
     public:
         Scene() = default;
-        ~Scene() {
-            std::cout << "Multithreading enabled: " << std::boolalpha << _multithreadingEnabled << std::endl;
-            std::cout << "Clusters: " << std::endl;
-            for (auto &cluster : _clusters)
-                std::cout << "\t" << cluster << std::endl;
-            std::cout << "Pre-render enabled: " << std::boolalpha << _preRenderEnabled << std::endl;
-            std::cout << "Continuous render enabled: " << std::boolalpha << _continuousRenderEnabled << std::endl;
-            std::cout << "Output file: " << _outputFile << std::endl;
-            std::cout << "Hot reload enabled: " << std::boolalpha << _hotReloadEnabled << std::endl;
-            std::cout << "Number of bounces: " << _numberOfBounces << std::endl;
-            std::cout << "Rays per pixel: " << _raysPerPixel << std::endl;
-            std::cout << "Objects: " << std::endl;
-            for (auto &obj : _objects)
-                std::cout << "\t" << obj->getPos().x << ", " << obj->getPos().y << ", " << obj->getPos().z << std::endl;
-        }
+        ~Scene() = default;
 
         // TODO: Implement these methods
         void setMultithreadingEnabled(const bool &enabled) {
@@ -76,41 +91,43 @@ public:
             std::cout << "Setting rays per pixel to " << rays << std::endl;
             _raysPerPixel = rays;
         };
-        void setCamera(const int &camera) {
-//            _camera = camera;
+        void setCamera(const std::shared_ptr<Camera> &camera) {
+            _camera = camera;
         };
+        sf::VertexArray &getVertexArray() { return _vertexArray;}
         void setObjects(const std::vector<std::shared_ptr<Object>> &objects) {
-            _objects = objects;
+            _pool = objects;
         };
         void setLights(const std::vector<lightPoint> &lights) {};
-
-        void addObject(Object *obj) {_pool.push_back(obj);};
-        void addLightPoint(lightPoint light) {_lightsPoints.push_back(light);};
-        std::vector<Object *> getPool() {return _pool;};
-        Object *getClosest(const Ray *ray, const Object *ignore = nullptr, bool ignoreLightSources = false) const {
-            Object *closest = nullptr;
-            float dist = __FLT_MAX__;
-
-            for (auto &obj : _pool) {
-                if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != sf::Vector3f(0, 0, 0)
-                && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
-                    continue;
-                sf::Vector3f vec = obj->getIntersection(ray) - ray->getOrigin();
-                float len = Math::length(vec);
-                if (dist < len || !Math::sameSign(vec, ray->getDir()))
-                    continue;
-                dist = len;
-                closest = obj;
-            }
-            return closest;
+        void setRawConfiguration(const std::string &raw) {
+            _rawConfig = raw;
         };
+        const Camera &getCamera() const {
+            return *_camera;
+        };
+
+        std::string getRawConfiguration() const {
+            return _rawConfig;
+        };
+        int getRaysPerPixel() const {
+            return _raysPerPixel;
+        };
+        int getNbBounces() const {
+            return _numberOfBounces;
+        };
+
+        // TODO
+        sf::Vector2u getResolution() const {return _camera->getResolution();}
+        void addLightPoint(const lightPoint& light) {_lightsPoints.push_back(light);};
+        auto getPool() const {return _pool;};
+        Object *getClosest(const Ray *ray, const Object *ignore = nullptr, bool ignoreLightSources = false) const;
         std::vector<lightPoint> getLightPoints() const {return _lightsPoints;};
         Object *getBetween(Ray *ray, float dst, Object *ignore = nullptr, bool ignoreLightSources = false) const {
             Object *closest = nullptr;
             float dist = __FLT_MAX__;
 
             for (auto &obj : _pool) {
-                if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != sf::Vector3f(0, 0, 0)
+                if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != sf::Vector3f(0, 0, 0)
                                       && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
                     continue;
                 sf::Vector3f vec = obj->getIntersection(ray) - ray->getOrigin();
@@ -118,13 +135,15 @@ public:
                 if (dist < len || !Math::sameSign(vec, ray->getDir()) || len > dst)
                     continue;
                 dist = len;
-                closest = obj;
+                closest = obj.get();
             }
             return closest;
         };
 
     protected:
     private:
-        std::vector<Object *> _pool;
+        std::vector<std::shared_ptr<Object>> _pool;
         std::vector<lightPoint> _lightsPoints;
+        std::string _rawConfig;
+        std::shared_ptr<Camera> _camera;
 };

@@ -15,11 +15,12 @@ class Object {
         Object(sf::Vector3f pos = sf::Vector3f(0, 0, 0), sf::Color color = sf::Color::Red,
         sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f, float reflectivity = 0.0f) :
         _pos(pos), _intensity(intensity), _reflectivity(reflectivity) {
-            _color = sf::Vector3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-            _emmsionColor = sf::Vector3f(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
+            setColor(color);
+            setEmissionColor(emmsionColor);
         };
         virtual ~Object() = default;
 
+        void setColor(const sf::Color &color) {_color = sf::Vector3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);};
         void setPosition(const sf::Vector3f &pos) {_pos = pos;};
         void setEmissionColor(const sf::Color &color) {_emmsionColor = sf::Vector3f(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);};
         void setTransparency(const float &transparency) {};

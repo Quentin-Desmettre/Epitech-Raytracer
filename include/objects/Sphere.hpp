@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Object.hpp"
+#include <iostream>
 
 class Sphere : public Object {
     public:
@@ -18,6 +19,7 @@ class Sphere : public Object {
         bool intersect(const Ray *ray) const override;
         sf::Vector3f getIntersection(const Ray *ray) const override;
         sf::Vector3f getNormal(sf::Vector3f inter) const override;
+        void setRadius(const float &radius) {std::cout << "radius: " << radius << std::endl; _radius = radius;};
 
     protected:
     private:

@@ -10,6 +10,7 @@
 #include "scene/SceneBuilder.hpp"
 #include "Exceptions.hpp"
 #include "objects/ObjectFactory.hpp"
+#include <fstream>
 
 typedef libconfig::Setting::Type Type;
 
@@ -17,9 +18,21 @@ SceneBuilder::SceneBuilder(int ac, char **av)
 {
     if (ac != 2)
         throw InvalidArgumentsException("Usage: ./raytracer <config_file>");
+    _file = av[1];
     _config.readFile(av[1]);
     _settings = &_config.getRoot();
+    setSetters();
+}
 
+SceneBuilder::SceneBuilder(const std::string &path)
+{
+    _config.readFile(path.c_str());
+    _settings = &_config.getRoot();
+    setSetters();
+}
+
+void SceneBuilder::setSetters()
+{
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
     _objSetters = {
@@ -46,20 +59,35 @@ SceneBuilder::SceneBuilder(int ac, char **av)
             {"camera",  static_cast<BuilderSetterFunc>(&SceneBuilder::setCamera)}
     };
 #pragma GCC diagnostic pop
-
 }
 
 std::unique_ptr<Scene> SceneBuilder::build()
 {
-    return ABuilder<Scene>::build(*_settings);
+    std::unique_ptr<Scene> scene = ABuilder<Scene>::build(*_settings);
+
+    std::ifstream file(_file);
+    std::string str((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+    scene->setRawConfiguration(str);
+    file.close();
+    return scene;
 }
 
 void SceneBuilder::setCamera(Scene &scene, const std::string &param,
                                            const libconfig::Setting &setting)
 {
-//    SharedCamera cam = CameraBuilder(setting).buildCamera();
-//
-//    setParameter<SharedCamera>(setting, cam);
+    sf::Vector2u resolution = {
+            static_cast<unsigned int>(setting["resolution"]["x"]),
+            static_cast<unsigned int>(setting["resolution"]["y"])
+    };
+    sf::Vector3f position = {
+            static_cast<float>(setting["position"]["x"]),
+            static_cast<float>(setting["position"]["y"]),
+            static_cast<float>(setting["position"]["z"])
+    };
+    auto cam = std::make_shared<Camera>(position, sf::Vector3f{0, 0, 1}, resolution);
+    cam->setRot({0, 0.25, 0});
+    setParameter(scene, param, cam);
 }
 
 void SceneBuilder::setClusters(Scene &scene, const std::string &param,

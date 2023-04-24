@@ -9,4 +9,5 @@
 
 SphereBuilder::SphereBuilder()
 {
+    this->_objSetters.push_back({"radius", {Type::TypeFloat, reinterpret_cast<ObjSetterFunc>(&Sphere::setRadius)}});
 }
