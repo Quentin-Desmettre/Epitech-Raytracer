@@ -5,9 +5,9 @@
 ** Camera
 */
 
-#include "Renderer.hpp"
+#include "scene/Scene.hpp"
 
-void Renderer::Camera::move(Direction dir, float speed)
+void Camera::move(Direction dir, float speed)
 {
     switch (dir) {
         case FORWARD:
@@ -31,7 +31,7 @@ void Renderer::Camera::move(Direction dir, float speed)
     }
 }
 
-void Renderer::Camera::turn(float x, float y)
+void Camera::turn(float x, float y)
 {
     _rot.x += x;
     _rot.y += y;

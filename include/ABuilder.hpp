@@ -147,7 +147,7 @@ protected:
                 setParameter<int>(obj, param, setting);
                 break;
             case libconfig::Setting::TypeFloat:
-                setParameter<float>(obj, param, setting);
+                setParameter<float>(obj, param, getFloat(setting));
                 break;
             case libconfig::Setting::TypeString:
                 setParameter<std::string>(obj, param, setting);

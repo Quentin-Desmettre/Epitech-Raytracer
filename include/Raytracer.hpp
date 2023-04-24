@@ -10,6 +10,7 @@
 #include "scene/Scene.hpp"
 #include "IRenderer.hpp"
 #include "Drawer.hpp"
+#include "RendererPool.hpp"
 
 namespace Raytracer {
 
@@ -35,7 +36,7 @@ namespace Raytracer {
         unsigned short _port;
         std::unique_ptr<Drawer> _drawer;
         std::unique_ptr<Scene> _scene;
-        std::vector<std::unique_ptr<IRenderer>> _renderers;
+        std::unique_ptr<IRenderer> _renderer;
     };
 
 } // Raytracer
