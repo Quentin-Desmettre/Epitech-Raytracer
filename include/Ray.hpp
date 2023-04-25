@@ -19,16 +19,16 @@ class Ray {
         // Setters
         void setOrigin(Vec3 origin) {_origin = origin;};
         void setDir(Vec3 dir) {_dir = dir;};
-        void setColor(Vec3 color) {_color = color;};
 
         // Getters
         Vec3 getOrigin() const {return _origin;};
         Vec3 getDir() const {return _dir;};
-        Vec3 getColor() const {return _color;};
 
         // Methods
         void reflect(Vec3 normal, float reflectivity) {
             Vec3 tmp = Math::randomDir();
+            if (Math::dot(tmp, normal) < 0)
+                tmp = -tmp;
             Vec3 specular = _dir - 2.0f * Math::dot(_dir, normal) * normal;
             Vec3 diffuse = tmp * Math::sign(Math::dot(normal, tmp));
             _dir = specular * reflectivity + diffuse * (1.0f - reflectivity);
@@ -37,5 +37,4 @@ class Ray {
     private:
         Vec3 _origin;
         Vec3 _dir;
-        Vec3 _color = Vec3(1, 1, 1);
 };

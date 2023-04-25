@@ -54,6 +54,7 @@ void addObjects(Scene &scene, Camera &camera)
 
     Sphere *sphere1 = new Sphere(Vec3(-1, -0.5, 4), sf::Color(64, 255, 64), 1);
     // sphere1->setReflectivity(1);
+    sphere1->setTransparency(1);
     scene.addObject(sphere1);
 
     Sphere *sphere2 = new Sphere(Vec3(0, -2, 4), sf::Color(64, 64, 255), 0.3);
@@ -63,6 +64,7 @@ void addObjects(Scene &scene, Camera &camera)
     scene.addObject(sphere3);
 
     Sphere *sphere4 = new Sphere(Vec3(-3, 0, 4), sf::Color::White, 0.5);
+    sphere4->setTransparency(0.5);
     scene.addObject(sphere4);
 
     // LightPoint *light1 = new LightPoint(Vec3(1, 0, 10), sf::Color(255, 255, 255), 5.0f);
@@ -72,13 +74,13 @@ void addObjects(Scene &scene, Camera &camera)
     // square->setReflectivity(1);
     // scene.addObject(square);
 
-    Cylinder *cylinder = new Cylinder(Vec3(-1, 0, 2), Vec3(1, 0, 0), 0.3, 2, sf::Color(255, 64, 64));
+    // Cylinder *cylinder = new Cylinder(Vec3(-1, 0, 2), Vec3(1, 0, 0), 0.3, 2, sf::Color(255, 64, 64));
     // cylinder->setReflectivity(1);
-    scene.addObject(cylinder);
+    // scene.addObject(cylinder);
 
-    Cone *cone = new Cone(Vec3(3, 0, 4), Vec3(0, 1, 0), 1, true, sf::Color(255, 64, 64));
+    // Cone *cone = new Cone(Vec3(3, 0, 4), Vec3(0, 1, 0), 1.0f, true, sf::Color(255, 64, 64));
     // cone->setReflectivity(1);
-    scene.addObject(cone);
+    // scene.addObject(cone);
 
     Plane *plane = new Plane(Vec3(0, 0.5, 0), Vec3(0, -1, 0), sf::Color(100, 100, 100));
     plane->setReflectivity(0.5);
