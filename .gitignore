@@ -40,3 +40,6 @@ websockets
 build
 
 raytracer
+perfs.txt
+callgrind*
+output.svg

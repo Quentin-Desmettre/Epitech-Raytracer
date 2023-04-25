@@ -9,21 +9,19 @@
 
 #include "Object.hpp"
 
-class Sphere : public Object {
+class Sphere : public AObject {
     public:
-        Sphere(sf::Vector3f pos = sf::Vector3f(0, 0, 0), sf::Color color = sf::Color::Red, float radius = 1.0f,
+        Sphere(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red, float radius = 1.0f,
         sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
         ~Sphere() = default;
-        float getRadius() {return _radius;};
-        bool intersect(Ray *ray) override;
-        sf::Vector3f getIntersection(Ray *ray) override;
-        sf::Vector3f getNormal(sf::Vector3f inter) override;
+        float getRadius() const {return _radius;};
+        bool intersect(const Ray &ray) const override;
+        Vec3 getIntersection(const Ray &ray) const override;
+        Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
     protected:
     private:
+        float getDelta(const Ray &ray) const;
+        float getIntersections(const Ray &ray) const;
+
         float _radius;
-        float a;
-        float b;
-        float c;
-        float _delta;
-        Ray *_lastRay;
 };
