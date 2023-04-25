@@ -15,7 +15,7 @@ const std::map<std::string, TransformationFactory::Builder> TransformationFactor
     {"matrix",      &TransformationFactory::buildMatrix}
 };
 
-TransformationFactory::TransformationFactory(Object &obj):
+TransformationFactory::TransformationFactory(IObject &obj):
     _obj(obj)
 {
 }
@@ -47,10 +47,12 @@ SharedITransformation TransformationFactory::buildTranslate(const libconfig::Set
 
     auto translate = std::make_shared<Transformation>("translate");
 
-    translate->setMatrices({Math::Matrix<4, 4>::translate3D(
-        settings["x"],
-        settings["y"],
-        settings["z"]
+    translate->setMatrices({Mat4::translate3D(
+        sf::Vector3f{
+              settings["x"],
+              settings["y"],
+              settings["z"]
+      }
     )});
     return translate;
 }
@@ -84,7 +86,7 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
 
     // If the rotation is around the origin, simply return a basic rotation matrix
     if (static_cast<std::string>(settings["around"]) == "origin") {
-        rotate->setMatrices({Math::Matrix<4, 4>::rotate3D(
+        rotate->setMatrices({Mat4::rotate3D(
             axis,
             settings["angle"]
         )});
@@ -94,24 +96,29 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
     // If the rotation is around the center of the object, we need to translate it to the origin, rotate it, then translate it back
     // To do so, we create 3 matrices
     // 1. Translate the object to the origin
-    Math::Matrix translateToOrigin = Math::Matrix<4, 4>::translate3D(
-        -_obj.getPos().x,
-        -_obj.getPos().y,
-        -_obj.getPos().z
+    Mat4 translateToOrigin = Mat4::translate3D(
+        sf::Vector3f{
+                -_obj.getPos().x,
+                -_obj.getPos().y,
+                -_obj.getPos().z
+        }
     );
 
     // 2. Rotate the object
-    Math::Matrix rotateAroundCenter = Math::Matrix<4, 4>::rotate3D(
+    Mat4 rotateAroundCenter = Mat4::rotate3D(
         axis,
         settings["angle"]
     );
 
     // 3. Translate the object back to its original position
-    Math::Matrix translateBack = Math::Matrix<4, 4>::translate3D(
-        _obj.getPos().x,
-        _obj.getPos().y,
-        _obj.getPos().z
+    Mat4 translateBack = Mat4::translate3D(
+        sf::Vector3f{
+                _obj.getPos().x,
+                _obj.getPos().y,
+                _obj.getPos().z
+        }
     );
+    // TODO: use getFloat instead
 
     // Then set theses 3 matrices
     rotate->setMatrices({translateToOrigin, rotateAroundCenter, translateBack});
@@ -137,10 +144,12 @@ SharedITransformation TransformationFactory::buildScale(
         throw InvalidParameterValueException("scale");
 
     auto scale = std::make_shared<Transformation>("scale");
-    scale->setMatrices({Math::Matrix<4, 4>::scale3D(
-        settings["x"],
-        settings["y"],
-        settings["z"]
+    scale->setMatrices({Mat4::scale3D(
+        sf::Vector3f{
+              settings["x"],
+              settings["y"],
+              settings["z"]
+      }
     )});
     return scale;
 }
@@ -157,7 +166,7 @@ SharedITransformation TransformationFactory::buildMatrix(
         throw InvalidParameterValueException("matrix");
 
     // Fill matrix
-    Math::Matrix<4, 4> matrix;
+    Mat4 matrix;
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             matrix(i, j) = ABuilder<Transformation>::getFloat(settings["matrix"][i * 4 + j]);

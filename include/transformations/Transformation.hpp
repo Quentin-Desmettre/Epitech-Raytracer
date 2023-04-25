@@ -15,13 +15,13 @@ public:
     explicit Transformation(std::string name);
 
     std::string getName() const override;
-    std::vector<Math::Matrix<4, 4>> getMatrices() const override;
+    std::vector<Mat4> getMatrices() const override;
 
-    void setMatrices(const std::vector<Math::Matrix<4, 4>> &matrices);
+    void setMatrices(const std::vector<Mat4> &matrices);
 
 private:
     std::string _name;
-    std::vector<Math::Matrix<4, 4>> _matrices;
+    std::vector<Mat4> _matrices;
 };
 
 #endif //EPITECH_RAYTRACER_TRANSFORMATION_HPP

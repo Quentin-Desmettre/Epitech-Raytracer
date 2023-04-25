@@ -34,11 +34,11 @@ Raytracer::Raytracer::Raytracer(int ac, char **av)
 
         // Create renderers
         auto renderer = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution());
-        if (!_scene->_clusters.empty())
-            renderer->addRenderer(std::make_unique<Clustering::Server>(_scene->_clusters, sf::Vector2u{0, 0}, sf::Vector2u{1, 1}));
+        if (!_scene->getClusters().empty())
+            renderer->addRenderer(std::make_unique<Clustering::Server>(_scene->getClusters(), sf::Vector2u{0, 0}, sf::Vector2u{1, 1}));
 
         // Even if there are clusters, we still render the rest of the image on this computer
-        std::size_t max = _scene->_multithreadingEnabled ? std::thread::hardware_concurrency() : 1;
+        std::size_t max = _scene->isMultithreadingEnabled() ? std::thread::hardware_concurrency() : 1;
         for (std::size_t i = 0; i < max; ++i)
             renderer->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
         renderer->setRange();
@@ -66,7 +66,7 @@ void Raytracer::Raytracer::runNormal()
     while (_drawer->isOpen()) {
         _renderer->render(*_scene);
         _drawer->draw(_renderer->getVertexArray());
-        _drawer->saveToFile(_scene->_outputFile);
+        _drawer->saveToFile(_scene->getOutputFile());
     }
 }
 

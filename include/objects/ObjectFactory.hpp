@@ -10,7 +10,7 @@
 #include "AFactory.hpp"
 #include "builders/ObjectBuilder.hpp"
 
-class ObjectFactory: public AFactory<Object> {
+class ObjectFactory: public AFactory<AObject> {
     public:
         explicit ObjectFactory();
 };

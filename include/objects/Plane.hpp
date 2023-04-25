@@ -7,24 +7,22 @@
 
 #pragma once
 
-#include "Triangle.hpp"
-#include <array>
+#include "Object.hpp"
 
-class Plane : public Object {
+class Plane : public AObject {
     public:
-        Plane(sf::Vector3f corner1 = sf::Vector3f(0, 0, 0), sf::Vector3f corner2 = sf::Vector3f(1, 0, 1),
-        sf::Color color = sf::Color::Red, sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
-        ~Plane() = default;
+        Plane(Vec3 pos = Vec3(0, 0, 0), Vec3 dir = Vec3(0, 1, 0),
+        sf::Color color = sf::Color::Red, sf::Color emissionColor = sf::Color::Black, float intensity = 1.0f);
+        ~Plane() override = default;
 
+        // TODO
         void setAxis(char axis) {}
         void setPosition(float position) {}
 
-
-        bool intersect(const Ray *ray) const override;
-        sf::Vector3f getIntersection(const Ray *ray) const override;
-        sf::Vector3f getNormal(sf::Vector3f inter) const override;
-
+        bool intersect(const Ray &ray) const override;
+        Vec3 getIntersection(const Ray &ray) const override;
+        Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
     protected:
     private:
-        std::array<Triangle, 2> _triangles;
+        Vec3 _dir;
 };

@@ -5,8 +5,7 @@
 ** PacketWriter
 */
 
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/VertexBuffer.hpp>
+#include <SFML/Graphics.hpp>
 #include <cstring>
 #include "network/PacketWriter.hpp"
 

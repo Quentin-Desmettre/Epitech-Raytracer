@@ -5,15 +5,22 @@
 ** Cone
 */
 
-#ifndef EPITECH_RAYTRACER_CONE_HPP
-#define EPITECH_RAYTRACER_CONE_HPP
+#pragma once
+
 #include "Object.hpp"
 
-class Cone: public Object {
-public:
-    bool intersect(const Ray *ray) const override {}
-    sf::Vector3f getNormal(sf::Vector3f intersectionPoint) const override {}
-    sf::Vector3f getIntersection(const Ray *ray) const override {}
-};
+class Cone : public AObject {
+    public:
+        Cone(Vec3 pos = Vec3(0, 0, 0), Vec3 dir = Vec3(0, 1, 0), float height = INF, bool isCapped = false,
+        sf::Color color = sf::Color::Red, sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
+        ~Cone() override = default;
+        bool intersect(const Ray &ray) const override;
+        Vec3 getIntersection(const Ray &ray) const override;
+        Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
 
-#endif //EPITECH_RAYTRACER_CONE_HPP
+    protected:
+    private:
+        Vec3 _dir;
+        float _height;
+        bool _isCapped;
+};

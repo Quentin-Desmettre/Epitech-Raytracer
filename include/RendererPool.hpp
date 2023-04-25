@@ -27,11 +27,6 @@ namespace Raytracer {
         int getThreadsCount() const override;
         static int getThreadsCount(const UniqueRendererVector &renderers);
 
-        /**
-         * @brief Split a range into multiple ranges, each with the same height.
-         */
-        static std::vector<std::pair<sf::Vector2u, sf::Vector2u>> splitRange(sf::Vector2u start, sf::Vector2u end, std::size_t count);
-
         typedef std::map<IRenderer *, std::pair<sf::Vector2u, sf::Vector2u>> RendererRangeMap;
         /**
          * @brief Split a range into multiple ranges, each with the same height. This method only uses the 'getThreadsCount' method on renderers.

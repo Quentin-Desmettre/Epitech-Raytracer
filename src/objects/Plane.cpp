@@ -7,27 +7,26 @@
 
 #include "objects/Plane.hpp"
 
-Plane::Plane(sf::Vector3f corner1, sf::Vector3f corner2, sf::Color color,
-sf::Color emmsionColor, float intensity) :
-Object(corner1, color, emmsionColor, intensity)
+Plane::Plane(Vec3 pos, Vec3 dir, sf::Color color, sf::Color emmsionColor, float intensity) :
+AObject(pos, color, emmsionColor, intensity)
 {
-    _triangles[0] = Triangle(corner1, corner2, sf::Vector3f(corner1.x, corner1.y, corner2.z), color, emmsionColor, intensity);
-    _triangles[1] = Triangle(corner1, sf::Vector3f(corner2.x, corner1.y, corner1.z), corner2, color, emmsionColor, intensity);
+    _dir = dir;
 }
 
-bool Plane::intersect(const Ray *ray) const
+bool Plane::intersect(const Ray &ray) const
 {
-    return _triangles[0].intersect(ray) || _triangles[1].intersect(ray);
+    float dot = Math::dot(ray.getDir(), _dir);
+    return dot != 0;
 }
 
-sf::Vector3f Plane::getIntersection(const Ray *ray) const
+Vec3 Plane::getIntersection(const Ray &ray) const
 {
-    if (_triangles[0].intersect(ray))
-        return _triangles[0].getIntersection(ray);
-    return _triangles[1].getIntersection(ray);
+    float dot = Math::dot(ray.getDir(), _dir);
+    float t = Math::dot(_pos - ray.getOrigin(), _dir) / dot;
+    return ray.getOrigin() + ray.getDir() * t;
 }
 
-sf::Vector3f Plane::getNormal(sf::Vector3f inter) const
+Vec3 Plane::getNormal(unused const Vec3 &inter, unused const Ray &ray) const
 {
-    return _triangles[0].getNormal(inter);
+    return Math::normalize(_dir);
 }

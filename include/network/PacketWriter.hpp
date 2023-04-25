@@ -9,7 +9,6 @@
 #define EPITECH_RAYTRACER_PACKETWRITER_HPP
 #include "network/Packet.hpp"
 #include <string>
-#include "PointArray.hpp"
 
 namespace Network {
     class PacketWriter {

@@ -36,33 +36,10 @@ void Raytracer::RendererPool::internalSetRange(sf::Vector2u start, sf::Vector2u 
     _start = start;
     _end = end;
     auto ranges = splitRange(start, end, _renderers);
-    std::cout << "#########################" << std::endl;
-    std::cout << "RENDERER POOl" << std::endl;
     for (auto &renderer : _renderers) {
-        std::cout << "start: " << ranges[renderer.get()].first.x << " " << ranges[renderer.get()].first.y << std::endl;
-        std::cout << "end: " << ranges[renderer.get()].second.x << " " << ranges[renderer.get()].second.y << std::endl;
-        std::cout << std::endl;
         renderer->setRange(ranges[renderer.get()].first,
                            ranges[renderer.get()].second);
     }
-    std::cout << "#########################" << std::endl;
-}
-
-std::vector<std::pair<sf::Vector2u, sf::Vector2u>> Raytracer::RendererPool::splitRange(sf::Vector2u start, sf::Vector2u end, std::size_t count)
-{
-    std::vector<std::pair<sf::Vector2u, sf::Vector2u>> ranges;
-    ranges.reserve(count);
-
-    unsigned width = (end.x - start.x) / count;
-    unsigned xStart = start.x;
-    unsigned xEnd = start.x + width;
-    for (unsigned i = 0; i < count - 1; ++i) {
-        ranges.emplace_back(sf::Vector2u(xStart, start.y), sf::Vector2u(xStart + width, end.y));
-        xStart += width;
-        xEnd += width;
-    }
-    ranges.emplace_back(sf::Vector2u(xStart, start.y), sf::Vector2u(end.x, end.y));
-    return ranges;
 }
 
 Raytracer::RendererPool::RendererRangeMap Raytracer::RendererPool::splitRange(sf::Vector2u start, sf::Vector2u end, const UniqueRendererVector &renderers)
@@ -89,23 +66,19 @@ Raytracer::RendererPool::RendererRangeMap Raytracer::RendererPool::splitRange(sf
 void Raytracer::RendererPool::render(const Scene &scene)
 {
     // Launch renderers
-//    setupRayDirs(scene);
-    std::cout << "Rendering..." << std::endl;
     std::vector<std::thread> threads;
     threads.reserve(_renderers.size());
     for (auto &renderer: _renderers)
         threads.emplace_back(&IRenderer::render, renderer.get(), std::ref(scene));
 
-    std::cout << "Rendering done" << std::endl;
     // Wait for renderers to finish
     for (auto &thread: threads)
         thread.join();
 
-    std::cout << "Merging renderers..." << std::endl;
     // Merge renderers
+    // TODO: optimize this step
     _vertexArray.clear();
     for (auto &renderer: _renderers) {
-        std::cout << "Adding vertex array of " << renderer->getVertexArray().getVertexCount() << " vertices" << std::endl;
         auto vertexArray = renderer->getVertexArray();
         for (unsigned i = 0; i < vertexArray.getVertexCount(); ++i) {
             _vertexArray.append(vertexArray[i]);

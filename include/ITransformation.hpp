@@ -7,7 +7,7 @@
 
 #ifndef EPITECH_RAYTRACER_ITRANSFORMATION_HPP
 #define EPITECH_RAYTRACER_ITRANSFORMATION_HPP
-#include "Math.hpp"
+#include "utils/Math.hpp"
 
 class ITransformation {
 public:
@@ -18,7 +18,7 @@ public:
      * @brief Get the Matrices object
      * @return The list of transformations to apply, in order
      */
-    virtual std::vector<Math::Matrix<4, 4>> getMatrices() const = 0;
+    virtual std::vector<Mat4> getMatrices() const = 0;
 };
 
 

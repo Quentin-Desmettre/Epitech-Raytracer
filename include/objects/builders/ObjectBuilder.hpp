@@ -28,13 +28,13 @@ class ObjectBuilder: public ABuilder<T> {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
             this->_objSetters.push_back({"type",                {Type::TypeString,  nullptr,                                                        false}});
-            this->_objSetters.push_back({"position",            {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setPosition),          false}});
-            this->_objSetters.push_back({"color",               {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setColor),             true}});
-            this->_objSetters.push_back({"transparency",        {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&Object::setTransparency),      true}});
-            this->_objSetters.push_back({"reflection",          {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&Object::setReflectivity),      true}});
-            this->_objSetters.push_back({"transformations",     {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&Object::setTransformations),   true}});
-            this->_objSetters.push_back({"emission-color",      {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&Object::setEmissionColor),     true}});
-            this->_objSetters.push_back({"emission-intensity",  {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&Object::setEmissionIntensity), true}});
+            this->_objSetters.push_back({"position",            {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setPosition),          false}});
+            this->_objSetters.push_back({"color",               {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setColor),             true}});
+            this->_objSetters.push_back({"transparency",        {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setTransparency),      true}});
+            this->_objSetters.push_back({"reflection",          {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setReflectivity),      true}});
+            this->_objSetters.push_back({"transformations",     {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&IObject::setTransformations),   true}});
+            this->_objSetters.push_back({"emission-color",      {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionColor),     true}});
+            this->_objSetters.push_back({"emission-intensity",  {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionIntensity), true}});
 
             // Groups
             this->_objGroupSetters.push_back({"position",   static_cast<ABuilder<T>::BuilderSetterFunc>(&ObjectBuilder::setPosition)});
@@ -51,7 +51,7 @@ class ObjectBuilder: public ABuilder<T> {
 
     protected:
         typedef libconfig::Setting::Type Type;
-        typedef void (Object::*ObjSetterFunc)();
+        typedef void (IObject::*ObjSetterFunc)();
 
 
     void setPosition(T &obj, const std::string &argName, const libconfig::Setting &setting)

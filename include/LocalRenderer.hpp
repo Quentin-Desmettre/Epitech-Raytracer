@@ -9,16 +9,6 @@
 #define EPITECH_RAYTRACER_LOCALRENDERER_HPP
 #include "IRenderer.hpp"
 
-inline sf::Vector3f operator*(sf::Vector3f vec, sf::Vector3f vec2) {
-    return sf::Vector3f(vec.x * vec2.x, vec.y * vec2.y, vec.z * vec2.z);
-}
-
-inline void operator*=(sf::Vector3f &vec, sf::Vector3f vec2) {
-    vec.x *= vec2.x;
-    vec.y *= vec2.y;
-    vec.z *= vec2.z;
-}
-
 namespace Raytracer {
 
     /**
@@ -42,17 +32,15 @@ namespace Raytracer {
         void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         void addPixel(sf::Vector2u pos, sf::Vector3f color);
         sf::Vector3f getPixelFColor(sf::Vector2f pos, const Scene &pool);
-        static void addLightOfPoints(sf::Vector3f &light, sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene &pool, Object *obj);
-        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene &pool, Object *obj);
+        static Vec3 addLightOfPoints(Vec3 normal, Vec3 inter, Vec3 color, const Scene &pool, const IObject *obj);
+        sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene &pool, const IObject *obj);
 
         sf::VertexArray _vertexArray;
         sf::Vector2u _start, _end;
         int _nbFrames{};
 
         // TODO: get these from the scene
-        sf::Vector3f getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) {
-            return {50 / 255.0f, 50 / 255.0f, 50 / 255.0f};
-        }
+        sf::Vector3f getAmbientLight(sf::Vector2f pos) const;
         sf::Vector3f _sunLight = Math::normalize(sf::Vector3f(-1, 1, 0));
         sf::Vector3f _sunColor = sf::Vector3f(1, 1, 1);
     };
