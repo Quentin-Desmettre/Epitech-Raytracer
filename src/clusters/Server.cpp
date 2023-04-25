@@ -94,16 +94,12 @@ Raytracer::Clustering::Server::NetworkRenderer::NetworkRenderer(const std::strin
 
 void Raytracer::Clustering::Server::NetworkRenderer::render(const Scene &scene)
 {
-    std::cout << "rendering" << std::endl;
     if (_scene != &scene) {// TODO: fix
         Network::Packet packet;
         // Encode scene
         Network::PacketWriter writer(packet);
         writer << std::byte(UPDATE_SCENE) << scene.getRawConfiguration();
         writer << _start.x << _start.y << _end.x << _end.y;
-        std::cout << "sending scene" << std::endl;
-        std::cout << "start: " << _start.x << " " << _start.y << std::endl;
-        std::cout << "end: " << _end.x << " " << _end.y << std::endl;
         _socket.send(packet);
         // Wait for answer
         packet = _socket.receive();
@@ -111,11 +107,10 @@ void Raytracer::Clustering::Server::NetworkRenderer::render(const Scene &scene)
     }
     Network::Packet packet;
 
-    std::cout << "sending render" << std::endl;
+    _clock.restart();
     // Render
     packet = Network::Packet({std::byte(RENDER)});
     _socket.send(packet);
-    std::cout << "Finishing my render" << std::endl;
 }
 
 void Raytracer::Clustering::Server::NetworkRenderer::fetchAnswer()
@@ -136,7 +131,6 @@ void Raytracer::Clustering::Server::NetworkRenderer::setRange(sf::Vector2u start
     Network::Packet packet;
     Network::PacketWriter writer(packet);
 
-    std::cout << "UDPATE_RANGE: " << start.x << " " << start.y << " ; " << end.x << " " << end.y << std::endl;
     writer << std::byte(UPDATE_RANGE) << start.x << start.y << end.x << end.y;
     _socket.send(packet);
 

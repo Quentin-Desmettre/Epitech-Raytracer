@@ -64,7 +64,6 @@ class ObjectBuilder: public ABuilder<T> {
                     ABuilder<T>::getFloat(setting["y"]),
                     ABuilder<T>::getFloat(setting["z"])
             };
-            std::cout << "pos: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
             ABuilder<T>::setParameter(obj, argName, pos);
         }
 

@@ -163,9 +163,6 @@ void Raytracer::LocalRenderer::internalSetRange(sf::Vector2u start, sf::Vector2u
     _vertexArray.clear();
     _vertexArray.setPrimitiveType(sf::Points);
     _vertexArray.resize(size);
-    std::cout << " ==================== " << std::endl;
-    std::cout << "RESIZING VERTEX ARRAY TO " << size << " POINTS" << std::endl;
-    std::cout << " ==================== " << std::endl;
     for (std::size_t x = 0; x < widthX; x++) {
         for (std::size_t y = 0; y < widthY; y++) {
             _vertexArray[y * widthX + x].position = sf::Vector2f(x, y);

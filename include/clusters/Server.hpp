@@ -92,6 +92,7 @@ namespace Raytracer::Clustering {
                 sf::VertexArray _vertexArray;
                 const Scene *_scene = nullptr;
                 sf::Vector2u _start, _end;
+                sf::Clock _clock;
             };
 
             std::vector<std::unique_ptr<IRenderer>> _renderers;

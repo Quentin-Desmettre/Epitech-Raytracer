@@ -55,11 +55,6 @@ void Raytracer::Clustering::Client::handleUpdateScene(Network::Packet &data, Net
     std::byte header;
     reader >> header >> sceneConfig >> _startPoint.x >> _startPoint.y >> _endPoint.x >> _endPoint.y;
 
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-    std::cout << "scene config: " << sceneConfig << std::endl;
-    std::cout << "start point: " << _startPoint.x << " " << _startPoint.y << std::endl;
-    std::cout << "end point: " << _endPoint.x << " " << _endPoint.y << std::endl;
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     // Write the scene to a file
     std::ofstream file("scene.config");
     file << sceneConfig;
@@ -79,14 +74,13 @@ void Raytracer::Clustering::Client::handleRender(Network::Packet &, Network::Tcp
 {
     _renderers->render(*_scene);
     sf::VertexArray vertexArray = _renderers->getVertexArray();
-    std::cout << "RENDERED VERTEX ARRAY SIZE: " << vertexArray.getVertexCount() << std::endl;
+    sf::Clock clock;
     Network::Packet packet;
     Network::PacketWriter writer(packet);
 
     writer << std::byte(RENDER_DONE) << vertexArray;
-    std::cout << "Sending vertex array of size: " << vertexArray.getVertexCount() << std::endl;
     socket.send(packet);
-    std::cout << "Sent vertex array" << std::endl;
+    std::cout << "Sent vertex array in " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
 }
 
 void Raytracer::Clustering::Client::handleUpdateRange(Network::Packet &data, Network::TcpSocket &socket)
@@ -96,7 +90,6 @@ void Raytracer::Clustering::Client::handleUpdateRange(Network::Packet &data, Net
     std::byte header;
     reader >> header >> _startPoint.x >> _startPoint.y >> _endPoint.x >> _endPoint.y;
 
-    std::cout << "Setting internal range to: " << _startPoint.x << ", " << _startPoint.y << " to " << _endPoint.x << ", " << _endPoint.y << std::endl;
     _renderers->setRange(_startPoint, _endPoint);
 
     // Inform that the update is done
@@ -115,7 +108,6 @@ void Raytracer::Clustering::Client::handleGetThreadCount(Network::Packet &, Netw
 
 void Raytracer::Clustering::Client::buildRendererPool()
 {
-    std::cout << "Building renderer pool, with start: " << _startPoint.x << ", " << _startPoint.y << " and end: " << _endPoint.x << ", " << _endPoint.y << std::endl;
     _renderers = std::make_unique<RendererPool>(_startPoint, _endPoint);
     for (unsigned i = 0; i < std::thread::hardware_concurrency(); i++)
         _renderers->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
