@@ -21,6 +21,8 @@ void Raytracer::Drawer::draw(const std::vector<std::unique_ptr<IRenderer>> &rend
 
 void Raytracer::Drawer::draw(const sf::VertexArray &vertexArray)
 {
+    static sf::Clock clock;
+
     sf::Event event;
     while (_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
@@ -28,6 +30,8 @@ void Raytracer::Drawer::draw(const sf::VertexArray &vertexArray)
     }
     _window.draw(vertexArray);
     _window.display();
+    std::cout << "TIme to draw: " << clock.getElapsedTime().asMilliseconds() << std::endl;
+    clock.restart();
 }
 
 void Raytracer::Drawer::saveToFile(const std::string &filename)

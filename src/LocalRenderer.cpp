@@ -7,6 +7,8 @@
 
 #include "LocalRenderer.hpp"
 #include <SFML/Network.hpp>
+#include "Math.hpp"
+#include "utils/Matrix.hpp"
 
 Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
 {
@@ -15,7 +17,6 @@ Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
 
 void Raytracer::LocalRenderer::render(const Scene &scene)
 {
-    std::cout << "rendering from X: " << _start.x << " to " << _end.x << " and from Y:" << _start.y << " to " << _end.y << std::endl;
     for (unsigned x = _start.x; x < _end.x; x++) {
         for (unsigned y = _start.y; y < _end.y; y++) {
             sf::Vector3f colors{0, 0, 0};
@@ -51,14 +52,37 @@ void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
     _vertexArray[posInArray].color = sf::Color(color.x, color.y, color.z);
 }
 
+//void setupRayDirs(const Scene &scene)
+//{
+//    rayDirs.clear();
+//
+//    unsigned maxX = scene.getResolution().x;
+//    unsigned maxY = scene.getResolution().y;
+//
+//    for (unsigned i = 0; i < maxX; i++) {
+//        for (unsigned j = 0; j < maxY; j++) {
+//            sf::Vector3f rayDir = Math::normalize(sf::Vector3f (i - maxX / 2.0f,
+//                                                                j - maxY / 2.0f, maxX / 2.0f));
+//            rayDirs.push_back(Math::normalize(Matrix::rotate(rayDir, scene.getCamera().getRot(), scene.getCamera().getPos())));
+//        }
+//    }
+//}
+
+sf::Vector3f getRayDir(sf::Vector2f pos, const Scene &scene)
+{
+    unsigned maxX = scene.getResolution().x;
+    unsigned maxY = scene.getResolution().y;
+
+    sf::Vector3f rayDir = Math::normalize(sf::Vector3f (pos.x - maxX / 2.0f,
+                                                        pos.y - maxY / 2.0f, maxX / 2.0f));
+    return Math::normalize(Matrix::rotate(rayDir, scene.getCamera().getRot(), scene.getCamera().getPos()));
+}
+
 sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &scene)
 {
     sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);
     sf::Vector3f light = {0, 0, 0};
-    std::size_t widthX = _end.x - _start.x;
-    std::size_t widthY = _end.y - _start.y;
-    Ray ray = Ray(scene.getCamera().getPos(),
-                  scene.getCamera().getRot() + sf::Vector3f(pos.x / widthX - 0.5f, pos.y / widthY - 0.5f, 1));
+    Ray ray = Ray(scene.getCamera().getPos(), getRayDir(pos, scene));
     Object *old = nullptr;
 
     for (int bounces = 0; bounces <= scene.getNbBounces(); bounces++) {
@@ -121,6 +145,9 @@ void Raytracer::LocalRenderer::internalSetRange(sf::Vector2u start, sf::Vector2u
     _vertexArray.clear();
     _vertexArray.setPrimitiveType(sf::Points);
     _vertexArray.resize(size);
+    std::cout << " ==================== " << std::endl;
+    std::cout << "RESIZING VERTEX ARRAY TO " << size << " POINTS" << std::endl;
+    std::cout << " ==================== " << std::endl;
     for (std::size_t x = 0; x < widthX; x++) {
         for (std::size_t y = 0; y < widthY; y++) {
             _vertexArray[y * widthX + x].position = sf::Vector2f(x, y);

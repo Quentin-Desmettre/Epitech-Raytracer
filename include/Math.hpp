@@ -11,6 +11,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <cmath>
+#include <cstring>
 
 namespace Math
 {
@@ -63,7 +64,7 @@ namespace Math
     public:
 
         Matrix(const std::initializer_list<std::initializer_list<double>> &list) {
-            std::size_t i = 0, j = 0;
+            std::size_t i = 0, j;
 
             for (auto &row: list) {
                 j = 0;
@@ -75,11 +76,10 @@ namespace Math
             }
         }
         Matrix() {
-            for (std::size_t i = 0; i < N; i++)
-                std::fill(_matrix[i].begin(), _matrix[i].end(), 0);
+            std::memset(_matrix, 0, sizeof(_matrix));
         }
         Matrix(const Matrix &other) {
-            _matrix = other._matrix;
+            std::memcpy(_matrix, other._matrix, sizeof(_matrix));
         }
 
         // matrix mul / add / sub
@@ -118,7 +118,7 @@ namespace Math
 
         // Assignment add/sub/mul
         Matrix &operator=(const Matrix &other) {
-            _matrix = other._matrix;
+            std::memcpy(_matrix, other._matrix, sizeof(_matrix));
             return *this;
         }
         Matrix &operator+=(const Matrix &other) {
@@ -227,7 +227,7 @@ namespace Math
         }
 
     private:
-        std::array<std::array<double, M>, N> _matrix;
+        double _matrix[M][N];
     };
 
 }

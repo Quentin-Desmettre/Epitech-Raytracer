@@ -11,15 +11,14 @@
 Raytracer::RendererPool::RendererPool(sf::Vector2u start, sf::Vector2u end)
 {
     _vertexArray.setPrimitiveType(sf::Points);
-
-    internalSetRange(start, end);
+    _start = start;
+    _end = end;
 }
 
 void Raytracer::RendererPool::addRenderer(std::unique_ptr<IRenderer> &&renderer)
 {
     IRenderer *ptr = renderer.release();
     _renderers.emplace_back(ptr);
-    setRange(_start, _end);
 }
 
 void Raytracer::RendererPool::setRange(sf::Vector2u start, sf::Vector2u end)
@@ -27,13 +26,26 @@ void Raytracer::RendererPool::setRange(sf::Vector2u start, sf::Vector2u end)
     internalSetRange(start, end);
 }
 
+void Raytracer::RendererPool::setRange()
+{
+    internalSetRange(_start, _end);
+}
+
 void Raytracer::RendererPool::internalSetRange(sf::Vector2u start, sf::Vector2u end)
 {
     _start = start;
     _end = end;
     auto ranges = splitRange(start, end, _renderers);
-    for (auto &renderer : _renderers)
-        renderer->setRange(ranges[renderer.get()].first, ranges[renderer.get()].second);
+    std::cout << "#########################" << std::endl;
+    std::cout << "RENDERER POOl" << std::endl;
+    for (auto &renderer : _renderers) {
+        std::cout << "start: " << ranges[renderer.get()].first.x << " " << ranges[renderer.get()].first.y << std::endl;
+        std::cout << "end: " << ranges[renderer.get()].second.x << " " << ranges[renderer.get()].second.y << std::endl;
+        std::cout << std::endl;
+        renderer->setRange(ranges[renderer.get()].first,
+                           ranges[renderer.get()].second);
+    }
+    std::cout << "#########################" << std::endl;
 }
 
 std::vector<std::pair<sf::Vector2u, sf::Vector2u>> Raytracer::RendererPool::splitRange(sf::Vector2u start, sf::Vector2u end, std::size_t count)
@@ -77,6 +89,7 @@ Raytracer::RendererPool::RendererRangeMap Raytracer::RendererPool::splitRange(sf
 void Raytracer::RendererPool::render(const Scene &scene)
 {
     // Launch renderers
+//    setupRayDirs(scene);
     std::cout << "Rendering..." << std::endl;
     std::vector<std::thread> threads;
     threads.reserve(_renderers.size());
@@ -92,6 +105,7 @@ void Raytracer::RendererPool::render(const Scene &scene)
     // Merge renderers
     _vertexArray.clear();
     for (auto &renderer: _renderers) {
+        std::cout << "Adding vertex array of " << renderer->getVertexArray().getVertexCount() << " vertices" << std::endl;
         auto vertexArray = renderer->getVertexArray();
         for (unsigned i = 0; i < vertexArray.getVertexCount(); ++i) {
             _vertexArray.append(vertexArray[i]);

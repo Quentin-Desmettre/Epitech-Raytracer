@@ -11,6 +11,7 @@
 #include "Exceptions.hpp"
 #include "objects/ObjectFactory.hpp"
 #include <fstream>
+#include "network/TcpSocket.hpp"
 
 typedef libconfig::Setting::Type Type;
 
@@ -81,11 +82,12 @@ void SceneBuilder::setCamera(Scene &scene, const std::string &param,
             static_cast<unsigned int>(setting["resolution"]["y"])
     };
     sf::Vector3f position = {
-            static_cast<float>(setting["position"]["x"]),
-            static_cast<float>(setting["position"]["y"]),
-            static_cast<float>(setting["position"]["z"])
+            getFloat(setting["position"]["x"]),
+            getFloat(setting["position"]["y"]),
+            getFloat(setting["position"]["z"])
     };
     auto cam = std::make_shared<Camera>(position, sf::Vector3f{0, 0, 1}, resolution);
+    cam->setPos(position);
     cam->setRot({0, 0.25, 0});
     setParameter(scene, param, cam);
 }
@@ -100,11 +102,9 @@ void SceneBuilder::setClusters(Scene &scene, const std::string &param,
             throw InvalidParameterValueException("Invalid type for clusters");
 
         std::string ip = setting[i];
-        // Check ip:port address regex
-        // Trust me, this regex works
-
-//        if (!Network::isIpValid(ip))
-//            throw InvalidParameterValueException("Invalid ip address for cluster: " + ip);
+        // Check ip:port
+        if (!Network::isIpPortValid(ip))
+            throw InvalidParameterValueException("Invalid ip address for cluster: " + ip);
         clustersIps.push_back(setting[i]);
     }
     setParameter(scene, param, clustersIps);

@@ -41,6 +41,7 @@ Raytracer::Raytracer::Raytracer(int ac, char **av)
         std::size_t max = _scene->_multithreadingEnabled ? std::thread::hardware_concurrency() : 1;
         for (std::size_t i = 0; i < max; ++i)
             renderer->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
+        renderer->setRange();
         _renderer = std::move(renderer);
     }
 }

@@ -5,6 +5,9 @@
 ** PacketWriter
 */
 
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/VertexBuffer.hpp>
+#include <cstring>
 #include "network/PacketWriter.hpp"
 
 Network::PacketWriter::PacketWriter(Network::Packet &packet)
@@ -29,35 +32,30 @@ Network::PacketWriter &Network::PacketWriter::operator<<(const std::vector<std::
 
 Network::PacketWriter &Network::PacketWriter::operator<<(const std::string &string)
 {
-    _packet.resize(_packet.getSize() + sizeof(string.size()) + string.size());
     *this << string.size();
     for (auto &byte : string)
         *this << std::byte(byte);
     return *this;
 }
-
-Network::PacketWriter &Network::PacketWriter::operator<<(const sf::VertexArray &vertexArray)
+#include <iostream>
+Network::PacketWriter &Network::PacketWriter::operator<<(const sf::VertexArray &pointArray)
 {
-    const auto count = vertexArray.getVertexCount();
-    std::size_t addedData = sizeof(count) + sizeof(vertexArray.getPrimitiveType()) + count * sizeof(sf::Vertex);
+    const std::size_t count = pointArray.getVertexCount();
 
-    _packet.resize(_packet.getSize() + addedData);
+    sf::Clock clock;
     *this << count;
-    *this << vertexArray.getPrimitiveType();
-    for (std::size_t i = 0; i < count; i++)
-        *this << vertexArray[i];
+    _packet.getData().reserve(_packet.getSize() + count * sizeof(sf::Vertex));
+
+//    std::memcpy(_packet.getData().data() + _packet.getSize() - 1, &pointArray[0], count * sizeof(sf::Vertex));
+    for (std::size_t i = 0; i < count * sizeof(sf::Vertex); i++)
+        _packet.getData().push_back(*(((std::byte *)&pointArray[0]) + i));
+    std::cout << "time to write array: " << clock.getElapsedTime().asMicroseconds() << std::endl;
     return *this;
 }
 
 Network::PacketWriter &Network::PacketWriter::operator<<(const sf::Vertex &vertex)
 {
-    *this << vertex.position.x;
-    *this << vertex.position.y;
-    *this << vertex.color.r;
-    *this << vertex.color.g;
-    *this << vertex.color.b;
-    *this << vertex.color.a;
-    *this << vertex.texCoords.x;
-    *this << vertex.texCoords.y;
+    _packet.resize(_packet.getSize() + sizeof(sf::Vertex));
+    std::memcpy(_packet.getData().data() + _packet.getSize() - 1 - sizeof(sf::Vertex), &vertex, sizeof(sf::Vertex));
     return *this;
 }

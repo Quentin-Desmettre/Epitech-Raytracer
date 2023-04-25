@@ -28,6 +28,8 @@ namespace Network {
          */
         std::vector<std::byte> getData() const;
 
+        std::vector<std::byte> &getData();
+
         void append(std::byte data);
 
         void resize(std::size_t size);

@@ -90,7 +90,7 @@ namespace Raytracer::Clustering {
                 int _nbThreads;
                 Network::TcpSocket _socket;
                 sf::VertexArray _vertexArray;
-                Scene _scene;
+                const Scene *_scene = nullptr;
                 sf::Vector2u _start, _end;
             };
 

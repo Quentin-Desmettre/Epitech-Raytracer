@@ -20,6 +20,7 @@ namespace Raytracer {
 
         void addRenderer(std::unique_ptr<IRenderer> &&renderer);
         void setRange(sf::Vector2u start, sf::Vector2u end) override;
+        void setRange();
 
         void render(const Scene &scene) override;
         sf::VertexArray getVertexArray() const override;

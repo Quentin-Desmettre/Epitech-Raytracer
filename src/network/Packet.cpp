@@ -31,3 +31,8 @@ std::vector<std::byte> Network::Packet::getData() const
 {
     return _data;
 }
+
+std::vector<std::byte> &Network::Packet::getData()
+{
+    return _data;
+}

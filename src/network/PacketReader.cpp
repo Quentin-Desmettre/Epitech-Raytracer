@@ -29,35 +29,38 @@ Network::PacketReader &Network::PacketReader::operator>>(std::vector<std::byte> 
     return *this;
 }
 
+#include <cstring>
+
 Network::PacketReader &Network::PacketReader::operator>>(std::string &string)
 {
-    unsigned int size = 0;
+    std::size_t size = 0;
     *this >> size;
-    string.resize(size);
-    for (unsigned int i = 0; i < size; i++)
-        *this >> string[i];
+
+    char *data = new char[size];
+    std::memcpy(data, _packet.getData().data() + _offset, size);
+    string = std::string(data, size);
+    _offset += size;
+    delete[] data;
     return *this;
 }
 
 Network::PacketReader &Network::PacketReader::operator>>(sf::VertexArray &vertexArray)
 {
-    unsigned int size = 0;
+    std::size_t size = 0;
     *this >> size;
+
+    sf::Clock clock;
     vertexArray.resize(size);
-    for (unsigned int i = 0; i < size; i++)
-        *this >> vertexArray[i];
+    sf::Vertex *vertexArrayPtr = &vertexArray[0];
+    std::memcpy(vertexArrayPtr, _packet.getData().data() + _offset, size * sizeof(sf::Vertex));
+    std::cout << "Time to read array: " << clock.getElapsedTime().asMicroseconds() << std::endl;
     return *this;
 }
 
 Network::PacketReader &Network::PacketReader::operator>>(sf::Vertex &vertex)
 {
-    *this >> vertex.position.x;
-    *this >> vertex.position.y;
-    *this >> vertex.color.r;
-    *this >> vertex.color.g;
-    *this >> vertex.color.b;
-    *this >> vertex.color.a;
-    *this >> vertex.texCoords.x;
-    *this >> vertex.texCoords.y;
+    *this >> vertex.position.x >> vertex.position.y;
+    *this >> vertex.color.r >> vertex.color.g >> vertex.color.b >> vertex.color.a;
+    *this >> vertex.texCoords.x >> vertex.texCoords.y;
     return *this;
 }

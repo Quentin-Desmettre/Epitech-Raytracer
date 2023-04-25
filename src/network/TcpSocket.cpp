@@ -85,12 +85,18 @@ void Network::TcpSocket::send(const Packet &data)
     if (!_connected)
         throw std::runtime_error("Socket is not connected. Use connect() first.");
 
-    // Send size
+    // Prepare packet
+    std::vector<std::byte> dataToSend(data.getSize() + sizeof(std::size_t));
+
+    // Put size
     std::size_t size = data.getSize();
-    if (!send(&size, sizeof(size)))
-        throw std::runtime_error("Failed to send data. Reason: " + std::string(strerror(errno)));
-    // Send data
-    if (!send(data.getData().data(), data.getSize()))
+    std::memcpy(dataToSend.data(), &size, sizeof(std::size_t));
+
+    // Put data
+    std::memcpy(dataToSend.data() + sizeof(std::size_t), data.getData().data(), data.getSize());
+
+    // Send it
+    if (!send(dataToSend.data(), dataToSend.size()))
         throw std::runtime_error("Failed to send data. Reason: " + std::string(strerror(errno)));
 }
 
@@ -100,15 +106,15 @@ bool Network::TcpSocket::send(const void *data, std::size_t size) const
     sockaddr_in addr;
     socklen_t len = sizeof(addr);
     getpeername(_socket, (struct sockaddr *)&addr, &len);
-    std::cout << "Sending " << size << " bytes to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << std::endl;
     std::size_t sent = 0;
     while (sent < size) {
         ssize_t res = write(_socket, static_cast<const char *>(data) + sent, size - sent);
-        if (res < 0)
+        if (res < 0) {
             return false;
+        }
         sent += res;
     }
-    std::cout << "sent " << size << " bytes" << std::endl;
+    std::cout << "sent " << size << " bytes to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << std::endl;
     return true;
 }
 
@@ -119,19 +125,18 @@ Network::Packet Network::TcpSocket::receive()
 
     // Get size
     std::cout << "Waiting for data" << std::endl;
-    waitForData(sizeof(std::size_t));
     std::size_t size = 0;
     if (!receive(static_cast<void *>(&size), sizeof(std::size_t)))
         throw std::runtime_error("Failed to receive data. Reason: " + std::string(strerror(errno)));
 
+    // Get data
     std::cout << "Received size: " << size << std::endl;
     std::cout << "Waiting for data" << std::endl;
-    // Get data
-    waitForData(size);
-    std::vector<std::byte> data(size);
-    if (!receive(static_cast<void *>(data.data()), size))
+    std::vector<std::byte> buffer(size);
+    if (!receive(static_cast<void *>(buffer.data()), size))
         throw std::runtime_error("Failed to receive data. Reason: " + std::string(strerror(errno)));
-    return {data};
+    std::cout << "RECEIVED DATA OF SIZE: " << size << std::endl;
+    return {buffer};
 }
 
 bool Network::TcpSocket::receive(void *data, std::size_t size) const
@@ -153,7 +158,6 @@ void Network::TcpSocket::waitForData(std::size_t size) const
         int bytes = bytesAvailable(_socket);
         if (bytes < 0)
             throw std::runtime_error("Failed to get bytes available. Reason: " + std::string(strerror(errno)));
-        std::cout << "Bytes available on fd " << _socket << ": " << bytes << std::endl;
         if (static_cast<std::size_t>(bytes) >= size)
             return;
         // Wait 1ms
@@ -216,6 +220,7 @@ bool Network::isIpPortValid(const std::string &ipPort)
 int Network::bytesAvailable(int socket)
 {
     int bytes = 0;
-    std::cout << "ioctl: " << ioctl(socket, FIONREAD, &bytes) << "// " << strerror(errno) << std::endl;
+    if (ioctl(socket, FIONREAD, &bytes) < 0)
+        throw std::runtime_error("Failed to get bytes available. Reason: " + std::string(strerror(errno)));
     return bytes;
 }
