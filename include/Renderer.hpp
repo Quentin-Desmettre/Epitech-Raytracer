@@ -7,13 +7,20 @@
 
 #pragma once
 
+#include "utils/Math.hpp"
+#include "scene/Scene.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
+#include <iostream>
 #include "Sfml.hpp"
-#include "Scene.hpp"
 #include "LightPoint.hpp"
 #include "objects/Sphere.hpp"
 #include "lights/ILight.hpp"
 #include "Camera.hpp"
 #include <thread>
+#include <memory>
 
 #define NB_BOUNCE 3
 #define RAYS_PER_PIXEL 5.0f
@@ -21,12 +28,38 @@
 
 class Renderer {
     public:
-        Renderer();
+    class Camera {
+    public:
+        enum Direction {
+            FORWARD,
+            BACKWARD,
+            LEFT,
+            RIGHT,
+            UP,
+            DOWN
+        };
+        Camera(sf::Vector3f pos = sf::Vector3f(0, 0, -2.0f), sf::Vector3f rot = sf::Vector3f(0, 0, 1)):
+                _pos(pos), _rot(rot) {};
+        ~Camera() = default;
+        void setPos(sf::Vector3f pos) {_pos = pos;};
+        void setRot(sf::Vector3f rot) {_rot = rot;};
+        sf::Vector3f getPos() {return _pos;};
+        sf::Vector3f getRot() {return _rot;};
+        void move(Direction dir, float speed);
+        void turn(float x, float y);
+    protected:
+    private:
+        sf::Vector3f _pos;
+        sf::Vector3f _rot;
+    };
+    typedef std::shared_ptr<Renderer::Camera> SharedCamera;
+    Renderer();
         ~Renderer() = default;
         void run(Scene *pool, Camera &camera);
         void useThreads(bool use = false) {_threads = use;};
         void smoothImage(bool smooth = true) {_smooth = smooth;};
         void setCamera(Camera camera) {_camera = camera;};
+
     protected:
     private:
         // Attributes

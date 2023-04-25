@@ -19,15 +19,15 @@ AObject(pos, color, emmsionColor, intensity)
 bool Cylinder::intersect(const Ray &ray) const
 {
     Vec3 dist = ray.getOrigin() - _pos;
-    float a = Math::dot(ray.getDir(), ray.getDir()) - pow(Math::dot(ray.getDir(), _dir), 2);
+    float a = Math::dot(ray.getDir(), ray.getDir()) - powf(Math::dot(ray.getDir(), _dir), 2);
     float b = 2 * (Math::dot(ray.getDir(), dist) - Math::dot(ray.getDir(), _dir) * Math::dot(dist, _dir));
-    float c = Math::dot(dist, dist) - pow(Math::dot(dist, _dir), 2) - pow(_radius, 2);
-    float delta = pow(b, 2) - 4 * a * c;
+    float c = Math::dot(dist, dist) - powf(Math::dot(dist, _dir), 2) - powf(_radius, 2);
+    float delta = powf(b, 2) - 4 * a * c;
 
     if (delta < 0)
         return false;
-    float t1 = (-b - sqrt(delta)) / (2 * a);
-    float t2 = (-b + sqrt(delta)) / (2 * a);
+    float t1 = (-b - sqrtf(delta)) / (2 * a);
+    float t2 = (-b + sqrtf(delta)) / (2 * a);
     if (_length == INF) {
         if (t1 < 0 && t2 < 0)
             return false;
@@ -47,15 +47,15 @@ bool Cylinder::intersect(const Ray &ray) const
 Vec3 Cylinder::getIntersection(const Ray &ray) const
 {
     Vec3 dist = ray.getOrigin() - _pos;
-    float a = Math::dot(ray.getDir(), ray.getDir()) - pow(Math::dot(ray.getDir(), _dir), 2);
+    float a = Math::dot(ray.getDir(), ray.getDir()) - powf(Math::dot(ray.getDir(), _dir), 2);
     float b = 2 * (Math::dot(ray.getDir(), dist) - Math::dot(ray.getDir(), _dir) * Math::dot(dist, _dir));
-    float c = Math::dot(dist, dist) - pow(Math::dot(dist, _dir), 2) - pow(_radius, 2);
-    float delta = pow(b, 2) - 4 * a * c;
+    float c = Math::dot(dist, dist) - powf(Math::dot(dist, _dir), 2) - powf(_radius, 2);
+    float delta = powf(b, 2) - 4 * a * c;
 
     if (delta < 0)
         return VEC3_ZERO;
-    float t1 = (-b - sqrt(delta)) / (2 * a);
-    float t2 = (-b + sqrt(delta)) / (2 * a);
+    float t1 = (-b - sqrtf(delta)) / (2 * a);
+    float t2 = (-b + sqrtf(delta)) / (2 * a);
     if (_length == INF) {
         if (t1 < 0 && t2 < 0)
             return VEC3_ZERO;

@@ -55,8 +55,7 @@ void Camera::updateRayDirs() {
         for (int j = 0; j < WINDOW_SIZE.y; j++) {
             Vec3 rayDir = Math::normalize(Vec3(i - WINDOW_SIZE.x / 2,
             j - WINDOW_SIZE.y / 2, WINDOW_SIZE.x / 2));
-            _rayDirs.push_back(Math::normalize(Matrix::rotate(rayDir, _rot, _pos)));
+            _rayDirs.push_back(Math::normalize(Mat4::vecRotate(rayDir, _rot, _pos)));
         }
     }
 };
-

@@ -22,6 +22,16 @@ Mat4::Mat4(std::array<float, 16> matrix)
     _matrix = matrix;
 }
 
+float &Mat4::operator[](int index)
+{
+    return _matrix[index];
+}
+
+float &Mat4::operator()(int x, int y)
+{
+    return _matrix[x * 4 + y];
+}
+
 Mat4 Mat4::operator*(const Mat4 &other) const
 {
     Mat4 result;
@@ -97,7 +107,7 @@ Mat4 Mat4::inverse() const
     return inv;
 }
 
-Vec3 Matrix::rotate(Vec3 vec, Vec3 dir, Vec3 pos)
+Vec3 Mat4::vecRotate(Vec3 vec, Vec3 dir, Vec3 pos)
 {
     Mat4 mat = Mat4({
         1, 0, 0, 0,
@@ -130,4 +140,53 @@ Vec3 Matrix::rotate(Vec3 vec, Vec3 dir, Vec3 pos)
         0, 0, 0, 1
     });
     return mat5 * mat4 * mat3 * mat2 * mat * vec;
+}
+
+Mat4 Mat4::translate3D(const Vec3 &vec)
+{
+    return Mat4({
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        vec.x, vec.y, vec.z, 1
+    });
+}
+
+Mat4 Mat4::scale3D(const Vec3 &vec)
+{
+    return Mat4({
+        vec.x, 0, 0, 0,
+        0, vec.y, 0, 0,
+        0, 0, vec.z, 0,
+        0, 0, 0, 1
+    });
+}
+
+Mat4 Mat4::rotate3D(char axis, double angle)
+{
+    switch (axis) {
+        case 'x':
+            return Mat4({
+                1, 0, 0, 0,
+                0, static_cast<float>(cos(angle)), static_cast<float>(-sin(angle)), 0,
+                0, static_cast<float>(sin(angle)), static_cast<float>(cos(angle)), 0,
+                0, 0, 0, 1
+            });
+        case 'y':
+            return Mat4({
+                static_cast<float>(cos(angle)), 0, static_cast<float>(sin(angle)), 0,
+                0, 1, 0, 0,
+                static_cast<float>(-sin(angle)), 0, static_cast<float>(cos(angle)), 0,
+                0, 0, 0, 1
+            });
+        case 'z':
+            return Mat4({
+                static_cast<float>(cos(angle)), static_cast<float>(-sin(angle)), 0, 0,
+                static_cast<float>(sin(angle)), static_cast<float>(cos(angle)), 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            });
+        default:
+            throw std::invalid_argument("Invalid axis");
+    }
 }

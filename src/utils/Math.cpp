@@ -14,7 +14,7 @@ Vec3 Math::normalize(const Vec3 &vec)
 
     if (len == 0)
         return VEC3_ZERO;
-    return Vec3(vec.x / len, vec.y / len, vec.z / len);
+    return {vec.x / len, vec.y / len, vec.z / len};
 }
 
 float Math::dot(const Vec3 &vec1, const Vec3 &vec2)
@@ -46,9 +46,9 @@ float Math::sign(const float val)
 
 Vec3 Math::cross(const Vec3 &vec1, const Vec3 &vec2)
 {
-    return Vec3(vec1.y * vec2.z - vec1.z * vec2.y,
+    return {vec1.y * vec2.z - vec1.z * vec2.y,
                 vec1.z * vec2.x - vec1.x * vec2.z,
-                vec1.x * vec2.y - vec1.y * vec2.x);
+                vec1.x * vec2.y - vec1.y * vec2.x};
 }
 
 double Math::toRad(const double deg)
@@ -63,7 +63,7 @@ Vec3 Math::lerp(const Vec3 &vec1, const Vec3 &vec2, const float t)
 
 float Math::length(const Vec3 &vec)
 {
-    return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    return sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
 
 bool Math::sameSign(const Vec3 &a, const Vec3 &b)

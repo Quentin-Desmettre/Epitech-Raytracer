@@ -32,7 +32,7 @@ float Sphere::getIntersections(const Ray &ray) const
     float c = Math::dot(origin - _pos, origin - _pos) - _radius * _radius;
     float delta = b * b - 4.0f * a * c;
 
-    return (-b - sqrt(delta)) / (2.0f * a);
+    return (-b - sqrtf(delta)) / (2.0f * a);
 }
 
 bool Sphere::intersect(const Ray &ray) const
@@ -45,7 +45,7 @@ Vec3 Sphere::getIntersection(const Ray &ray) const
     float t = getIntersections(ray);
 
     if (t < 0 || t != t) // t != t is a check for NaN
-        return Vec3(0, 0, 0);
+        return {0, 0, 0};
     return ray.getOrigin() + ray.getDir() * t;
 }
 

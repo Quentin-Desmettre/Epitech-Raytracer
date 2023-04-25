@@ -8,6 +8,8 @@
 #pragma once
 
 #include "Ray.hpp"
+#include "ITransformation.hpp"
+#include <memory>
 #include <SFML/Graphics.hpp>
 
 class IObject {
@@ -26,11 +28,17 @@ class IObject {
         virtual void setPos(Vec3 pos) = 0;
         virtual void setReflectivity(float reflectivity) = 0;
         virtual void setTransparency(float transparency) = 0;
+        virtual void setColor(const sf::Color &color) = 0;
+        virtual void setPosition(const sf::Vector3f &pos) = 0;
+        virtual void setEmissionColor(const sf::Color &color) = 0;
+        virtual void setEmissionIntensity(const float &intensity) = 0;
+        virtual void setTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations) = 0;
 
         // Methods
         virtual bool intersect(const Ray &ray) const = 0;
         virtual Vec3 getIntersection(const Ray &ray) const = 0;
         virtual Vec3 getNormal(const Vec3 &inter, const Ray &ray) const = 0;
+
     protected:
         Vec3 _pos;
         Vec3 _color;
@@ -41,50 +49,42 @@ class IObject {
     private:
 };
 
+/**
+ * @brief Abstract class for all objects
+ *
+ * This class implements setters/getters from IObject, but left abstract the methods
+ * - intersect
+ * - getIntersection
+ * - getNormal
+ */
 class AObject : public IObject {
     public:
-        AObject(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red,
-        sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f, float reflectivity = 0.0f) {
-            _pos = pos;
-            _intensity = intensity;
-            _reflectivity = reflectivity;
-            _color = Vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-            if (emmsionColor != sf::Color::Transparent)
-                _emmsionColor = Vec3(emmsionColor.r / 255.0f, emmsionColor.g / 255.0f, emmsionColor.b / 255.0f);
-        };
-        virtual ~AObject() = default;
+        explicit AObject(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red,
+        sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f, float reflectivity = 0.0f);
+        ~AObject() override = default;
+
+        // Operators
+        virtual bool operator==(const AObject &obj) const;
+        virtual bool operator!=(const AObject &obj) const;
 
         // Getters
-        Vec3 getPos() const override {return _pos;};
-        Vec3 getColor() const override {return _color;};
-        Vec3 getEmissionColor() const override {return _emmsionColor;};
-        float getEmissionIntensity() const override {return _intensity;};
-        float getReflectivity() const override {return _reflectivity;};
-        float getTransparency() const override {return _transparency;};
+        Vec3 getPos() const override;
+        Vec3 getColor() const override;
+        Vec3 getEmissionColor() const override;
+        float getEmissionIntensity() const override;
+        float getReflectivity() const override;
+        float getTransparency() const override;
 
         // Setters
-        void setPos(Vec3 pos) override {_pos = pos;};
-        void setReflectivity(float reflectivity) override {_reflectivity = reflectivity;};
-        void setTransparency(float transparency) override {_transparency = transparency;};
+        void setPos(Vec3 pos) override;
+        void setReflectivity(float reflectivity) override;
+        void setTransparency(float transparency) override;
+        void setColor(const sf::Color &color) override;
+        void setPosition(const sf::Vector3f &pos) override;
+        void setEmissionColor(const sf::Color &color) override;
+        void setEmissionIntensity(const float &intensity) override;
+        void setTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations);
 
-        // Methods
-        bool intersect(unused const Ray &ray) const override {return false;};
-        Vec3 getIntersection(unused const Ray &ray) const override {return VEC3_ZERO;};
-        Vec3 getNormal(unused const Vec3 &inter, unused const Ray &ray) const override {return VEC3_ZERO;};
     protected:
-    private:
+        std::vector<std::shared_ptr<ITransformation>> _transformations;
 };
-
-inline bool operator==(const AObject &lhs, const AObject &rhs)
-{
-    return lhs.getPos() == rhs.getPos() && lhs.getColor() == rhs.getColor() &&
-    lhs.getEmissionColor() == rhs.getEmissionColor() && lhs.getEmissionIntensity() == rhs.getEmissionIntensity() &&
-    lhs.getReflectivity() == rhs.getReflectivity();
-}
-
-inline bool operator!=(const AObject &lhs, const AObject &rhs)
-{
-    return lhs.getPos() != rhs.getPos() || lhs.getColor() != rhs.getColor() ||
-    lhs.getEmissionColor() != rhs.getEmissionColor() || lhs.getEmissionIntensity() != rhs.getEmissionIntensity() ||
-    lhs.getReflectivity() != rhs.getReflectivity();
-}

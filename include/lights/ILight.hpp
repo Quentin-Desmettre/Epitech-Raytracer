@@ -9,7 +9,7 @@
 
 #include "../Sfml.hpp"
 #include "../utils/Math.hpp"
-#include "../Scene.hpp"
+#include "scene/Scene.hpp"
 
 class ILight {
     public:
