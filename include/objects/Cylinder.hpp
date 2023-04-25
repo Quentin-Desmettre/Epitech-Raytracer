@@ -2,22 +2,24 @@
 ** EPITECH PROJECT, 2023
 ** Epitech-Raytracer
 ** File description:
-** Plane
+** Cylinder
 */
 
 #pragma once
 
 #include "Object.hpp"
 
-class Plane : public AObject {
+class Cylinder : public AObject {
     public:
-        Plane(Vec3 pos = Vec3(0, 0, 0), Vec3 dir = Vec3(0, 1, 0),
+        Cylinder(Vec3 pos = Vec3(0, 0, 0), Vec3 dir = Vec3(0, 1, 0), float radius = 1.0f, float length = INF,
         sf::Color color = sf::Color::Red, sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
-        ~Plane() = default;
+        ~Cylinder() = default;
         bool intersect(const Ray &ray) const override;
         Vec3 getIntersection(const Ray &ray) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
     protected:
     private:
         Vec3 _dir;
+        float _radius;
+        float _length;
 };

@@ -6,7 +6,6 @@
 */
 
 #include "LightPoint.hpp"
-#include <iostream>
 
 LightPoint::LightPoint(Vec3 pos, sf::Color color, float intensity)
 {

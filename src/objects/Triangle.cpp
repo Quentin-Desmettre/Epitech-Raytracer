@@ -9,17 +9,17 @@
 
 Triangle::Triangle(Vec3 point1, Vec3 point2, Vec3 point3,
 sf::Color color, sf::Color emmsionColor, float intensity) :
-Object(point1, color, emmsionColor, intensity)
+AObject(point1, color, emmsionColor, intensity)
 {
     _points[0] = point1;
     _points[1] = point2;
     _points[2] = point3;
 }
 
-bool Triangle::intersect(const Ray *ray) const
+bool Triangle::intersect(const Ray &ray) const
 {
-    Vec3 origin = ray->getOrigin();
-    Vec3 dir = ray->getDir();
+    Vec3 origin = ray.getOrigin();
+    Vec3 dir = ray.getDir();
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];
     Vec3 pvec = Math::cross(dir, edge2);
@@ -41,10 +41,10 @@ bool Triangle::intersect(const Ray *ray) const
     return true;
 }
 
-Vec3 Triangle::getIntersection(const Ray *ray) const
+Vec3 Triangle::getIntersection(const Ray &ray) const
 {
-    Vec3 origin = ray->getOrigin();
-    Vec3 dir = ray->getDir();
+    Vec3 origin = ray.getOrigin();
+    Vec3 dir = ray.getDir();
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];
     Vec3 pvec = Math::cross(dir, edge2);
@@ -56,7 +56,7 @@ Vec3 Triangle::getIntersection(const Ray *ray) const
     return origin + dir * t;
 }
 
-Vec3 Triangle::getNormal(__attribute_maybe_unused__ Vec3 inter) const
+Vec3 Triangle::getNormal(unused const Vec3 &inter, unused const Ray &ray) const
 {
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];

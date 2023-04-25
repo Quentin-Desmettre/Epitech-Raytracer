@@ -7,18 +7,18 @@
 
 #include "Scene.hpp"
 
-const Object *Scene::getClosest(const Ray *ray, const Object *ignore, bool ignoreLightSources) const
+const AObject *Scene::getClosest(const Ray &ray, const AObject *ignore, bool ignoreLightSources) const
 {
-    Object *closest = nullptr;
-    float dist = __FLT_MAX__;
+    AObject *closest = nullptr;
+    float dist = INF;
 
-    for (auto &obj : _pool) {
+    for (const auto &obj : _pool) {
         if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)
         && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
             continue;
-        Vec3 vec = obj->getIntersection(ray) - ray->getOrigin();
+        Vec3 vec = obj->getIntersection(ray) - ray.getOrigin();
         float len = Math::length(vec);
-        if (dist < len || !Math::sameSign(vec, ray->getDir()))
+        if (dist < len || !Math::sameSign(vec, ray.getDir()))
             continue;
         dist = len;
         closest = obj;
@@ -26,18 +26,18 @@ const Object *Scene::getClosest(const Ray *ray, const Object *ignore, bool ignor
     return closest;
 }
 
-const Object *Scene::getBetween(const Ray *ray, float dst, const Object *ignore, bool ignoreLightSources) const
+const AObject *Scene::getBetween(const Ray &ray, float dst, const AObject *ignore, bool ignoreLightSources) const
 {
-    Object *closest = nullptr;
-    float dist = __FLT_MAX__;
+    AObject *closest = nullptr;
+    float dist = INF;
 
     for (auto &obj : _pool) {
         if (obj == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)
         && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
             continue;
-        Vec3 vec = obj->getIntersection(ray) - ray->getOrigin();
+        Vec3 vec = obj->getIntersection(ray) - ray.getOrigin();
         float len = Math::length(vec);
-        if (dist < len || !Math::sameSign(vec, ray->getDir()) || len > dst)
+        if (dist < len || !Math::sameSign(vec, ray.getDir()) || len > dst)
             continue;
         dist = len;
         closest = obj;

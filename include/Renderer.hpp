@@ -11,12 +11,12 @@
 #include "Scene.hpp"
 #include "LightPoint.hpp"
 #include "objects/Sphere.hpp"
+#include "lights/ILight.hpp"
 #include "Camera.hpp"
-#include <iostream>
 #include <thread>
 
 #define NB_BOUNCE 3
-#define RAYS_PER_PIXEL 1.0f
+#define RAYS_PER_PIXEL 5.0f
 #define NB_THREADS std::thread::hardware_concurrency()
 
 class Renderer {
@@ -29,43 +29,39 @@ class Renderer {
         void setCamera(Camera camera) {_camera = camera;};
     protected:
     private:
+        // Attributes
         Camera _camera;
         sf::RenderWindow _window;
         sf::VertexArray _vertexArray;
+        std::vector<Vec3> _pixels;
+        sf::Clock clock;
+        std::vector<std::thread> _threadPool;
+
+        // Settings
         Vec3 _sunColor = Vec3(1, 1, 1);
-        Vec3 _sunLight = Math::normalize(Vec3(-1, 1, 0));
-        sf::Clock _clock;
+        Vec3 _sunLight = Math::normalize(Vec3(-1, 1, -0.5));
         bool _smooth = true;
         bool _threads = false;
-        size_t _nbFrames = 0;
+        size_t _nbFrames = 1;
 
         // Getters
         Vec3 getPixelFColor(sf::Vector2f pos, const Scene *pool) const ;
-        Vec3 getAmbientLight(__attribute_maybe_unused__ sf::Vector2f pos) const {
+        Vec3 getAmbientLight(unused sf::Vector2f pos) const {
             return Vec3(50 / 255.0f, 50 / 255.0f, 50 / 255.0f);
         }
 
         // Setters
         Vec3 addSunLight(Vec3 normal, Vec3 inter,
-        Vec3 color, const Scene *pool, const Object *obj) const;
+        Vec3 color, const Scene *pool, const AObject *obj) const;
         Vec3 addLightOfPoints(Vec3 normal, Vec3 inter,
-        Vec3 color, const Scene *pool, const Object *obj) const;
+        Vec3 color, const Scene *pool, const AObject *obj) const;
         void addPixel(sf::Vector2f pos, Vec3 color);
         void addSphereAtPos(sf::Vector2f pos, Scene *pool);
 
         // Others
-        void handleMovement();
+        void resetPixels() {_nbFrames = 1;};
+        void handleMovement(sf::Event event);
         void perThread(int startX, int endX, const Scene *pool);
-        void draw() {
-            _window.draw(_vertexArray);
-            _nbFrames++;
-            std::cout << "Render in " << _clock.getElapsedTime().asSeconds() << "s" << std::endl;
-            _clock.restart();
-        };
-        void drawToFile() {
-            sf::Texture texture;
-            texture.create(_window.getSize().x, _window.getSize().y);
-            texture.update(_window);
-            texture.copyToImage().saveToFile("renders/render.png");
-        };
+        void draw();
+        void drawToFile();
 };

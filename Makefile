@@ -1,4 +1,3 @@
-
 ##
 ## EPITECH PROJECT, 2023
 ## helloworld
@@ -6,16 +5,20 @@
 ## Makefile
 ##
 
-SRC = 	src/main.cpp 				\
-		src/Renderer.cpp 			\
-		src/Scene.cpp 				\
-		src/Camera.cpp 				\
-		src/LightPoint.cpp 			\
-		src/utils/Math.cpp			\
-		src/utils/Matrix.cpp		\
-		src/objects/Sphere.cpp 		\
-		src/objects/Triangle.cpp 	\
-		src/objects/Plane.cpp 		\
+SRC = 	src/main.cpp 						\
+		src/Renderer/Core.cpp				\
+		src/Renderer/Lights.cpp				\
+		src/Scene.cpp 						\
+		src/Camera.cpp 						\
+		src/LightPoint.cpp 					\
+		src/utils/Math.cpp					\
+		src/utils/Matrix.cpp				\
+		src/objects/Sphere.cpp 				\
+		src/objects/Triangle.cpp 			\
+		src/objects/Square.cpp 				\
+		src/objects/Plane.cpp 				\
+		src/objects/Cone.cpp 				\
+		src/objects/Cylinder.cpp 			\
 
 CXX = g++
 
