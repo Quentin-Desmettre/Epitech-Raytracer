@@ -8,8 +8,8 @@
 #ifndef EPITECH_RAYTRACER_CLIENT_HPP
 #define EPITECH_RAYTRACER_CLIENT_HPP
 #include "network/TcpListener.hpp"
-#include "RendererPool.hpp"
-#include "clusters/Server.hpp"
+#include "render/RendererPool.hpp"
+#include "clusters/NetworkRenderer.hpp"
 #include <map>
 
 namespace Raytracer::Clustering {
@@ -31,6 +31,7 @@ namespace Raytracer::Clustering {
         std::unique_ptr<RendererPool> _renderers;
         std::unique_ptr<Scene> _scene;
         sf::Vector2u _startPoint, _endPoint;
+        PointArray _array;
 
         const static std::map<std::byte, void (Client::*)(Network::Packet &, Network::TcpSocket &)> _handlers;
     };

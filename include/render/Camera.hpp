@@ -10,7 +10,7 @@
 #include "utils/Math.hpp"
 #include "utils/Matrix.hpp"
 
-#define WINDOW_SIZE sf::Vector2f(800, 800)
+#define WINDOW_SIZE sf::Vector2f(1920, 800)
 
 class Camera {
     public:
@@ -43,7 +43,7 @@ class Camera {
         Vec3 getPos() const {return _pos;};
         Vec3 getRot() const {return _rot;};
         Vec3 getRayDir(sf::Vector2f pos) const {
-            return _rayDirs[(int)pos.x * (int)WINDOW_SIZE.y + (int)pos.y];
+            return _rayDirs[(int)pos.x * _size.y + (int)pos.y];
         };
 
         // Methods

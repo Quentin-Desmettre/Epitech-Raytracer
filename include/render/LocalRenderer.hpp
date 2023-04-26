@@ -20,9 +20,7 @@ namespace Raytracer {
     public:
         LocalRenderer(sf::Vector2u start, sf::Vector2u end);
 
-        void render(const Scene &scene) override;
-
-        sf::VertexArray getVertexArray() const override;
+        void render(const Scene &scene, PointArray &array) override;
 
         int getThreadsCount() const override;
 
@@ -35,7 +33,7 @@ namespace Raytracer {
         static Vec3 addLightOfPoints(Vec3 normal, Vec3 inter, Vec3 color, const Scene &pool, const IObject *obj);
         sf::Vector3f addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene &pool, const IObject *obj);
 
-        sf::VertexArray _vertexArray;
+        PointArray *_array;
         sf::Vector2u _start, _end;
         int _nbFrames{};
 

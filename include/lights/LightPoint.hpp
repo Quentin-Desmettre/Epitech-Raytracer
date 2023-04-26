@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Sfml.hpp"
+#include "render/Sfml.hpp"
 
 class LightPoint {
     public:

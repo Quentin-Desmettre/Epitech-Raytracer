@@ -8,6 +8,7 @@
 #ifndef EPITECH_RAYTRACER_IRENDERER_HPP
 #define EPITECH_RAYTRACER_IRENDERER_HPP
 #include "scene/Scene.hpp"
+#include "PointArray.hpp"
 
 namespace Raytracer {
 
@@ -18,21 +19,16 @@ namespace Raytracer {
         /**
          * @brief Render the scene.
          *
-         * This method will update its internal vertex array.
+         * This method will update the given PointArray with the rendered scene.
+         * This method should be thread safe, as each thread must update a different part of the PointArray.
          * @param scene
          */
-        virtual void render(const Scene &scene) = 0;
+        virtual void render(const Scene &scene, PointArray &array) = 0;
 
         /**
          * @brief Set the range of the renderer.
          */
         virtual void setRange(sf::Vector2u start, sf::Vector2u end) = 0;
-
-        /**
-         * @brief Get the vertex array of the renderer.
-         * @return The internal vertex array of the renderer.
-         */
-        virtual sf::VertexArray getVertexArray() const = 0;
 
         /**
          *

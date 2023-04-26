@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "Ray.hpp"
+#include "render/Ray.hpp"
 #include "objects/Object.hpp"
-#include "LightPoint.hpp"
+#include "lights/LightPoint.hpp"
 #include <iostream>
 #include <utility>
 #include <vector>
 #include <memory>
-#include "Camera.hpp"
+#include "render/Camera.hpp"
 
 class Scene {
     public:
@@ -70,5 +70,4 @@ class Scene {
         bool _hotReloadEnabled = false;
         int _numberOfBounces = 0;
         int _raysPerPixel = 0;
-        sf::VertexArray _vertexArray;
 };

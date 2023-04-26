@@ -138,12 +138,10 @@ protected:
 
         switch (type) {
             case libconfig::Setting::TypeBoolean:
-                std::cout << " === Value === " << (bool)setting << std::endl;
                 setParameter<bool>(obj, param, setting);
                 break;
             case libconfig::Setting::TypeInt:
             case libconfig::Setting::TypeInt64:
-                std::cout << "int " << (int)setting << " for parameter " << param << std::endl;
                 setParameter<int>(obj, param, setting);
                 break;
             case libconfig::Setting::TypeFloat:

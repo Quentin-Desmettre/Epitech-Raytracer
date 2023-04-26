@@ -2,12 +2,12 @@
 //** EPITECH PROJECT, 2023
 //** Epitech-Raytracer
 //** File description:
-//** Renderer
+//** render
 //*/
 //
-//#include "Renderer.hpp"
+//#include "render.hpp"
 //
-//Vec3 Renderer::addSunLight(Vec3 normal, Vec3 inter,
+//Vec3 render::addSunLight(Vec3 normal, Vec3 inter,
 //Vec3 color, const Scene *pool, const AObject *obj) const
 //{
 //    static float length = Math::length(_sunLight);
@@ -22,7 +22,7 @@
 //    return std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * _sunColor;
 //}
 //
-//Vec3 Renderer::addLightOfPoints(Vec3 normal, Vec3 inter,
+//Vec3 render::addLightOfPoints(Vec3 normal, Vec3 inter,
 //Vec3 color, const Scene *pool, const AObject *obj) const
 //{
 //    Vec3 light = VEC3_ZERO;

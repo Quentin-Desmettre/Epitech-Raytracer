@@ -5,7 +5,7 @@
 ** LocalRenderer
 */
 
-#include "LocalRenderer.hpp"
+#include "render/LocalRenderer.hpp"
 #include <SFML/Network.hpp>
 #include "utils/Math.hpp"
 #include "utils/Matrix.hpp"
@@ -15,8 +15,9 @@ Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
     internalSetRange(start, end);
 }
 
-void Raytracer::LocalRenderer::render(const Scene &scene)
+void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array)
 {
+    _array = &array;
     for (unsigned x = _start.x; x < _end.x; x++) {
         for (unsigned y = _start.y; y < _end.y; y++) {
             sf::Vector3f colors{0, 0, 0};
@@ -31,15 +32,12 @@ void Raytracer::LocalRenderer::render(const Scene &scene)
 
 void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
 {
-    std::size_t widthX = _end.x - _start.x;
-    std::size_t posInArray = (pos.y - _start.y) * widthX + (pos.x - _start.x);
-
     color *= 255.0f;
     color.x = std::min(color.x, 255.0f);
     color.y = std::min(color.y, 255.0f);
     color.z = std::min(color.z, 255.0f);
     if (_nbFrames != 0) {
-        sf::Color old = _vertexArray[posInArray].color;
+        sf::Color old = _array->getPixel(pos);
         sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
         if (oldColor == sf::Vector3f{0,0,0} || color == sf::Vector3f{0,0,0})
             color += oldColor;
@@ -48,8 +46,7 @@ void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
             color = oldColor * (1 - weight) + color * weight;
         }
     }
-    _vertexArray[posInArray].position = sf::Vector2f(pos.x, pos.y);
-    _vertexArray[posInArray].color = sf::Color(color.x, color.y, color.z);
+    _array->setPixel(pos, color);
 }
 
 //void setupRayDirs(const Scene &scene)
@@ -155,33 +152,11 @@ void Raytracer::LocalRenderer::internalSetRange(sf::Vector2u start, sf::Vector2u
 {
     _start = start;
     _end = end;
-
-    std::size_t widthX = end.x - start.x;
-    std::size_t widthY = end.y - start.y;
-    std::size_t size = widthX * widthY;
-
-    _vertexArray.clear();
-    _vertexArray.setPrimitiveType(sf::Points);
-    _vertexArray.resize(size);
-    std::cout << " ==================== " << std::endl;
-    std::cout << "RESIZING VERTEX ARRAY TO " << size << " POINTS" << std::endl;
-    std::cout << " ==================== " << std::endl;
-    for (std::size_t x = 0; x < widthX; x++) {
-        for (std::size_t y = 0; y < widthY; y++) {
-            _vertexArray[y * widthX + x].position = sf::Vector2f(x, y);
-            _vertexArray[y * widthX + x].color = sf::Color::Black;
-        }
-    }
 }
 
 int Raytracer::LocalRenderer::getThreadsCount() const
 {
     return 1;
-}
-
-sf::VertexArray Raytracer::LocalRenderer::getVertexArray() const
-{
-    return _vertexArray;
 }
 
 Vec3 Raytracer::LocalRenderer::getAmbientLight(sf::Vector2f pos) const

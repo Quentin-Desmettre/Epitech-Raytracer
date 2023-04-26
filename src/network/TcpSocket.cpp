@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <sys/ioctl.h>
 #include <iostream>
+#include <csignal>
 
 Network::TcpSocket::TcpSocket()
 {
@@ -47,24 +48,6 @@ void Network::TcpSocket::connect(const std::string &address, unsigned short port
     _connected = true;
     _remoteAddress = address;
     _remotePort = port;
-}
-
-Network::TcpSocket::TcpSocket(const std::string &address, unsigned short port, int socket)
-{
-    std::cout <<" === nik ===" << std::endl;
-    int val = 0;
-    std::cout << ioctl(socket, FIONREAD, &val) << std::endl;
-    std::cout << "val: " << val << std::endl;
-    std::cout << "errno: " << strerror(errno) << std::endl;
-    std::cout << "=================" << std::endl;
-    _connected = true;
-    _socket = socket;
-    std::cout <<" === ta race ===" << std::endl;
-    val = 0;
-    std::cout << ioctl(socket, FIONREAD, &val) << std::endl;
-    std::cout << "val: " << val << std::endl;
-    std::cout << "errno: " << strerror(errno) << std::endl;
-    std::cout << "=================" << std::endl;
 }
 
 Network::TcpSocket::~TcpSocket()
@@ -102,10 +85,6 @@ void Network::TcpSocket::send(const Packet &data)
 
 bool Network::TcpSocket::send(const void *data, std::size_t size) const
 {
-    // Get infos
-    sockaddr_in addr;
-    socklen_t len = sizeof(addr);
-    getpeername(_socket, (struct sockaddr *)&addr, &len);
     std::size_t sent = 0;
     while (sent < size) {
         ssize_t res = write(_socket, static_cast<const char *>(data) + sent, size - sent);
@@ -114,7 +93,6 @@ bool Network::TcpSocket::send(const void *data, std::size_t size) const
         }
         sent += res;
     }
-    std::cout << "sent " << size << " bytes to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << std::endl;
     return true;
 }
 
@@ -124,18 +102,14 @@ Network::Packet Network::TcpSocket::receive()
         throw std::runtime_error("Socket is not connected. Use connect() first.");
 
     // Get size
-    std::cout << "Waiting for data" << std::endl;
     std::size_t size = 0;
     if (!receive(static_cast<void *>(&size), sizeof(std::size_t)))
         throw std::runtime_error("Failed to receive data. Reason: " + std::string(strerror(errno)));
 
     // Get data
-    std::cout << "Received size: " << size << std::endl;
-    std::cout << "Waiting for data" << std::endl;
     std::vector<std::byte> buffer(size);
     if (!receive(static_cast<void *>(buffer.data()), size))
         throw std::runtime_error("Failed to receive data. Reason: " + std::string(strerror(errno)));
-    std::cout << "RECEIVED DATA OF SIZE: " << size << std::endl;
     return {buffer};
 }
 
@@ -152,17 +126,14 @@ bool Network::TcpSocket::receive(void *data, std::size_t size) const
     return true;
 }
 
-void Network::TcpSocket::waitForData(std::size_t size) const
+void Network::TcpSocket::waitForData() const
 {
-    while (true) {
-        int bytes = bytesAvailable(_socket);
-        if (bytes < 0)
-            throw std::runtime_error("Failed to get bytes available. Reason: " + std::string(strerror(errno)));
-        if (static_cast<std::size_t>(bytes) >= size)
-            return;
-        // Wait 1ms
-        usleep(100000);
-    }
+    fd_set set;
+
+    FD_ZERO(&set);
+    FD_SET(_socket, &set);
+    if (select(_socket + 1, &set, nullptr, nullptr, nullptr) < 0)
+        throw std::runtime_error("Failed to wait for data. Reason: " + std::string(strerror(errno)));
 }
 
 std::string Network::TcpSocket::getRemoteAddress() const
@@ -177,21 +148,6 @@ unsigned short Network::TcpSocket::getRemotePort() const
     if (!_connected)
         throw std::runtime_error("Socket is not connected. Use connect() first.");
     return _remotePort;
-}
-
-void Network::TcpSocket::checkDisconnect()
-{
-    if (!_connected)
-        return;
-    fd_set set;
-    FD_ZERO(&set);
-    FD_SET(_socket, &set);
-    if (select(_socket + 1, &set, nullptr, nullptr, nullptr) < 0)
-        throw std::runtime_error("Failed to check disconnect. Reason: " + std::string(strerror(errno)));
-    if (bytesAvailable(_socket) == 0) {
-        disconnect();
-        throw std::runtime_error("Disconnected from server.");
-    }
 }
 
 // Functions
@@ -223,4 +179,15 @@ int Network::bytesAvailable(int socket)
     if (ioctl(socket, FIONREAD, &bytes) < 0)
         throw std::runtime_error("Failed to get bytes available. Reason: " + std::string(strerror(errno)));
     return bytes;
+}
+
+void Network::TcpSocket::setupSigpipeHandler()
+{
+    signal(SIGPIPE, sigpipeHandler);
+}
+
+void Network::TcpSocket::sigpipeHandler(int signal)
+{
+    (void)signal;
+    throw std::runtime_error("Connection closed.");
 }

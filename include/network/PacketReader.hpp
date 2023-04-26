@@ -9,6 +9,7 @@
 #define EPITECH_RAYTRACER_PACKETREADER_HPP
 #include "network/Packet.hpp"
 #include "scene/Scene.hpp"
+#include "render/PointArray.hpp"
 
 namespace Network {
     class PacketReader {
@@ -28,8 +29,7 @@ namespace Network {
         PacketReader &operator>>(std::byte &byte);
         PacketReader &operator>>(std::vector<std::byte> &bytes);
         PacketReader &operator>>(std::string &string);
-        PacketReader &operator>>(sf::VertexArray &vertexArray);
-        PacketReader &operator>>(sf::Vertex &vertex);
+        PacketReader &readPointArray(PointArray &array, sf::Vector2u start);
 
 
     private:
