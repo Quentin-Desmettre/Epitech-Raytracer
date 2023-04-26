@@ -35,7 +35,7 @@ Network::PacketReader &Network::PacketReader::operator>>(std::string &string)
     std::size_t size = 0;
     *this >> size;
 
-    string.reserve(size);
+    string.resize(size);
     std::memcpy(string.data(), _packet.getData().data() + _offset, size);
     _offset += size;
     return *this;
@@ -46,7 +46,7 @@ Network::PacketReader &Network::PacketReader::readPointArray(PointArray &array, 
     std::size_t size = 0;
 
     *this >> size;
-    std::memcpy(array.getPixels() + (start.y * array.getSizeVector().x + start.x) * 3,
+    std::memcpy(array.getPixels() + (start.x * array.getSizeVector().y + start.y) * 3,
                 _packet.getData().data() + _offset,
                 size);
     return *this;

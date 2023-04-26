@@ -23,6 +23,8 @@ void Network::TcpListener::listen(unsigned short port)
     // Socket
     _listening = false;
     _socket = socket(AF_INET, SOCK_STREAM, 0);
+    int optval = 1;
+    setsockopt(_socket, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
     if (_socket == -1)
         throw std::runtime_error("Failed to create socket. Reason: " + std::string(strerror(errno)));
 
