@@ -33,8 +33,8 @@ Raytracer::Raytracer::Raytracer(int ac, char **av):
         _isClient = false;
         _drawer = std::make_unique<Drawer>(_scene->getResolution().x, _scene->getResolution().y);
 
-        // Create renderers
         auto renderer = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution());
+        // Create clusters
         if (!_scene->getClusters().empty()) {
             for (const auto &cluster : _scene->getClusters())
                 renderer->addRenderer(std::make_unique<Clustering::NetworkRenderer>(cluster));
@@ -44,8 +44,10 @@ Raytracer::Raytracer::Raytracer(int ac, char **av):
         std::size_t max = _scene->isMultithreadingEnabled() ? std::thread::hardware_concurrency() : 1;
         for (std::size_t i = 0; i < max; ++i)
             renderer->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
+
+        // Set the range
         renderer->setRange();
-        _array = PointArray(_scene->getResolution());
+        _array.resize(_scene->getResolution());
         _renderer = std::move(renderer);
     }
 }

@@ -32,9 +32,6 @@ Raytracer::Clustering::NetworkRenderer::NetworkRenderer(const std::string &ipPor
     std::cout << "Connected to " << ipPort << " with " << _nbThreads << " threads" << std::endl;
 }
 
-#include <cstring>
-#include <fstream>
-
 void Raytracer::Clustering::NetworkRenderer::render(const Scene &scene, PointArray &array)
 {
     if (_scene != &scene) {// TODO: fix
@@ -52,14 +49,13 @@ void Raytracer::Clustering::NetworkRenderer::render(const Scene &scene, PointArr
 
     // Render
     _clock.restart();
-    _array = &array;
     packet = Network::Packet({std::byte(RENDER)});
     _socket.send(packet);
 
     // Fetch answer
     std::cout << "fetching answer" << std::endl;
     packet = _socket.receive();
-    std::cout << "Time to received render response: " << _clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
+    std::cout << "Time to receive render response: " << _clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
     _clock.restart();
 
 

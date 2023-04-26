@@ -16,6 +16,10 @@ public:
 
     sf::Uint8 *getPixels() const;
 
+    void resize(sf::Vector2u size);
+
+    void setStartPoint(sf::Vector2u start);
+
     std::size_t getSize() const;
     sf::Vector2u getSizeVector() const;
 
@@ -28,6 +32,7 @@ private:
     // List of pixels in RGB format, ordered by column
     std::unique_ptr<sf::Uint8 []> _pixels;
     sf::Vector2u _size;
+    sf::Vector2u _start;
 
 };
 

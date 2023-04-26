@@ -68,7 +68,8 @@ void Raytracer::Clustering::Client::handleUpdateScene(Network::Packet &data, Net
     SceneBuilder builder{"scene.config"};
     _scene = builder.build();
     _renderers->setRange(_startPoint, _endPoint);
-    _array = PointArray({_endPoint.x - _startPoint.x, _endPoint.y - _startPoint.y});
+    _array.resize({_endPoint.x - _startPoint.x, _endPoint.y - _startPoint.y});
+    _array.setStartPoint(_startPoint);
 
     // Inform that the update is done
     Network::Packet packet({std::byte(UPDATE_SCENE_DONE)});
@@ -100,6 +101,8 @@ void Raytracer::Clustering::Client::handleUpdateRange(Network::Packet &data, Net
     reader >> header >> _startPoint.x >> _startPoint.y >> _endPoint.x >> _endPoint.y;
 
     _renderers->setRange(_startPoint, _endPoint);
+    _array = PointArray({_endPoint.x - _startPoint.x, _endPoint.y - _startPoint.y});
+    _array.setStartPoint(_startPoint);
 
     // Inform that the update is done
     Network::Packet packet({std::byte(UPDATE_RANGE_DONE)});
