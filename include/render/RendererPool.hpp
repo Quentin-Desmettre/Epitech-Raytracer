@@ -22,8 +22,7 @@ namespace Raytracer {
         void setRange(sf::Vector2u start, sf::Vector2u end) override;
         void setRange();
 
-        void render(const Scene &scene) override;
-        sf::VertexArray getVertexArray() const override;
+        void render(const Scene &scene, PointArray &array) override;
         int getThreadsCount() const override;
         static int getThreadsCount(const UniqueRendererVector &renderers);
 
@@ -39,7 +38,6 @@ namespace Raytracer {
     private:
         void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         std::vector<std::unique_ptr<IRenderer>> _renderers;
-        sf::VertexArray _vertexArray;
         sf::Vector2u _start, _end;
     };
 }

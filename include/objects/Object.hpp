@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Ray.hpp"
+#include "render/Ray.hpp"
 #include "ITransformation.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>

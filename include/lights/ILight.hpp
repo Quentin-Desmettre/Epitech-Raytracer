@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../Sfml.hpp"
+#include "render/Sfml.hpp"
 #include "../utils/Math.hpp"
 #include "scene/Scene.hpp"
 

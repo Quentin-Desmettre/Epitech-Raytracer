@@ -8,12 +8,11 @@
 #ifndef EPITECH_RAYTRACER_POINTARRAY_HPP
 #define EPITECH_RAYTRACER_POINTARRAY_HPP
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 class PointArray {
 public:
     explicit PointArray(sf::Vector2u size);
-
-    void resize(sf::Vector2u size);
 
     sf::Uint8 *getPixels() const;
 

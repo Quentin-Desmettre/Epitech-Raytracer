@@ -5,7 +5,7 @@
 ** Camera
 */
 
-#include "Camera.hpp"
+#include "render/Camera.hpp"
 
 void Camera::move(Direction movement, float speed, bool &reset)
 {

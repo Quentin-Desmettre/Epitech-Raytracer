@@ -9,7 +9,7 @@
 #include "network/PacketReader.hpp"
 #include "network/PacketWriter.hpp"
 #include "scene/SceneBuilder.hpp"
-#include "LocalRenderer.hpp"
+#include "render/LocalRenderer.hpp"
 #include <fstream>
 #include <thread>
 
@@ -20,7 +20,8 @@ const std::map<std::byte, void (Raytracer::Clustering::Client::*)(Network::Packe
     {std::byte{Raytracer::Clustering::GET_THREAD_COUNT},  &Raytracer::Clustering::Client::handleGetThreadCount},
 };
 
-Raytracer::Clustering::Client::Client(unsigned short port)
+Raytracer::Clustering::Client::Client(unsigned short port):
+        _array({1, 1})
 {
     _listener.listen(port);
 }
@@ -29,15 +30,18 @@ void Raytracer::Clustering::Client::run()
 {
     Network::TcpSocket socket;
 
+    // Wait for connection
     std::cout << "Waiting for connection..." << std::endl;
     _listener.accept(socket);
-    // Wait for request, handle it, then wait again
-    std::cout << "waiting for request..." << std::endl;
-    usleep(1000000);
+
+    // Build the scene
     _startPoint = {0, 0};
     _endPoint = {1, 1};
     buildRendererPool();
+
+    // Handle requests
     while (true) {
+        // Handle request
         Network::Packet message = socket.receive();
         std::byte type = message.getData()[0];
         std::cout << "received request: " << static_cast<int>(type) << std::endl;
@@ -64,6 +68,7 @@ void Raytracer::Clustering::Client::handleUpdateScene(Network::Packet &data, Net
     SceneBuilder builder{"scene.config"};
     _scene = builder.build();
     _renderers->setRange(_startPoint, _endPoint);
+    _array = PointArray({_endPoint.x - _startPoint.x, _endPoint.y - _startPoint.y});
 
     // Inform that the update is done
     Network::Packet packet({std::byte(UPDATE_SCENE_DONE)});
@@ -72,15 +77,19 @@ void Raytracer::Clustering::Client::handleUpdateScene(Network::Packet &data, Net
 
 void Raytracer::Clustering::Client::handleRender(Network::Packet &, Network::TcpSocket &socket)
 {
-    _renderers->render(*_scene);
-    sf::VertexArray vertexArray = _renderers->getVertexArray();
+    // Render
     sf::Clock clock;
+    _renderers->render(*_scene, _array);
+    std::cout << "Time to render: " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
+    clock.restart();
+
+    // Send result
     Network::Packet packet;
     Network::PacketWriter writer(packet);
 
-    writer << std::byte(RENDER_DONE) << vertexArray;
+    writer << std::byte(RENDER_DONE) << _array;
     socket.send(packet);
-    std::cout << "Sent vertex array in " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
+    std::cout << "Sent array in " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
 }
 
 void Raytracer::Clustering::Client::handleUpdateRange(Network::Packet &data, Network::TcpSocket &socket)

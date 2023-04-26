@@ -8,9 +8,10 @@
 #ifndef EPITECH_RAYTRACER_RAYTRACER_HPP
 #define EPITECH_RAYTRACER_RAYTRACER_HPP
 #include "scene/Scene.hpp"
-#include "IRenderer.hpp"
-#include "Drawer.hpp"
-#include "RendererPool.hpp"
+#include "render/IRenderer.hpp"
+#include "render/Drawer.hpp"
+#include "render/RendererPool.hpp"
+#include "render/PointArray.hpp"
 
 namespace Raytracer {
 
@@ -36,6 +37,7 @@ namespace Raytracer {
         unsigned short _port;
         std::unique_ptr<Drawer> _drawer;
         std::unique_ptr<Scene> _scene;
+        PointArray _array;
         std::unique_ptr<IRenderer> _renderer;
     };
 

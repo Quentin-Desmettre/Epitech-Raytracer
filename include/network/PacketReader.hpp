@@ -9,7 +9,7 @@
 #define EPITECH_RAYTRACER_PACKETREADER_HPP
 #include "network/Packet.hpp"
 #include "scene/Scene.hpp"
-#include "PointArray.hpp"
+#include "render/PointArray.hpp"
 
 namespace Network {
     class PacketReader {

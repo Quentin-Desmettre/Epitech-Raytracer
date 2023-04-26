@@ -8,13 +8,14 @@
 #include "Raytracer.hpp"
 #include "scene/SceneBuilder.hpp"
 #include "clusters/Client.hpp"
-#include "clusters/Server.hpp"
-#include "RendererPool.hpp"
-#include "LocalRenderer.hpp"
+#include "clusters/NetworkRenderer.hpp"
+#include "render/RendererPool.hpp"
+#include "render/LocalRenderer.hpp"
 #include <thread>
 #include <algorithm>
 
-Raytracer::Raytracer::Raytracer(int ac, char **av)
+Raytracer::Raytracer::Raytracer(int ac, char **av):
+        _array({1, 1})
 {
     // Client mode: ac == 2 and av[1] starts with "--port=
     if (ac == 2 && std::string(av[1]).find("--port=") == 0) {
@@ -34,14 +35,17 @@ Raytracer::Raytracer::Raytracer(int ac, char **av)
 
         // Create renderers
         auto renderer = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution());
-        if (!_scene->getClusters().empty())
-            renderer->addRenderer(std::make_unique<Clustering::Server>(_scene->getClusters(), sf::Vector2u{0, 0}, sf::Vector2u{1, 1}));
+        if (!_scene->getClusters().empty()) {
+            for (const auto &cluster : _scene->getClusters())
+                renderer->addRenderer(std::make_unique<Clustering::NetworkRenderer>(cluster));
+        }
 
         // Even if there are clusters, we still render the rest of the image on this computer
         std::size_t max = _scene->isMultithreadingEnabled() ? std::thread::hardware_concurrency() : 1;
         for (std::size_t i = 0; i < max; ++i)
             renderer->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
         renderer->setRange();
+        _array = PointArray(_scene->getResolution());
         _renderer = std::move(renderer);
     }
 }
@@ -64,9 +68,8 @@ void Raytracer::Raytracer::runClient()
 void Raytracer::Raytracer::runNormal()
 {
     while (_drawer->isOpen()) {
-        _renderer->render(*_scene);
-        _drawer->draw(_renderer->getVertexArray());
+        _renderer->render(*_scene, _array);
+        _drawer->draw(_array);
         _drawer->saveToFile(_scene->getOutputFile());
     }
 }
-

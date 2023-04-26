@@ -5,7 +5,7 @@
 ** PointArray
 */
 
-#include "PointArray.hpp"
+#include "render/PointArray.hpp"
 
 PointArray::PointArray(sf::Vector2u size):
     _size(size)

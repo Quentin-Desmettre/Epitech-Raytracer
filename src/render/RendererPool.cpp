@@ -5,12 +5,11 @@
 ** RendererPool
 */
 
-#include "RendererPool.hpp"
+#include "render/RendererPool.hpp"
 #include <thread>
 
 Raytracer::RendererPool::RendererPool(sf::Vector2u start, sf::Vector2u end)
 {
-    _vertexArray.setPrimitiveType(sf::Points);
     _start = start;
     _end = end;
 }
@@ -63,32 +62,18 @@ Raytracer::RendererPool::RendererRangeMap Raytracer::RendererPool::splitRange(sf
     return ranges;
 }
 
-void Raytracer::RendererPool::render(const Scene &scene)
+void Raytracer::RendererPool::render(const Scene &scene, PointArray &array)
 {
     // Launch renderers
+    // They will automatically fill the PointArray with their results
     std::vector<std::thread> threads;
     threads.reserve(_renderers.size());
     for (auto &renderer: _renderers)
-        threads.emplace_back(&IRenderer::render, renderer.get(), std::ref(scene));
+        threads.emplace_back(&IRenderer::render, renderer.get(), std::ref(scene), std::ref(array));
 
     // Wait for renderers to finish
     for (auto &thread: threads)
         thread.join();
-
-    // Merge renderers
-    // TODO: optimize this step
-    _vertexArray.clear();
-    for (auto &renderer: _renderers) {
-        auto vertexArray = renderer->getVertexArray();
-        for (unsigned i = 0; i < vertexArray.getVertexCount(); ++i) {
-            _vertexArray.append(vertexArray[i]);
-        }
-    }
-}
-
-sf::VertexArray Raytracer::RendererPool::getVertexArray() const
-{
-    return _vertexArray;
 }
 
 int Raytracer::RendererPool::getThreadsCount(const UniqueRendererVector &renderers)

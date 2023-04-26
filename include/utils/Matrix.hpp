@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Sfml.hpp"
+#include "render/Sfml.hpp"
 #include "Math.hpp"
 #include <array>
 

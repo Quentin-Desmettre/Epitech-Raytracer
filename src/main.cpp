@@ -7,7 +7,6 @@
 
 #include "scene/SceneBuilder.hpp"
 #include "Raytracer.hpp"
-#include "Renderer.hpp"
 #include "objects/Sphere.hpp"
 #include "objects/Triangle.hpp"
 #include "objects/Square.hpp"
@@ -163,7 +162,7 @@ int main(int ac, char **av)
     Raytracer::Raytracer raytracer(ac, av);
 //
     raytracer.run();
-//    Renderer r;
+//    render r;
 //    Scene scene;
 //    Camera camera;
 //

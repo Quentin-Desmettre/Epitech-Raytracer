@@ -8,7 +8,7 @@
 #ifndef EPITECH_RAYTRACER_PACKETWRITER_HPP
 #define EPITECH_RAYTRACER_PACKETWRITER_HPP
 #include "network/Packet.hpp"
-#include "PointArray.hpp"
+#include "render/PointArray.hpp"
 #include <string>
 
 namespace Network {

@@ -21,7 +21,7 @@ namespace Raytracer {
 
         bool isOpen() const;
         void draw(const std::vector<std::unique_ptr<IRenderer>> &renderers);
-        void draw(const sf::VertexArray &vertexArray);
+        void draw(const PointArray &array);
         void saveToFile(const std::string &filename);
 
     private:

@@ -25,5 +25,4 @@ class AFactory: public IFactory<T> {
         std::map<std::string, std::shared_ptr<void>> _builders;
 };
 
-
 #endif //EPITECH_RAYTRACER_AFACTORY_HPP
