@@ -7,48 +7,48 @@
 ##
 
 SRC = \
-	./src/main.cpp \
-	./src/Camera.cpp \
-	./src/Drawer.cpp \
-	./src/AObject.cpp \
-	./src/Raytracer.cpp \
-	./src/Exceptions.cpp \
-	./src/LightPoint.cpp \
-	./src/utils/Math.cpp \
-	./src/scene/Scene.cpp \
-	./src/objects/Obj.cpp \
-	./src/objects/Cone.cpp \
-	./src/utils/Matrix.cpp \
-	./src/RendererPool.cpp \
-	./src/Renderer/Core.cpp \
-	./src/objects/Torus.cpp \
-	./src/objects/Plane.cpp \
-	./src/LocalRenderer.cpp \
+	./src/network/PacketReader.cpp \
+	./src/network/TcpListener.cpp \
+	./src/network/TcpSocket.cpp \
+	./src/network/PacketWriter.cpp \
 	./src/network/Packet.cpp \
-	./src/objects/Sphere.cpp \
-	./src/objects/Square.cpp \
-	./src/Renderer/Lights.cpp \
-	./src/clusters/Server.cpp \
+	./src/clusters/NetworkRenderer.cpp \
 	./src/clusters/Client.cpp \
+	./src/scene/Scene.cpp \
+	./src/scene/SceneBuilder.cpp \
+	./src/render/Camera.cpp \
+	./src/render/LocalRenderer.cpp \
+	./src/render/PointArray.cpp \
+	./src/render/Drawer.cpp \
+	./src/render/RendererPool.cpp \
+	./src/Exceptions.cpp \
+	./src/lights/LightPoint.cpp \
+	./src/lights/Lights.cpp \
+	./src/transformations/TransformationFactory.cpp \
+	./src/transformations/Transformation.cpp \
+	./src/objects/Sphere.cpp \
+	./src/objects/Obj.cpp \
+	./src/objects/Square.cpp \
+	./src/objects/Torus.cpp \
+	./src/objects/Cone.cpp \
 	./src/objects/Cylinder.cpp \
 	./src/objects/Triangle.cpp \
-	./src/network/TcpSocket.cpp \
-	./src/scene/SceneBuilder.cpp \
-	./src/objects/Tanglecube.cpp \
-	./src/network/TcpListener.cpp \
-	./src/network/PacketReader.cpp \
-	./src/network/PacketWriter.cpp \
 	./src/objects/ObjectFactory.cpp \
-	./src/objects/builders/ObjBuilder.cpp \
-	./src/objects/builders/ConeBuilder.cpp \
-	./src/objects/builders/TorusBuilder.cpp \
-	./src/objects/builders/PlaneBuilder.cpp \
-	./src/transformations/Transformation.cpp \
+	./src/objects/AObject.cpp \
+	./src/objects/Tanglecube.cpp \
+	./src/objects/Plane.cpp \
 	./src/objects/builders/SphereBuilder.cpp \
 	./src/objects/builders/CylinderBuilder.cpp \
-	./src/objects/builders/TriangleBuilder.cpp \
+	./src/objects/builders/ConeBuilder.cpp \
+	./src/objects/builders/ObjBuilder.cpp \
+	./src/objects/builders/TorusBuilder.cpp \
 	./src/objects/builders/TanglecubeBuilder.cpp \
-	./src/transformations/TransformationFactory.cpp \
+	./src/objects/builders/TriangleBuilder.cpp \
+	./src/objects/builders/PlaneBuilder.cpp \
+	./src/utils/Math.cpp \
+	./src/utils/Matrix.cpp \
+	./src/Raytracer.cpp \
+	./src/main.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
