@@ -69,14 +69,14 @@ namespace Network {
          */
         unsigned short getRemotePort() const;
 
-        void checkDisconnect();
+        void waitForData() const;
     private:
         bool send(const void *data, std::size_t size) const;
         bool receive(void *data, std::size_t size) const;
 
-        void waitForData(std::size_t size) const;
+        static void setupSigpipeHandler() __attribute__((constructor));
+        static void sigpipeHandler(int signal);
 
-        TcpSocket(const std::string &address, unsigned short port, int socket);
 
         int _socket;
         bool _connected;

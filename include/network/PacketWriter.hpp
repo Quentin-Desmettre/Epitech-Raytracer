@@ -8,6 +8,7 @@
 #ifndef EPITECH_RAYTRACER_PACKETWRITER_HPP
 #define EPITECH_RAYTRACER_PACKETWRITER_HPP
 #include "network/Packet.hpp"
+#include "PointArray.hpp"
 #include <string>
 
 namespace Network {
@@ -24,10 +25,9 @@ namespace Network {
         }
 
         PacketWriter &operator<<(std::byte byte);
+        PacketWriter &operator<<(const PointArray &array);
         PacketWriter &operator<<(const std::vector<std::byte> &bytes);
         PacketWriter &operator<<(const std::string &string);
-        PacketWriter &operator<<(const sf::VertexArray &pointArray);
-        PacketWriter &operator<<(const sf::Vertex &vertex);
 
     private:
         Network::Packet &_packet;

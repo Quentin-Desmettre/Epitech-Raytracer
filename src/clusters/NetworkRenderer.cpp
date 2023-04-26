@@ -19,31 +19,15 @@ Raytracer::Clustering::Server::Server(const std::vector<std::string> &clusters, 
     internalSetRange(start, end);
 }
 
-void Raytracer::Clustering::Server::render(const Scene &scene)
+void Raytracer::Clustering::Server::render(const Scene &scene, PointArray &array)
 {
     // Render
     for (auto &renderer : _renderers)
-        renderer->render(scene);
+        renderer->render(scene, array);
     std::cout << "Fetching answers..." << std::endl;
     for (auto &renderer : _renderers)
         dynamic_cast<NetworkRenderer *>(renderer.get())->fetchAnswer();
     std::cout << "Done" << std::endl;
-
-    std::cout << "Update vertex array" << std::endl;
-    // Update vertex array
-    sf::VertexArray arr;
-    _vertexArray.clear();
-    for (auto &renderer : _renderers) {
-        arr = renderer->getVertexArray();
-        for (std::size_t i = 0; i < arr.getVertexCount(); i++)
-            _vertexArray.append(arr[i]);
-    }
-    std::cout << "Done" << std::endl;
-}
-
-sf::VertexArray Raytracer::Clustering::Server::getVertexArray() const
-{
-    return _vertexArray;
 }
 
 int Raytracer::Clustering::Server::getThreadsCount() const
@@ -92,7 +76,7 @@ Raytracer::Clustering::Server::NetworkRenderer::NetworkRenderer(const std::strin
     std::cout << "Connected to " << ipPort << " with " << _nbThreads << " threads" << std::endl;
 }
 
-void Raytracer::Clustering::Server::NetworkRenderer::render(const Scene &scene)
+void Raytracer::Clustering::Server::NetworkRenderer::render(const Scene &scene, PointArray &array)
 {
     if (_scene != &scene) {// TODO: fix
         Network::Packet packet;
@@ -109,10 +93,12 @@ void Raytracer::Clustering::Server::NetworkRenderer::render(const Scene &scene)
 
     _clock.restart();
     // Render
+    _array = &array;
     packet = Network::Packet({std::byte(RENDER)});
     _socket.send(packet);
 }
-
+#include <cstring>
+#include <fstream>
 void Raytracer::Clustering::Server::NetworkRenderer::fetchAnswer()
 {
     std::cout << "fetching answer" << std::endl;
@@ -120,10 +106,25 @@ void Raytracer::Clustering::Server::NetworkRenderer::fetchAnswer()
     std::cout << "starting the reader" << std::endl;
     Network::PacketReader reader(packet);
     std::byte type;
-
+    reader >> type;
     std::cout << "reading..." << std::endl;
-    reader >> type >> _vertexArray;
-    std::cout << "Fetched!" << std::endl;
+    std::size_t size = 0;
+    reader >> size;
+
+    sf::Clock clock;
+    std::cout << "packet size: " << packet.getData().size() << std::endl;
+    std::ofstream file("test.ppm", std::ios::binary | std::ios::out | std::ios::trunc);
+    file.write((const char *)packet.getData().data() + 9, size);
+    file.close();
+    std::memcpy(_array->getPixels() + _start.y * _array->getSizeVector().x * 3 + _start.x * 3, packet.getData().data() + 9, size);
+//    auto *arr = new sf::Uint8[size * 3];
+//    std::memcpy(arr, packet.getData().data() + 9, size * 3);
+//    for (std::size_t i = 0; i < size; i++) {
+//    }
+//    for (int i = 0; i < size; i++)
+//        std::cout << vertexArray[i].position.x << "; " << vertexArray[i].position.y << std::endl;
+    std::cout << "Time to read array: " << clock.getElapsedTime().asMicroseconds() << std::endl;
+    std::cout << "Fetched in " << _clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
 }
 
 void Raytracer::Clustering::Server::NetworkRenderer::setRange(sf::Vector2u start, sf::Vector2u end)
@@ -143,9 +144,4 @@ void Raytracer::Clustering::Server::NetworkRenderer::setRange(sf::Vector2u start
 int Raytracer::Clustering::Server::NetworkRenderer::getThreadsCount() const
 {
     return _nbThreads;
-}
-
-sf::VertexArray Raytracer::Clustering::Server::NetworkRenderer::getVertexArray() const
-{
-    return _vertexArray;
 }

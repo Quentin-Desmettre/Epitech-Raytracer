@@ -46,8 +46,7 @@ namespace Raytracer::Clustering {
              * Once the clusters have finished, the method will update the vertex array with the result of the clusters.
              * @param scene The scene to render. This object must never be destroyed.
              */
-            void render(const Scene &scene) override;
-            sf::VertexArray getVertexArray() const override;
+            void render(const Scene &scene, PointArray &array) override;
 
             void setRange(sf::Vector2u start, sf::Vector2u end) override;
 
@@ -62,17 +61,12 @@ namespace Raytracer::Clustering {
                  * @brief Sends the RENDER request to the cluster.
                  * @param scene
                  */
-                void render(const Scene &scene) override;
+                void render(const Scene &scene, PointArray &array) override;
 
                 /**
                  * @brief Fetch the answer from the cluster.
                  */
                 void fetchAnswer();
-
-                /**
-                 * @see IRenderer::getVertexArray()
-                 */
-                sf::VertexArray getVertexArray() const override;
 
                 /**
                  * @brief Sends the request to update the range of the renderer.
@@ -89,7 +83,7 @@ namespace Raytracer::Clustering {
             private:
                 int _nbThreads;
                 Network::TcpSocket _socket;
-                sf::VertexArray _vertexArray;
+                PointArray *_array;
                 const Scene *_scene = nullptr;
                 sf::Vector2u _start, _end;
                 sf::Clock _clock;
@@ -97,7 +91,6 @@ namespace Raytracer::Clustering {
 
             std::vector<std::unique_ptr<IRenderer>> _renderers;
             sf::Vector2u _start, _end;
-            sf::VertexArray _vertexArray;
 
             void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         };
