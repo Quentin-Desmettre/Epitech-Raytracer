@@ -19,12 +19,12 @@
 
 ObjectFactory::ObjectFactory()
 {
-    this->_builders["sphere"] =     reinterpret_cast<IBuilder<AObject> *>(new SphereBuilder());
-    this->_builders["plane"] =      reinterpret_cast<IBuilder<AObject> *>(new PlaneBuilder());
-    this->_builders["cylinder"] =   reinterpret_cast<IBuilder<AObject> *>(new CylinderBuilder());
-    this->_builders["cone"] =       reinterpret_cast<IBuilder<AObject> *>(new ConeBuilder());
-    this->_builders["torus"] =      reinterpret_cast<IBuilder<AObject> *>(new TorusBuilder());
-    this->_builders["triangle"] =   reinterpret_cast<IBuilder<AObject> *>(new TriangleBuilder());
-    this->_builders["tanglecube"] = reinterpret_cast<IBuilder<AObject> *>(new TanglecubeBuilder());
-    this->_builders["obj"] =        reinterpret_cast<IBuilder<AObject> *>(new ObjBuilder());
+    this->_builders["sphere"] =     std::make_shared<SphereBuilder>();
+    this->_builders["plane"] =      std::make_shared<PlaneBuilder>();
+    this->_builders["cylinder"] =   std::make_shared<CylinderBuilder>();
+    this->_builders["cone"] =       std::make_shared<ConeBuilder>();
+    this->_builders["torus"] =      std::make_shared<TorusBuilder>();
+    this->_builders["triangle"] =   std::make_shared<TriangleBuilder>();
+    this->_builders["tanglecube"] = std::make_shared<TanglecubeBuilder>();
+    this->_builders["obj"] =        std::make_shared<ObjBuilder>();
 }

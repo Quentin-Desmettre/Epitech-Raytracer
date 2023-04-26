@@ -17,11 +17,12 @@ class AFactory: public IFactory<T> {
         std::shared_ptr<T> create(const std::string &type, const libconfig::Setting &settings) override {
             if (_builders.find(type) == _builders.end())
                 throw InvalidParameterNameException(type);
-            return _builders[type]->build(settings);
+            auto *builder = static_cast<IBuilder<T> *>(_builders[type].get());
+            return builder->build(settings);
         }
 
     protected:
-        std::map<std::string, IBuilder<T> *> _builders;
+        std::map<std::string, std::shared_ptr<void>> _builders;
 };
 
 
