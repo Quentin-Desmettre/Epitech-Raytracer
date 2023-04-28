@@ -156,3 +156,13 @@ std::pair<sf::Vector2u, sf::Vector2u> Raytracer::LocalRenderer::getRange() const
 {
     return {_start, _end};
 }
+
+void Raytracer::LocalRenderer::reset()
+{
+    _nbFrames = 0;
+}
+
+const std::vector<std::unique_ptr<Raytracer::IRenderer>> &Raytracer::LocalRenderer::getSubRenderers()
+{
+    return _subRenderers;
+}

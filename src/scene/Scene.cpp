@@ -105,6 +105,11 @@ const Camera &Scene::getCamera() const
     return *_camera;
 }
 
+Camera &Scene::getCamera()
+{
+    return *_camera;
+}
+
 std::string Scene::getRawConfiguration() const
 {
     return _rawConfig;
@@ -179,4 +184,9 @@ std::vector<LightPoint> Scene::getLightPoints() const
 void Scene::addLightPoint(const LightPoint& light)
 {
     _lightsPoints.push_back(light);
+}
+
+void Scene::addObject(std::unique_ptr<IObject> &&object)
+{
+    _pool.push_back(std::move(object));
 }

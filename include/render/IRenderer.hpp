@@ -38,6 +38,16 @@ namespace Raytracer {
          *
          */
          virtual int getThreadsCount() const = 0;
+
+        /**
+         * @brief Reset the number of frames renderer.
+         */
+         virtual void reset() = 0;
+
+        /**
+         * @brief Get the sub renderers.
+         */
+         virtual const std::vector<std::unique_ptr<IRenderer>> &getSubRenderers() = 0;
     };
 } // Raytracer
 

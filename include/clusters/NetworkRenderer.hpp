@@ -17,6 +17,7 @@ namespace Raytracer::Clustering {
         UPDATE_RANGE,
         RENDER,
         GET_THREAD_COUNT,
+        RESET,
 
         // Answers
         UPDATE_SCENE_DONE,
@@ -53,9 +54,22 @@ namespace Raytracer::Clustering {
          */
         int getThreadsCount() const override;
 
+        /**
+         * @brief Reset the number of frames renderer.
+         * @see IRenderer::reset()
+         */
+        void reset() override;
+
+        /**
+         * @brief Get the sub renderers.
+         * @see IRenderer::getSubRenderers()
+         */
+        const std::vector<std::unique_ptr<IRenderer>> &getSubRenderers() override;
+
     private:
         int _nbThreads;
         Network::TcpSocket _socket;
+        std::vector<std::unique_ptr<IRenderer>> _subRenderers;
         PointArray *_array;
         const Scene *_scene = nullptr;
         sf::Vector2u _start, _end;

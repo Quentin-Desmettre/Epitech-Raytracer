@@ -36,6 +36,11 @@ namespace Raytracer {
          * @return A map of renderers and their ranges.
          */
         static RendererRangeMap splitRange(sf::Vector2u start, sf::Vector2u end, const UniqueRendererVector &renderers);
+
+        void reset() override;
+        void reset(const std::unique_ptr<IRenderer> &renderers = nullptr);
+
+        const std::vector<std::unique_ptr<IRenderer>> &getSubRenderers() override;
     private:
         void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         std::vector<std::unique_ptr<IRenderer>> _renderers;

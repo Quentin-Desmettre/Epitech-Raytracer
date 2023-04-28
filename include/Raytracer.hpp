@@ -30,8 +30,12 @@ namespace Raytracer {
         void run();
 
     private:
+        void handleEvents();
         void runClient();
         void runNormal();
+        void addSphereAtPos(const sf::Vector2f &pos);
+        void handleMovement(const sf::Event &ev);
+        void reset(const std::unique_ptr<IRenderer> &renderer = nullptr);
 
         bool _isClient;
         unsigned short _port;

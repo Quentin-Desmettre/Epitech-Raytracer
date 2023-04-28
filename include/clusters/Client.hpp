@@ -26,6 +26,9 @@ namespace Raytracer::Clustering {
         void handleRender(Network::Packet &data, Network::TcpSocket &socket);
         void handleUpdateRange(Network::Packet &data, Network::TcpSocket &socket);
         void handleGetThreadCount(Network::Packet &data, Network::TcpSocket &socket);
+        void handleReset(Network::Packet &data, Network::TcpSocket &socket);
+
+        void reset(IRenderer *renderer = nullptr);
 
         Network::TcpListener _listener;
         std::unique_ptr<RendererPool> _renderers;

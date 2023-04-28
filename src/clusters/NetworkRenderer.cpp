@@ -91,3 +91,18 @@ std::pair<sf::Vector2u, sf::Vector2u> Raytracer::Clustering::NetworkRenderer::ge
 {
     return {_start, _end};
 }
+
+void Raytracer::Clustering::NetworkRenderer::reset()
+{
+    Network::Packet packet;
+    Network::PacketWriter writer(packet);
+
+    writer << std::byte(RESET);
+    _socket.send(packet);
+    _socket.receive();
+}
+
+const std::vector<std::unique_ptr<Raytracer::IRenderer>> &Raytracer::Clustering::NetworkRenderer::getSubRenderers()
+{
+    return _subRenderers;
+}
