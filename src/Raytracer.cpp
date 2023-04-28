@@ -76,12 +76,13 @@ void Raytracer::Raytracer::runNormal()
 
     // Launch thread for events
     std::thread event_thread(&Raytracer::handleEvents, this);
-    while (_drawer->isOpen()) {
+    while (_run) {
         _renderer->render(*_scene, _array, &time);
         _drawer->draw(_array);
         _drawer->saveToFile(_scene->getOutputFile());
     }
     event_thread.join();
+    _drawer->close();
 }
 
 void Raytracer::Raytracer::addSphereAtPos(const sf::Vector2f &pos)
@@ -140,7 +141,7 @@ void Raytracer::Raytracer::handleEvents()
                 (event.type == sf::Event::KeyPressed &&
                  event.key.code == sf::Keyboard::Escape)) {
                 _drawer->saveToFile(_scene->getOutputFile());
-                _drawer->close();
+                _run = false;
                 return;
             } else if (event.type == sf::Event::MouseButtonPressed &&
                        event.mouseButton.button == sf::Mouse::Left &&

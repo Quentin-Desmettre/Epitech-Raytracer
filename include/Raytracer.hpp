@@ -38,6 +38,7 @@ namespace Raytracer {
         void reset(const std::unique_ptr<IRenderer> &renderer = nullptr);
 
         bool _isClient;
+        bool _run = true;
         unsigned short _port;
         std::unique_ptr<Drawer> _drawer;
         std::unique_ptr<Scene> _scene;
