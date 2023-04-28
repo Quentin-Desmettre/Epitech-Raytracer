@@ -6,7 +6,6 @@
 */
 
 #include "utils/Math.hpp"
-#include <random>
 
 Vec3 Math::normalize(const Vec3 &vec)
 {
@@ -24,8 +23,7 @@ float Math::dot(const Vec3 &vec1, const Vec3 &vec2)
 
 float Math::random(const float min, const float max)
 {
-    thread_local std::mt19937 generator(std::random_device{}());
-    std::normal_distribution<float> distribution(min, max);
+    thread_local std::normal_distribution<float> distribution(min, max);
 
     return distribution(generator);
 }

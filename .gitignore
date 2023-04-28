@@ -43,3 +43,5 @@ raytracer
 perfs.txt
 callgrind*
 output.svg
+script.sh
+scene.conf

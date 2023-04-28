@@ -14,7 +14,7 @@ PlaneBuilder::PlaneBuilder()
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
     // Axis setter must be called before position setter
-    _objSetters.push_back({"axis", {Type::TypeGroup, reinterpret_cast<ObjSetterFunc>(&Plane::setAxis), false}});
+    _objSetters.push_back({"axis", {Type::TypeString, reinterpret_cast<ObjSetterFunc>(&Plane::setAxis), false}});
 
     // New position setter
     _objSetters.erase(_objSetters.begin() + static_cast<int>(indexOf("position", _objSetters)));
