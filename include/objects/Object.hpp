@@ -9,6 +9,7 @@
 
 #include "render/Ray.hpp"
 #include "ITransformation.hpp"
+#include "Exceptions.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>
 

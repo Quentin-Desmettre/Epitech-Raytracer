@@ -16,8 +16,8 @@ class Plane : public AObject {
         ~Plane() override = default;
 
         // TODO
-        void setAxis(char axis) {}
-        void setPosition(float position) {}
+        void setAxis(const std::string &axis);
+        void setPosition(const float &position);
 
         bool intersect(const Ray &ray) const override;
         Vec3 getIntersection(const Ray &ray) const override;
