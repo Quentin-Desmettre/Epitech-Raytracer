@@ -28,6 +28,10 @@ namespace Raytracer {
 
         void setRange(sf::Vector2u start, sf::Vector2u end) override;
 
+        void reset() override;
+
+        const std::vector<std::unique_ptr<IRenderer>> &getSubRenderers() override;
+
     private:
         void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         void addPixel(sf::Vector2u pos, sf::Vector3f color);
@@ -38,6 +42,7 @@ namespace Raytracer {
         PointArray *_array;
         sf::Vector2u _start, _end;
         int _nbFrames{};
+        std::vector<std::unique_ptr<IRenderer>> _subRenderers;
 
         // TODO: get these from the scene
         sf::Vector3f getAmbientLight(sf::Vector2f pos) const;

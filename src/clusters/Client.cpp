@@ -15,10 +15,11 @@
 #include <thread>
 
 const std::map<std::byte, void (Raytracer::Clustering::Client::*)(Network::Packet &, Network::TcpSocket &)> Raytracer::Clustering::Client::_handlers = {
-    {std::byte{Raytracer::Clustering::UPDATE_SCENE},    &Raytracer::Clustering::Client::handleUpdateScene},
+    {std::byte{Raytracer::Clustering::UPDATE_SCENE},     &Raytracer::Clustering::Client::handleUpdateScene},
     {std::byte{Raytracer::Clustering::UPDATE_RANGE},     &Raytracer::Clustering::Client::handleUpdateRange},
-    {std::byte{Raytracer::Clustering::RENDER},          &Raytracer::Clustering::Client::handleRender},
-    {std::byte{Raytracer::Clustering::GET_THREAD_COUNT},  &Raytracer::Clustering::Client::handleGetThreadCount},
+    {std::byte{Raytracer::Clustering::RENDER},           &Raytracer::Clustering::Client::handleRender},
+    {std::byte{Raytracer::Clustering::GET_THREAD_COUNT}, &Raytracer::Clustering::Client::handleGetThreadCount},
+    {std::byte{Raytracer::Clustering::RESET},            &Raytracer::Clustering::Client::handleReset},
 };
 
 Raytracer::Clustering::Client::Client(unsigned short port):
@@ -126,4 +127,18 @@ void Raytracer::Clustering::Client::buildRendererPool()
     for (unsigned i = 0; i < std::thread::hardware_concurrency(); i++)
         _renderers->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
     _renderers->setRange();
+}
+
+void Raytracer::Clustering::Client::handleReset(Network::Packet &, Network::TcpSocket &socket)
+{
+    reset(_renderers.get());
+    for (auto &renderer : _renderers->getSubRenderers())
+        reset(renderer.get());
+}
+
+void Raytracer::Clustering::Client::reset(IRenderer *renderer)
+{
+    renderer->reset();
+    for (auto &subRenderer : renderer->getSubRenderers())
+        reset(subRenderer.get());
 }

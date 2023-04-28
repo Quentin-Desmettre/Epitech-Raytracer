@@ -46,6 +46,7 @@ class Scene {
         int getNbBounces() const;
         int getRaysPerPixel() const;
         const Camera &getCamera() const;
+        Camera &getCamera();
         std::vector<std::shared_ptr<IObject>> getPool() const;
         std::vector<LightPoint> getLightPoints() const;
         std::string getRawConfiguration() const;
@@ -55,6 +56,7 @@ class Scene {
 
         // Methods
         void addLightPoint(const LightPoint& light);
+        void addObject(std::unique_ptr<IObject> &&object);
 
     protected:
     private:

@@ -152,3 +152,21 @@ std::pair<sf::Vector2u, sf::Vector2u> Raytracer::RendererPool::getRange() const
 {
     return std::make_pair(_start, _end);
 }
+
+void Raytracer::RendererPool::reset()
+{
+    for (auto &renderer : _renderers)
+        reset(renderer);
+}
+
+void Raytracer::RendererPool::reset(const std::unique_ptr<IRenderer> &renderer)
+{
+    renderer->reset();
+    for (auto &child : renderer->getSubRenderers())
+        reset(child);
+}
+
+const std::vector<std::unique_ptr<Raytracer::IRenderer>> &Raytracer::RendererPool::getSubRenderers()
+{
+    return _renderers;
+}

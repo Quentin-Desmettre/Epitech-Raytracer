@@ -6,16 +6,10 @@
 */
 
 #include "render/Drawer.hpp"
-#include <thread>
 #include "Print.hpp"
 
 Raytracer::Drawer::Drawer(int x, int y) : _window(sf::VideoMode(x, y), "Raytracer")
 {
-}
-
-void Raytracer::Drawer::draw(const std::vector<std::unique_ptr<IRenderer>> &renderers)
-{
-    _window.display();
 }
 
 void Raytracer::Drawer::draw(const PointArray &array)
@@ -60,15 +54,23 @@ void Raytracer::Drawer::draw(const PointArray &array)
 
 void Raytracer::Drawer::saveToFile(const std::string &filename)
 {
-//    sf::Clock cl;
-//    sf::Texture texture;
-//    texture.create(_window.getSize().x, _window.getSize().y);
-//    texture.update(_window);
-//    texture.copyToImage().saveToFile(filename);
-//    Raytracer::cout << "Time to save: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
+    sf::Texture texture;
+    texture.create(_window.getSize().x, _window.getSize().y);
+    texture.update(_window);
+    texture.copyToImage().saveToFile(filename);
 }
 
 bool Raytracer::Drawer::isOpen() const
 {
     return _window.isOpen();
+}
+
+bool Raytracer::Drawer::pollEvent(sf::Event &event)
+{
+    return _window.pollEvent(event);
+}
+
+void Raytracer::Drawer::close()
+{
+    _window.close();
 }

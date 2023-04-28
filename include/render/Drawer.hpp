@@ -20,9 +20,10 @@ namespace Raytracer {
         Drawer(int x, int y);
 
         bool isOpen() const;
-        void draw(const std::vector<std::unique_ptr<IRenderer>> &renderers);
+        void close();
         void draw(const PointArray &array);
         void saveToFile(const std::string &filename);
+        bool pollEvent(sf::Event &event);
 
     private:
         sf::RenderWindow _window;
