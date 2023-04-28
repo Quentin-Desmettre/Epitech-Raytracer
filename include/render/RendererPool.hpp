@@ -15,14 +15,15 @@ namespace Raytracer {
 
     class RendererPool: public IRenderer {
     public:
-        RendererPool(sf::Vector2u start, sf::Vector2u end);
+        RendererPool(sf::Vector2u start, sf::Vector2u end, bool updateRangeOnRender = false);
         ~RendererPool() override = default;
 
         void addRenderer(std::unique_ptr<IRenderer> &&renderer);
         void setRange(sf::Vector2u start, sf::Vector2u end) override;
+        std::pair<sf::Vector2u, sf::Vector2u> getRange() const override;
         void setRange();
 
-        void render(const Scene &scene, PointArray &array) override;
+        void render(const Scene &scene, PointArray &array, sf::Time *time) override;
         int getThreadsCount() const override;
         static int getThreadsCount(const UniqueRendererVector &renderers);
 
@@ -39,6 +40,7 @@ namespace Raytracer {
         void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         std::vector<std::unique_ptr<IRenderer>> _renderers;
         sf::Vector2u _start, _end;
+        bool _updateRangeOnRender;
     };
 }
 

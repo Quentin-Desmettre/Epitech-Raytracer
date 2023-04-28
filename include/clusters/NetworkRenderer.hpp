@@ -33,13 +33,19 @@ namespace Raytracer::Clustering {
          * @brief Sends the RENDER request to the cluster, and wait until a response is received
          * @param scene
          */
-        void render(const Scene &scene, PointArray &array) override;
+        void render(const Scene &scene, PointArray &array, sf::Time *time) override;
 
         /**
          * @brief Sends the request to update the range of the renderer.
          * @see IRenderer::setRange()
          */
         void setRange(sf::Vector2u start, sf::Vector2u end) override;
+
+        /**
+         * @brief Get the range of the renderer.
+         * @see IRenderer::getRange()
+         */
+        std::pair<sf::Vector2u, sf::Vector2u> getRange() const override;
 
         /**
          * @brief Get the number of threads of the cluster.

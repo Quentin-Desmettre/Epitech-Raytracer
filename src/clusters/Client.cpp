@@ -10,6 +10,7 @@
 #include "network/PacketWriter.hpp"
 #include "scene/SceneBuilder.hpp"
 #include "render/LocalRenderer.hpp"
+#include "Print.hpp"
 #include <fstream>
 #include <thread>
 
@@ -31,7 +32,7 @@ void Raytracer::Clustering::Client::run()
     Network::TcpSocket socket;
 
     // Wait for connection
-    std::cout << "Waiting for connection..." << std::endl;
+    Raytracer::cout << "Waiting for connection..." << std::endl;
     _listener.accept(socket);
 
     // Build the scene
@@ -44,7 +45,7 @@ void Raytracer::Clustering::Client::run()
         // Handle request
         Network::Packet message = socket.receive();
         std::byte type = message.getData()[0];
-        std::cout << "received request: " << static_cast<int>(type) << std::endl;
+        Raytracer::cout << "received request: " << static_cast<int>(type) << std::endl;
         if (_handlers.find(type) != _handlers.end())
             (this->*_handlers.at(type))(message, socket);
         else
@@ -80,8 +81,9 @@ void Raytracer::Clustering::Client::handleRender(Network::Packet &, Network::Tcp
 {
     // Render
     sf::Clock clock;
-    _renderers->render(*_scene, _array);
-    std::cout << "Time to render: " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
+    sf::Time time;
+    _renderers->render(*_scene, _array, &time);
+    Raytracer::cout << "Time to render: " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
     clock.restart();
 
     // Send result
@@ -90,7 +92,7 @@ void Raytracer::Clustering::Client::handleRender(Network::Packet &, Network::Tcp
 
     writer << std::byte(RENDER_DONE) << _array;
     socket.send(packet);
-    std::cout << "Sent array in " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
+    Raytracer::cout << "Sent array in " << clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
 }
 
 void Raytracer::Clustering::Client::handleUpdateRange(Network::Packet &data, Network::TcpSocket &socket)
@@ -101,7 +103,7 @@ void Raytracer::Clustering::Client::handleUpdateRange(Network::Packet &data, Net
     reader >> header >> _startPoint.x >> _startPoint.y >> _endPoint.x >> _endPoint.y;
 
     _renderers->setRange(_startPoint, _endPoint);
-    _array = PointArray({_endPoint.x - _startPoint.x, _endPoint.y - _startPoint.y});
+    _array.resize({_endPoint.x - _startPoint.x, _endPoint.y - _startPoint.y});
     _array.setStartPoint(_startPoint);
 
     // Inform that the update is done

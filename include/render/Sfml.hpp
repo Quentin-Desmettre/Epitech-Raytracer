@@ -16,9 +16,6 @@
 
 typedef sf::Glsl::Vec3 Vec3;
 
-// comment or set to 0 to disable debug mode (no debug messages)
-#define DEBUG 1
-
 #define unused __attribute_maybe_unused__
 
 #define VEC3_ZERO Vec3(0, 0, 0)

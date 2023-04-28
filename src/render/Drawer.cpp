@@ -7,6 +7,7 @@
 
 #include "render/Drawer.hpp"
 #include <thread>
+#include "Print.hpp"
 
 Raytracer::Drawer::Drawer(int x, int y) : _window(sf::VideoMode(x, y), "Raytracer")
 {
@@ -25,9 +26,10 @@ void Raytracer::Drawer::draw(const PointArray &array)
             _window.close();
     }
     // Draw from RGB pixels
+    sf::Clock cl;
     sf::VertexArray vertexArray(sf::Points, array.getSize() / 3);
     unsigned x = 0, y = 0, maxY = array.getSizeVector().y;
-    for (int i = 0; i < array.getSize(); i += 3) {
+    for (unsigned i = 0; i < array.getSize(); i += 3) {
         vertexArray[i / 3].position.x = x;
         vertexArray[i / 3].position.y = y;
         vertexArray[i / 3].color = sf::Color(array.getPixels()[i], array.getPixels()[i + 1], array.getPixels()[i + 2]);
@@ -37,9 +39,10 @@ void Raytracer::Drawer::draw(const PointArray &array)
             x++;
         }
     }
+    Raytracer::cout << "Time to draw: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
     _window.draw(vertexArray);
     _window.display();
-    #if DEBUG
+    #ifdef DEBUG
         static sf::Clock clock;
         static int _nbFrames = 0;
         static float avgPerfs = 0;
@@ -48,7 +51,7 @@ void Raytracer::Drawer::draw(const PointArray &array)
             avgPerfs = clock.getElapsedTime().asSeconds();
         else
             avgPerfs = (avgPerfs * _nbFrames + clock.getElapsedTime().asSeconds()) / (_nbFrames + 1);
-        std::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
+        Raytracer::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
         << "\t(avg: " << avgPerfs << "s)" << std::endl;
         clock.restart();
         _nbFrames++;
@@ -57,10 +60,12 @@ void Raytracer::Drawer::draw(const PointArray &array)
 
 void Raytracer::Drawer::saveToFile(const std::string &filename)
 {
-    sf::Texture texture;
-    texture.create(_window.getSize().x, _window.getSize().y);
-    texture.update(_window);
-    texture.copyToImage().saveToFile(filename);
+//    sf::Clock cl;
+//    sf::Texture texture;
+//    texture.create(_window.getSize().x, _window.getSize().y);
+//    texture.update(_window);
+//    texture.copyToImage().saveToFile(filename);
+//    Raytracer::cout << "Time to save: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
 }
 
 bool Raytracer::Drawer::isOpen() const

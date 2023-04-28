@@ -10,6 +10,7 @@
 #include "network/PacketReader.hpp"
 #include "network/PacketWriter.hpp"
 #include <thread>
+#include "Print.hpp"
 
 //==============================================================================
 // NetworkRenderer
@@ -29,10 +30,10 @@ Raytracer::Clustering::NetworkRenderer::NetworkRenderer(const std::string &ipPor
     std::byte header;
     reader >> header >> _nbThreads;
 
-    std::cout << "Connected to " << ipPort << " with " << _nbThreads << " threads" << std::endl;
+    Raytracer::cout << "Connected to " << ipPort << " with " << _nbThreads << " threads" << std::endl;
 }
 
-void Raytracer::Clustering::NetworkRenderer::render(const Scene &scene, PointArray &array)
+void Raytracer::Clustering::NetworkRenderer::render(const Scene &scene, PointArray &array, sf::Time *time)
 {
     if (_scene != &scene) {// TODO: fix
         Network::Packet packet;
@@ -48,22 +49,23 @@ void Raytracer::Clustering::NetworkRenderer::render(const Scene &scene, PointArr
     Network::Packet packet;
 
     // Render
+    sf::Clock cl;
     _clock.restart();
     packet = Network::Packet({std::byte(RENDER)});
     _socket.send(packet);
 
     // Fetch answer
-    std::cout << "fetching answer" << std::endl;
     packet = _socket.receive();
-    std::cout << "Time to receive render response: " << _clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
-    _clock.restart();
+    Raytracer::cout << "Time to receive render response: " << cl.getElapsedTime().asMilliseconds() << "ms" << std::endl;
+    cl.restart();
 
 
     Network::PacketReader reader(packet);
     std::byte type;
     reader >> type;
     reader.readPointArray(array, _start);
-    std::cout << "Fetched in " << _clock.getElapsedTime().asMilliseconds() << "ms" << std::endl;
+    *time = _clock.getElapsedTime();
+    Raytracer::cout << "Fetched in " << cl.getElapsedTime().asMicroseconds() << "microsec" << std::endl;
 }
 
 void Raytracer::Clustering::NetworkRenderer::setRange(sf::Vector2u start, sf::Vector2u end)
@@ -83,4 +85,9 @@ void Raytracer::Clustering::NetworkRenderer::setRange(sf::Vector2u start, sf::Ve
 int Raytracer::Clustering::NetworkRenderer::getThreadsCount() const
 {
     return _nbThreads;
+}
+
+std::pair<sf::Vector2u, sf::Vector2u> Raytracer::Clustering::NetworkRenderer::getRange() const
+{
+    return {_start, _end};
 }

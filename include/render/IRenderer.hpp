@@ -21,14 +21,18 @@ namespace Raytracer {
          *
          * This method will update the given PointArray with the rendered scene.
          * This method should be thread safe, as each thread must update a different part of the PointArray.
-         * @param scene
+         * @param scene The scene to render
+         * @param array The PointArray to update
+         * @param timeTaken The time taken to render the scene
          */
-        virtual void render(const Scene &scene, PointArray &array) = 0;
+        virtual void render(const Scene &scene, PointArray &array, sf::Time *timeTaken) = 0;
 
         /**
          * @brief Set the range of the renderer.
          */
         virtual void setRange(sf::Vector2u start, sf::Vector2u end) = 0;
+
+        virtual std::pair<sf::Vector2u, sf::Vector2u> getRange() const = 0;
 
         /**
          *

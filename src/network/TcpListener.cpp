@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include "Print.hpp"
 
 void Network::TcpListener::listen(unsigned short port)
 {
@@ -38,7 +39,7 @@ void Network::TcpListener::listen(unsigned short port)
         throw std::runtime_error("Failed to bind socket. Reason: " + std::string(strerror(errno)));
     if (::listen(_socket, 3) < 0)
         throw std::runtime_error("Failed to listen on socket. Reason: " + std::string(strerror(errno)));
-    std::cout << "Listening on port " << port << std::endl;
+    Raytracer::cout << "Listening on port " << port << std::endl;
     _listening = true;
 }
 

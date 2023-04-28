@@ -48,7 +48,8 @@ SRC = \
 	./src/utils/Math.cpp \
 	./src/utils/Matrix.cpp \
 	./src/Raytracer.cpp \
-	./src/main.cpp
+	./src/main.cpp \
+	./src/Print.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -56,15 +57,18 @@ CXX = g++
 
 NAME = raytracer
 
-CXXFLAGS = -Wall -Wextra -I ./include -std=c++20 -lconfig++ -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -O3 -g
+CXXFLAGS = -Wall -Wextra -I ./include -std=c++20 -lconfig++ -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -O3
 
 all: $(NAME)
 
 $(NAME):   $(OBJ)
 	$(CXX) -o $(NAME) $(OBJ) $(CXXFLAGS)
 
-debug: CXXFLAGS += -g
-debug: re
+debug: CXXFLAGS += -g -DDEBUG
+debug: all
+
+rebug: CXXFLAGS += -g -DDEBUG
+rebug: re
 
 run: all
 	./$(NAME)
