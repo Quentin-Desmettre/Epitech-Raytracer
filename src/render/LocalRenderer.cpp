@@ -9,15 +9,17 @@
 #include <SFML/Network.hpp>
 #include "utils/Math.hpp"
 #include "utils/Matrix.hpp"
+#include "Print.hpp"
 
 Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
 {
     internalSetRange(start, end);
 }
 
-void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array)
+void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf::Time *time)
 {
     _array = &array;
+    sf::Clock clock;
     for (unsigned x = _start.x; x < _end.x; x++) {
         for (unsigned y = _start.y; y < _end.y; y++) {
             sf::Vector3f colors{0, 0, 0};
@@ -27,6 +29,8 @@ void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array)
             addPixel({x, y}, colors);
         }
     }
+    *time = clock.getElapsedTime();
+    Raytracer::cout << "Elapsed time: " << time->asSeconds() << std::endl;
     _nbFrames++;
 }
 
@@ -48,22 +52,6 @@ void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
     }
     _array->setPixel(pos, color);
 }
-
-//void setupRayDirs(const Scene &scene)
-//{
-//    rayDirs.clear();
-//
-//    unsigned maxX = scene.getResolution().x;
-//    unsigned maxY = scene.getResolution().y;
-//
-//    for (unsigned i = 0; i < maxX; i++) {
-//        for (unsigned j = 0; j < maxY; j++) {
-//            sf::Vector3f rayDir = Math::normalize(sf::Vector3f (i - maxX / 2.0f,
-//                                                                j - maxY / 2.0f, maxX / 2.0f));
-//            rayDirs.push_back(Math::normalize(Matrix::rotate(rayDir, scene.getCamera().getRot(), scene.getCamera().getPos())));
-//        }
-//    }
-//}
 
 sf::Vector3f getRayDir(sf::Vector2f pos, const Scene &scene)
 {
@@ -101,8 +89,8 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
         ray.reflect(normal, obj->getReflectivity());
 
         // adding light of sun and light points
-        light += addSunLight(normal, inter, rayColor, scene, obj) * lightIntensity;
-        light += addLightOfPoints(normal, inter, rayColor, scene, obj) * lightIntensity;
+//        light += addSunLight(normal, inter, rayColor, scene, obj) * lightIntensity;
+//        light += addLightOfPoints(normal, inter, rayColor, scene, obj) * lightIntensity;
 
         // reducing light intensity for next iteration
         lightIntensity *= 0.6;
@@ -110,7 +98,7 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
     }
 
     // Lumière ambiante
-    light += rayColor * getAmbientLight(pos);
+//    light += rayColor * getAmbientLight(pos);
     return light;
 }
 
@@ -162,4 +150,9 @@ int Raytracer::LocalRenderer::getThreadsCount() const
 Vec3 Raytracer::LocalRenderer::getAmbientLight(sf::Vector2f pos) const
 {
     return {50 / 255.0f, 50 / 255.0f, 50 / 255.0f};
+}
+
+std::pair<sf::Vector2u, sf::Vector2u> Raytracer::LocalRenderer::getRange() const
+{
+    return {_start, _end};
 }

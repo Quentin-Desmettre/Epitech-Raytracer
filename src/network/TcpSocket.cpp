@@ -16,6 +16,7 @@
 #include <sys/ioctl.h>
 #include <iostream>
 #include <csignal>
+#include "Print.hpp"
 
 Network::TcpSocket::TcpSocket()
 {
@@ -38,7 +39,7 @@ void Network::TcpSocket::connect(const std::string &address, unsigned short port
     sockaddr_in addr;
     bzero(&addr, sizeof(addr));
     addr.sin_family = AF_INET;
-    std::cout << address << std::endl;
+    Raytracer::cout << address << std::endl;
     addr.sin_addr.s_addr = inet_addr(address.c_str());
     addr.sin_port = htons(port);
 

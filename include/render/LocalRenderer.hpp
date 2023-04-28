@@ -20,7 +20,9 @@ namespace Raytracer {
     public:
         LocalRenderer(sf::Vector2u start, sf::Vector2u end);
 
-        void render(const Scene &scene, PointArray &array) override;
+        void render(const Scene &scene, PointArray &array, sf::Time *time) override;
+
+        std::pair<sf::Vector2u, sf::Vector2u> getRange() const override;
 
         int getThreadsCount() const override;
 
