@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include "render/Ray.hpp"
 #include "ITransformation.hpp"
 #include "Exceptions.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>
+
+class Ray;
 
 class IObject {
     public:
@@ -22,13 +23,17 @@ class IObject {
         virtual Vec3 getColor() const = 0;
         virtual Vec3 getEmissionColor() const = 0;
         virtual float getEmissionIntensity() const = 0;
-        virtual float getReflectivity() const = 0;
-        virtual float getTransparency() const = 0;
+        virtual bool getReflectivity() const = 0;
+        virtual bool getTransparency() const = 0;
+        virtual float getRoughness() const = 0;
+        virtual float getRefractiveIndex() const = 0;
 
         // Setters
         virtual void setPos(Vec3 pos) = 0;
-        virtual void setReflectivity(float reflectivity) = 0;
-        virtual void setTransparency(float transparency) = 0;
+        virtual void setReflectivity(bool reflectivity) = 0;
+        virtual void setTransparency(bool transparency) = 0;
+        virtual void setRoughness(float roughness) = 0;
+        virtual void setRefractiveIndex(float refractiveIndex) = 0;
         virtual void setColor(const sf::Color &color) = 0;
         virtual void setPosition(const sf::Vector3f &pos) = 0;
         virtual void setEmissionColor(const sf::Color &color) = 0;
@@ -44,9 +49,11 @@ class IObject {
         Vec3 _pos;
         Vec3 _color;
         Vec3 _emmsionColor;
-        float _intensity = 1.0f;
-        float _reflectivity = 0.0f;
-        float _transparency = 0.0f;
+        float _intensity;
+        float _roughness;
+        bool _reflectivity;
+        bool _transparency;
+        float _refractiveIndex;
     private:
 };
 
@@ -61,7 +68,7 @@ class IObject {
 class AObject : public IObject {
     public:
         explicit AObject(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red,
-        sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f, float reflectivity = 0.0f);
+        sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f);
         ~AObject() override = default;
 
         // Operators
@@ -73,13 +80,17 @@ class AObject : public IObject {
         Vec3 getColor() const override;
         Vec3 getEmissionColor() const override;
         float getEmissionIntensity() const override;
-        float getReflectivity() const override;
-        float getTransparency() const override;
+        bool getReflectivity() const override;
+        bool getTransparency() const override;
+        float getRoughness() const override;
+        float getRefractiveIndex() const override;
 
         // Setters
         void setPos(Vec3 pos) override;
-        void setReflectivity(float reflectivity) override;
-        void setTransparency(float transparency) override;
+        void setReflectivity(bool reflectivity) override;
+        void setTransparency(bool transparency) override;
+        void setRoughness(float roughness) override;
+        void setRefractiveIndex(float refractiveIndex) override;
         void setColor(const sf::Color &color) override;
         void setPosition(const sf::Vector3f &pos) override;
         void setEmissionColor(const sf::Color &color) override;

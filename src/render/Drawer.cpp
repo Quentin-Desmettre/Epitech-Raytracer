@@ -36,7 +36,7 @@ void Raytracer::Drawer::draw(const PointArray &array)
     Raytracer::cout << "Time to draw: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
     _window.draw(vertexArray);
     _window.display();
-    #ifdef DEBUG
+    // #ifdef DEBUG
         static sf::Clock clock;
         static int _nbFrames = 0;
         static float avgPerfs = 0;
@@ -45,11 +45,11 @@ void Raytracer::Drawer::draw(const PointArray &array)
             avgPerfs = clock.getElapsedTime().asSeconds();
         else
             avgPerfs = (avgPerfs * _nbFrames + clock.getElapsedTime().asSeconds()) / (_nbFrames + 1);
-        Raytracer::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
+        std::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
         << "\t(avg: " << avgPerfs << "s)" << std::endl;
         clock.restart();
         _nbFrames++;
-    #endif
+    // #endif
 }
 
 void Raytracer::Drawer::saveToFile(const std::string &filename)

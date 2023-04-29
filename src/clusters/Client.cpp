@@ -129,7 +129,7 @@ void Raytracer::Clustering::Client::buildRendererPool()
     _renderers->setRange();
 }
 
-void Raytracer::Clustering::Client::handleReset(Network::Packet &, Network::TcpSocket &socket)
+void Raytracer::Clustering::Client::handleReset(Network::Packet &, unused Network::TcpSocket &socket)
 {
     reset(_renderers.get());
     for (auto &renderer : _renderers->getSubRenderers())

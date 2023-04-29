@@ -79,7 +79,6 @@ void Raytracer::Raytracer::runNormal()
     while (_run) {
         _renderer->render(*_scene, _array, &time);
         _drawer->draw(_array);
-        _drawer->saveToFile(_scene->getOutputFile());
     }
     event_thread.join();
     _drawer->close();
@@ -138,16 +137,15 @@ void Raytracer::Raytracer::handleEvents()
     while (true) {
         while (_drawer->pollEvent(event)) {
             if (event.type == sf::Event::Closed ||
-                (event.type == sf::Event::KeyPressed &&
-                 event.key.code == sf::Keyboard::Escape)) {
+            (event.type == sf::Event::KeyPressed &&
+            event.key.code == sf::Keyboard::Escape)) {
                 _drawer->saveToFile(_scene->getOutputFile());
                 _run = false;
                 return;
             } else if (event.type == sf::Event::MouseButtonPressed &&
-                       event.mouseButton.button == sf::Mouse::Left &&
-                       sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-                addSphereAtPos(
-                        sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+            event.mouseButton.button == sf::Mouse::Left &&
+            sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                addSphereAtPos(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             else if (event.type == sf::Event::KeyPressed)
                 handleMovement(event);
         }

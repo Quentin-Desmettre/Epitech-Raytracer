@@ -12,6 +12,12 @@ AObject(pos, color, emmsionColor, intensity), _radius(radius)
 {
 }
 
+void Sphere::setTransparency(bool transparency)
+{
+    _transparency = transparency;
+    _refractiveIndex = 1.01f;
+}
+
 float Sphere::getDelta(const Ray &ray) const
 {
     Vec3 origin = ray.getOrigin();
@@ -20,7 +26,7 @@ float Sphere::getDelta(const Ray &ray) const
     float b = 2 * Math::dot(dir, origin - _pos);
     float c = Math::dot(origin - _pos, origin - _pos) - _radius * _radius;
 
-    return b * b - 4.0f * a * c;
+    return b * b - 4 * a * c;
 }
 
 float Sphere::getIntersections(const Ray &ray) const

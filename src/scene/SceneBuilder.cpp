@@ -75,7 +75,7 @@ std::unique_ptr<Scene> SceneBuilder::build()
 }
 
 void SceneBuilder::setCamera(Scene &scene, const std::string &param,
-                                           const libconfig::Setting &setting)
+const libconfig::Setting &setting)
 {
     sf::Vector2u resolution = {
             static_cast<unsigned int>(setting["resolution"]["x"]),
@@ -98,7 +98,7 @@ void SceneBuilder::setCamera(Scene &scene, const std::string &param,
 }
 
 void SceneBuilder::setClusters(Scene &scene, const std::string &param,
-                                             const libconfig::Setting &setting)
+const libconfig::Setting &setting)
 {
     std::vector<std::string> clustersIps;
 
@@ -116,14 +116,14 @@ void SceneBuilder::setClusters(Scene &scene, const std::string &param,
 }
 
 void SceneBuilder::setObjects(Scene &scene, const std::string &param,
-                                            const libconfig::Setting &setting)
+const libconfig::Setting &setting)
 {
     ObjectFactory objectFactory;
 
     setGroupList(scene, param, setting, &objectFactory);
 }
 
-void SceneBuilder::setLights(Scene &scene, const std::string &param,
-                                           const libconfig::Setting &setting)
+void SceneBuilder::setLights(unused Scene &scene, unused const std::string &param,
+unused const libconfig::Setting &setting)
 {
 }

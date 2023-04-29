@@ -21,6 +21,7 @@ SRC = \
 	./src/render/PointArray.cpp \
 	./src/render/Drawer.cpp \
 	./src/render/RendererPool.cpp \
+	./src/render/Ray.cpp \
 	./src/Exceptions.cpp \
 	./src/lights/LightPoint.cpp \
 	./src/lights/Lights.cpp \

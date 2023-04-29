@@ -7,12 +7,14 @@
 
 #include "objects/Object.hpp"
 
-AObject::AObject(Vec3 pos, sf::Color color, sf::Color emmsionColor,
-                 float intensity, float reflectivity)
+AObject::AObject(Vec3 pos, sf::Color color, sf::Color emmsionColor, float intensity)
 {
     _pos = pos;
     _intensity = intensity;
-    _reflectivity = reflectivity;
+    _reflectivity = false;
+    _transparency = false;
+    _refractiveIndex = 1.0f;
+    _roughness = 0.0f;
     AObject::setColor(color);
     AObject::setEmissionColor(emmsionColor);
 }
@@ -37,14 +39,24 @@ float AObject::getEmissionIntensity() const
     return _intensity;
 }
 
-float AObject::getReflectivity() const
+bool AObject::getReflectivity() const
 {
     return _reflectivity;
 }
 
-float AObject::getTransparency() const
+bool AObject::getTransparency() const
 {
     return _transparency;
+}
+
+float AObject::getRoughness() const
+{
+    return _roughness;
+}
+
+float AObject::getRefractiveIndex() const
+{
+    return _refractiveIndex;
 }
 
 void AObject::setPos(Vec3 pos)
@@ -52,14 +64,24 @@ void AObject::setPos(Vec3 pos)
     _pos = pos;
 }
 
-void AObject::setReflectivity(float reflectivity)
+void AObject::setReflectivity(bool reflectivity)
 {
     _reflectivity = reflectivity;
 }
 
-void AObject::setTransparency(float transparency)
+void AObject::setTransparency(bool transparency)
 {
     _transparency = transparency;
+}
+
+void AObject::setRoughness(float roughness)
+{
+    _roughness = roughness;
+}
+
+void AObject::setRefractiveIndex(float refractiveIndex)
+{
+    _refractiveIndex = refractiveIndex;
 }
 
 void AObject::setColor(const sf::Color &color)
