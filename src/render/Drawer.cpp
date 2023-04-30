@@ -51,6 +51,7 @@ void Raytracer::Drawer::draw(const PointArray &array)
         vertexArray[i / 3].position.y /= _antiAliasing;
     }
     Raytracer::cout << "Time to draw: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
+    _window.clear();
     _window.draw(vertexArray);
     _window.display();
     // #ifdef DEBUG

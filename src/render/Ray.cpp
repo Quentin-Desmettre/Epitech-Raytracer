@@ -9,47 +9,32 @@
 
 void Ray::reflect(Vec3 normal, const IObject *obj)
 {
-    // Get the material properties of the object
-    bool reflectivity = obj->getReflectivity();
-    bool transparency = obj->getTransparency();
     float refractiveIndex = obj->getRefractiveIndex();
     float roughness = obj->getRoughness();
+    float hitAngle = Math::dot(_dir, normal);
+    float airRefractiveIndex = 1.0f;
+    Vec3 randDir = Math::randomDir();
 
-    // Calculate the refractive index of the medium the ray is currently in
-    float currentRefractiveIndex = 1.0f;
-    if (Math::dot(_dir, normal) > 0.0f) {
-        currentRefractiveIndex = refractiveIndex;
+    if (hitAngle > 0.0f) {
+        airRefractiveIndex = refractiveIndex;
         normal = -normal;
+        hitAngle = -hitAngle;
     }
 
-    // Calculate the reflected direction of the ray
-    Vec3 reflectionDirection = _dir - 2.0f * Math::dot(_dir, normal) * normal;
-
-    // Calculate the refracted direction of the ray (if applicable)
-    Vec3 refractionDirection = Vec3(0.0f, 0.0f, 0.0f);
-    if (transparency) {
-        float cosI = -Math::dot(normal, _dir);
-        float sinT2 = currentRefractiveIndex * currentRefractiveIndex * (1.0f - cosI * cosI) / (refractiveIndex * refractiveIndex);
+    if (obj->getTransparency()) {
+        float cosI = -hitAngle;
+        float sinT2 = airRefractiveIndex * airRefractiveIndex * (1.0f - cosI * cosI) / (refractiveIndex * refractiveIndex);
         if (sinT2 <= 1.0f) {
             float cosT = sqrtf(1.0f - sinT2);
-            refractionDirection = (currentRefractiveIndex / refractiveIndex) * _dir + ((currentRefractiveIndex / refractiveIndex) * cosI - cosT) * normal;
-            float reflectionAmount = 0.5f * (1.0f + fabsf(Math::dot(_dir, normal))) * 0.0f;
-            _dir = Math::normalize(reflectionAmount * reflectionDirection + (1.0f - reflectionAmount) * refractionDirection);
-            return;
+            Vec3 refractionDirection = (airRefractiveIndex / refractiveIndex) * _dir + ((airRefractiveIndex / refractiveIndex) * cosI - cosT) * normal;
+            _dir = Math::normalize(refractionDirection + roughness * randDir);;
         }
-    }
-
-    // Calculate the final direction of the ray based on the material properties
-    Vec3 tmp = Math::randomDir();
-    if (reflectivity) {
-        // Use a perturbed reflection direction for rough surfaces
-        Vec3 perturbedReflectionDirection = Math::normalize(reflectionDirection + roughness * tmp);
-        _dir = perturbedReflectionDirection;
-    } else {
-        _dir = tmp * Math::sign(Math::dot(normal, tmp));
-    }
+    } else if (obj->getReflectivity()) {
+        Vec3 reflectionDirection = _dir - 2.0f * hitAngle * normal;
+        _dir = Math::normalize(reflectionDirection + roughness * randDir);
+    } else
+        _dir = randDir * Math::sign(Math::dot(normal, randDir));
 }
-
 
 // void Ray::reflect(Vec3 normal, const IObject *obj)
 // {
@@ -73,11 +58,13 @@ void Ray::reflect(Vec3 normal, const IObject *obj)
 //         _dir = diffuse;
 // }
 
-// void Ray::reflect(Vec3 normal, float reflectivity, float transparency, float refraction)
+// void Ray::reflect(Vec3 normal, const IObject *obj)
 // {
+//     float reflectivity = obj->getReflectivity();
+//     float transparency = obj->getTransparency();
 //     float cosi = Math::dot(_dir, normal);
 //     float etai = 1.0f; // refractive index of air
-//     float etat = refraction;
+//     float etat = obj->getRefractiveIndex();
 //     if (cosi > 0) {
 //         std::swap(etai, etat);
 //         normal = -normal;
