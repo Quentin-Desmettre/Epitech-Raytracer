@@ -140,6 +140,20 @@ Vec3 Mat4::vecRotate(Vec3 vec, Vec3 dir, Vec3 pos)
         0, 0, 0, 1
     });
     return mat5 * mat4 * mat3 * mat2 * mat * vec;
+    // In one matrix
+//    float cosDirX = cosf(dir.x);
+//    float cosDirY = cosf(dir.y);
+//    float cosDirZ = cosf(dir.z);
+//    float sinDirX = sinf(dir.x);
+//    float sinDirY = sinf(dir.y);
+//    float sinDirZ = sinf(dir.z);
+//    Mat4 mat = Mat4({
+//        cosDirY * cosDirZ,                                  -cosDirY * sinDirZ,                                 sinDirY,            0,
+//        cosDirX * sinDirZ + sinDirX * sinDirY * cosDirZ,    cosDirX * cosDirZ - sinDirX * sinDirY * sinDirZ,    -sinDirX * cosDirY, 0,
+//        sinDirX * sinDirZ - cosDirX * sinDirY * cosDirZ,    sinDirX * cosDirZ + cosDirX * sinDirY * sinDirZ,    cosDirX * cosDirY,  0,
+//        0,                                                  0,                                                  0,                  1
+//    });
+//    return mat * vec;
 }
 
 Mat4 Mat4::translate3D(const Vec3 &vec)

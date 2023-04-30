@@ -9,6 +9,7 @@
 #define EPITECH_RAYTRACER_DRAWER_HPP
 #include <SFML/Graphics.hpp>
 #include "IRenderer.hpp"
+#include <memory>
 
 namespace Raytracer {
 
@@ -17,16 +18,17 @@ namespace Raytracer {
      */
     class Drawer {
     public:
-        Drawer(int x, int y);
+        Drawer(unsigned x, unsigned y);
 
-        bool isOpen() const;
+        [[nodiscard]] bool isOpen() const;
         void close();
         void draw(const PointArray &array);
         void saveToFile(const std::string &filename);
         bool pollEvent(sf::Event &event);
+        void resize(unsigned x, unsigned y);
 
     private:
-        sf::RenderWindow _window;
+        std::unique_ptr<sf::RenderWindow> _window;
     };
 }
 

@@ -11,9 +11,9 @@
 #include "clusters/NetworkRenderer.hpp"
 #include "render/RendererPool.hpp"
 #include "render/LocalRenderer.hpp"
-#include <thread>
 #include <algorithm>
 #include "objects/Sphere.hpp"
+#include <fstream>
 
 Raytracer::Raytracer::Raytracer(int ac, char **av):
         _array({1, 1})
@@ -28,30 +28,11 @@ Raytracer::Raytracer::Raytracer(int ac, char **av):
     }
     // Normal mode
     else {
-        SceneBuilder builder(ac, av);
-
-        _scene = builder.build();
+        if (ac != 2)
+            throw InvalidArgumentsException("Invalid number of arguments");
+        _configPath = av[1];
         _isClient = false;
-        _drawer = std::make_unique<Drawer>(_scene->getResolution().x, _scene->getResolution().y);
-
-        auto global_pool = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution(), true);
-        // Create clusters
-        if (!_scene->getClusters().empty()) {
-            for (const auto &cluster : _scene->getClusters())
-                global_pool->addRenderer(std::make_unique<Clustering::NetworkRenderer>(cluster));
-        }
-
-        // Even if there are clusters, we still render the rest of the image on this computer
-        auto thread_pool = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution());
-        std::size_t max = _scene->isMultithreadingEnabled() ? std::thread::hardware_concurrency() : 1;
-        for (std::size_t i = 0; i < max; ++i)
-            thread_pool->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
-
-        // Set the range
-        global_pool->addRenderer(std::move(thread_pool));
-        global_pool->setRange();
-        _array.resize(_scene->getResolution());
-        _renderer = std::move(global_pool);
+        reset();
     }
 }
 
@@ -74,14 +55,13 @@ void Raytracer::Raytracer::runNormal()
 {
     sf::Time time;
 
-    // Launch thread for events
-    std::thread event_thread(&Raytracer::handleEvents, this);
     while (_run) {
+        checkConfigChanges();
+        handleEvents();
         _renderer->render(*_scene, _array, &time);
         _drawer->draw(_array);
         _drawer->saveToFile(_scene->getOutputFile());
     }
-    event_thread.join();
     _drawer->close();
 }
 
@@ -100,7 +80,7 @@ void Raytracer::Raytracer::addSphereAtPos(const sf::Vector2f &pos)
     this->reset(_renderer);
 }
 
-void Raytracer::Raytracer::handleMovement(const sf::Event &event)
+bool Raytracer::Raytracer::handleMovement(const sf::Event &event)
 {
     bool reset = false;
 
@@ -127,37 +107,82 @@ void Raytracer::Raytracer::handleMovement(const sf::Event &event)
     if (event.key.code == sf::Keyboard::Enter)
         _drawer->saveToFile(_scene->getOutputFile());
 
-    if (reset)
-        this->reset(_renderer);
+    return reset;
 }
 
 void Raytracer::Raytracer::handleEvents()
 {
     sf::Event event;
+    bool updateRayDirs = false;
 
-    while (true) {
-        while (_drawer->pollEvent(event)) {
-            if (event.type == sf::Event::Closed ||
-                (event.type == sf::Event::KeyPressed &&
-                 event.key.code == sf::Keyboard::Escape)) {
-                _drawer->saveToFile(_scene->getOutputFile());
-                _run = false;
-                return;
-            } else if (event.type == sf::Event::MouseButtonPressed &&
-                       event.mouseButton.button == sf::Mouse::Left &&
-                       sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-                addSphereAtPos(
-                        sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
-            else if (event.type == sf::Event::KeyPressed)
-                handleMovement(event);
+    while (_drawer->pollEvent(event)) {
+        if (event.type == sf::Event::Closed ||
+            (event.type == sf::Event::KeyPressed &&
+             event.key.code == sf::Keyboard::Escape)) {
+            _drawer->saveToFile(_scene->getOutputFile());
+            _run = false;
+            return;
+        } else if (event.type == sf::Event::MouseButtonPressed &&
+                   event.mouseButton.button == sf::Mouse::Left &&
+                   sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+            addSphereAtPos(
+                    sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+        } else if (event.type == sf::Event::KeyPressed) {
+            updateRayDirs = handleMovement(event) || updateRayDirs;
         }
+        usleep(1000000 / 60);
     }
+    if (updateRayDirs)
+        this->reset(_renderer);
 }
 
 void Raytracer::Raytracer::reset(const std::unique_ptr<IRenderer> &renderer)
 {
-    _scene->getCamera().updateRayDirs();
+    if (_renderer.get() == renderer.get())
+        _scene->getCamera().updateRayDirs();
     _renderer->reset();
     for (auto &r : renderer->getSubRenderers())
         reset(r);
+}
+
+void Raytracer::Raytracer::reset()
+{
+    SceneBuilder builder(_configPath);
+    auto tmpScene = builder.build();
+
+    _isClient = false;
+    if (!_scene || tmpScene->getResolution() != _scene->getResolution())
+        _drawer = std::make_unique<Drawer>(tmpScene->getResolution().x, tmpScene->getResolution().y);
+    _scene = std::move(tmpScene);
+    _renderer = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution(), true);
+    auto rendererPool = dynamic_cast<RendererPool *>(_renderer.get());
+
+    // Create clusters
+    if (!_scene->getClusters().empty()) {
+        for (const auto &cluster : _scene->getClusters())
+            rendererPool->addRenderer(std::make_unique<Clustering::NetworkRenderer>(cluster));
+    }
+
+    // Even if there are clusters, we still render the rest of the image on this computer
+    auto thread_pool = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution());
+    std::size_t max = _scene->isMultithreadingEnabled() ? std::thread::hardware_concurrency() : 1;
+    for (std::size_t i = 0; i < max; ++i)
+        thread_pool->addRenderer(std::make_unique<LocalRenderer>(sf::Vector2u(0, 0), sf::Vector2u(1, 1)));
+
+    // Set the range
+    rendererPool->addRenderer(std::move(thread_pool));
+    rendererPool->setRange();
+    _array.resize(_scene->getResolution());
+    _lastWriteTime = std::filesystem::last_write_time(_configPath);
+}
+
+void Raytracer::Raytracer::checkConfigChanges()
+{
+    std::ifstream file(_configPath);
+
+    if (!file)
+        throw std::runtime_error("Cannot open config file");
+    file.close();
+    if (_lastWriteTime != std::filesystem::last_write_time(_configPath))
+        reset();
 }

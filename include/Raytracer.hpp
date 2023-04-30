@@ -12,6 +12,8 @@
 #include "render/Drawer.hpp"
 #include "render/RendererPool.hpp"
 #include "render/PointArray.hpp"
+#include <filesystem>
+#include <thread>
 
 namespace Raytracer {
 
@@ -34,8 +36,23 @@ namespace Raytracer {
         void runClient();
         void runNormal();
         void addSphereAtPos(const sf::Vector2f &pos);
-        void handleMovement(const sf::Event &ev);
-        void reset(const std::unique_ptr<IRenderer> &renderer = nullptr);
+        bool handleMovement(const sf::Event &ev);
+
+        /**
+         * @brief Reset a renderer
+         * @param renderer The renderer to reset.
+         */
+        void reset(const std::unique_ptr<IRenderer> &renderer);
+
+        /**
+         * @brief Reset the raytracer, re-creating the scene.
+         */
+        void reset();
+
+        /**
+         * @brief Listen for config changes.
+         */
+        void checkConfigChanges();
 
         bool _isClient;
         bool _run = true;
@@ -44,6 +61,9 @@ namespace Raytracer {
         std::unique_ptr<Scene> _scene;
         PointArray _array;
         std::unique_ptr<IRenderer> _renderer;
+        std::string _configPath;
+        std::filesystem::file_time_type _lastWriteTime;
+        std::unique_ptr<std::thread> _event_thread;
     };
 
 } // Raytracer

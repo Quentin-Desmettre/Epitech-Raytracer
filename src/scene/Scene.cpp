@@ -67,9 +67,9 @@ void Scene::setRawConfiguration(const std::string &raw)
     _rawConfig = raw;
 }
 
-//======================\\
-//        GETTERS       \\
-//======================
+//======================//
+//        GETTERS       //
+//======================//
 bool Scene::isMultithreadingEnabled() const
 {
     return _multithreadingEnabled;
@@ -178,9 +178,9 @@ std::vector<LightPoint> Scene::getLightPoints() const
     return _lightsPoints;
 }
 
-//======================\\
-//        METHODS       \\
-//======================
+//======================//
+//        METHODS       //
+//======================//
 void Scene::addLightPoint(const LightPoint& light)
 {
     _lightsPoints.push_back(light);

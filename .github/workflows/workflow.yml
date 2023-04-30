@@ -44,9 +44,6 @@ jobs:
         shell: bash
         run: |
           make
-          make clean
-          make fclean
-          make re
           ls ${{ env.EXECUTABLES }}
 
       - name: Run tests (functional and unit)
