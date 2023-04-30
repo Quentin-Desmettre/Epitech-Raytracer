@@ -91,9 +91,12 @@ const libconfig::Setting &setting)
             getFloat(setting["focusedPoint"]["y"]),
             getFloat(setting["focusedPoint"]["z"])
     };
+    float antiAliasing = getFloat(setting["antiAliasing"]);
+
     auto cam = std::make_shared<Camera>(position, sf::Vector3f{0, 0, 1}, resolution);
     cam->setPos(position);
     cam->setRot(focusedPoint);
+    cam->setAntiAliasing(antiAliasing);
     setParameter(scene, param, cam);
 }
 

@@ -30,10 +30,10 @@ class IObject {
 
         // Setters
         virtual void setPos(Vec3 pos) = 0;
-        virtual void setReflectivity(bool reflectivity) = 0;
-        virtual void setTransparency(bool transparency) = 0;
-        virtual void setRoughness(float roughness) = 0;
-        virtual void setRefractiveIndex(float refractiveIndex) = 0;
+        virtual void setReflectivity(const bool &reflectivity) = 0;
+        virtual void setTransparency(const bool &transparency) = 0;
+        virtual void setRoughness(const float &roughness) = 0;
+        virtual void setRefractiveIndex(const float &refractiveIndex) = 0;
         virtual void setColor(const sf::Color &color) = 0;
         virtual void setPosition(const sf::Vector3f &pos) = 0;
         virtual void setEmissionColor(const sf::Color &color) = 0;
@@ -87,10 +87,10 @@ class AObject : public IObject {
 
         // Setters
         void setPos(Vec3 pos) override;
-        void setReflectivity(bool reflectivity) override;
-        void setTransparency(bool transparency) override;
-        void setRoughness(float roughness) override;
-        void setRefractiveIndex(float refractiveIndex) override;
+        void setReflectivity(const bool &reflectivity) override;
+        void setTransparency(const bool &transparency) override;
+        void setRoughness(const float &roughness) override;
+        void setRefractiveIndex(const float &refractiveIndex) override;
         void setColor(const sf::Color &color) override;
         void setPosition(const sf::Vector3f &pos) override;
         void setEmissionColor(const sf::Color &color) override;

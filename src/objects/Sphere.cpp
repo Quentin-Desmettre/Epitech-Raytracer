@@ -12,10 +12,10 @@ AObject(pos, color, emmsionColor, intensity), _radius(radius)
 {
 }
 
-void Sphere::setTransparency(bool transparency)
+void Sphere::setTransparency(const bool &transparency)
 {
     _transparency = transparency;
-    _refractiveIndex = 1.01f;
+    _refractiveIndex = 1.0001f;
 }
 
 float Sphere::getDelta(const Ray &ray) const

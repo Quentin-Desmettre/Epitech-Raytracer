@@ -64,22 +64,22 @@ void AObject::setPos(Vec3 pos)
     _pos = pos;
 }
 
-void AObject::setReflectivity(bool reflectivity)
+void AObject::setReflectivity(const bool &reflectivity)
 {
     _reflectivity = reflectivity;
 }
 
-void AObject::setTransparency(bool transparency)
+void AObject::setTransparency(const bool &transparency)
 {
     _transparency = transparency;
 }
 
-void AObject::setRoughness(float roughness)
+void AObject::setRoughness(const float &roughness)
 {
     _roughness = roughness;
 }
 
-void AObject::setRefractiveIndex(float refractiveIndex)
+void AObject::setRefractiveIndex(const float &refractiveIndex)
 {
     _refractiveIndex = refractiveIndex;
 }

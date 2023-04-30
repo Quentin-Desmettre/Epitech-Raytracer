@@ -129,7 +129,7 @@ sf::Vector3f Raytracer::LocalRenderer::addSunLight(sf::Vector3f normal, sf::Vect
     // if (Math::dot(normal, ray.getDir()) <= 0)
     //     return VEC3_ZERO;
     Vec3 result = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * _sunColor;
-    if (obj->getReflectivity())
+    if (obj->getReflectivity() || obj->getTransparency())
         result *= obj->getRoughness();
     return result;
 }

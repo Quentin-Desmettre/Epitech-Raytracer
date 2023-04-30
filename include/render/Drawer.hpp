@@ -17,7 +17,7 @@ namespace Raytracer {
      */
     class Drawer {
     public:
-        Drawer(int x, int y);
+        Drawer(int x, int y, float antiAliasing);
 
         bool isOpen() const;
         void close();
@@ -27,6 +27,7 @@ namespace Raytracer {
 
     private:
         sf::RenderWindow _window;
+        float _antiAliasing;
     };
 }
 

@@ -8,7 +8,9 @@
 #include "render/Drawer.hpp"
 #include "Print.hpp"
 
-Raytracer::Drawer::Drawer(int x, int y) : _window(sf::VideoMode(x, y), "Raytracer")
+Raytracer::Drawer::Drawer(int x, int y, float antiAliasing) :
+_window(sf::VideoMode(x / antiAliasing, y / antiAliasing), "Raytracer", 7U, sf::ContextSettings(0, 0, antiAliasing > 1 ? antiAliasing : 0)),
+_antiAliasing(antiAliasing)
 {
 }
 
@@ -26,12 +28,27 @@ void Raytracer::Drawer::draw(const PointArray &array)
     for (unsigned i = 0; i < array.getSize(); i += 3) {
         vertexArray[i / 3].position.x = x;
         vertexArray[i / 3].position.y = y;
-        vertexArray[i / 3].color = sf::Color(array.getPixels()[i], array.getPixels()[i + 1], array.getPixels()[i + 2]);
+        vertexArray[i / 3].color = sf::Color(array[i], array[i + 1], array[i + 2]);
+        // apply anti-aliasing through supersampling
+        // if (_antiAliasing > 1) {
+        //     Vec3 tmp;
+        //     for (int j = 0; j < _antiAliasing; j++) {
+        //         for (int k = 0; k < _antiAliasing; k++) {
+        //             tmp += Vec3(array[(i + j * 3) * (uint)_antiAliasing + k * 3], array[(i + j * 3) * (uint)_antiAliasing + k * 3 + 1], array[(i + j * 3) * (uint)_antiAliasing + k * 3 + 2]);
+        //         }
+        //     }
+        //     tmp /= _antiAliasing * _antiAliasing;
+        //     vertexArray[i / 3].color = sf::Color(tmp.x, tmp.y, tmp.z);
+        // }
         y++;
         if (y >= maxY) {
             y = 0;
             x++;
         }
+    }
+    for (unsigned i = 0; i < array.getSize(); i += 3) {
+        vertexArray[i / 3].position.x /= _antiAliasing;
+        vertexArray[i / 3].position.y /= _antiAliasing;
     }
     Raytracer::cout << "Time to draw: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
     _window.draw(vertexArray);

@@ -32,7 +32,8 @@ Raytracer::Raytracer::Raytracer(int ac, char **av):
 
         _scene = builder.build();
         _isClient = false;
-        _drawer = std::make_unique<Drawer>(_scene->getResolution().x, _scene->getResolution().y);
+        _drawer = std::make_unique<Drawer>(_scene->getResolution().x, _scene->getResolution().y, _scene->getAntiAliasing());
+        std::cout << "Rendering " << _scene->getResolution().x << "x" << _scene->getResolution().y << " image" << std::endl;
 
         auto global_pool = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution(), true);
         // Create clusters

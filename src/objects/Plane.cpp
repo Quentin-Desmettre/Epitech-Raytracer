@@ -33,7 +33,7 @@ void Plane::setPosition(const float &position) {
     _pos = _dir * position;
 }
 
-void Plane::setTransparency(bool transparency)
+void Plane::setTransparency(const bool &transparency)
 {
     _transparency = transparency;
     _refractiveIndex = 0.1f;

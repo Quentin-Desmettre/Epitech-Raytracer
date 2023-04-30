@@ -19,7 +19,7 @@ class Plane : public AObject {
         // TODO
         void setAxis(const std::string &axis);
         void setPosition(const float &position);
-        void setTransparency(bool transparency) override;
+        void setTransparency(const bool &transparency) override;
 
         bool intersect(const Ray &ray) const override;
         Vec3 getIntersection(const Ray &ray) const override;
