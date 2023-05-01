@@ -16,6 +16,7 @@ namespace Math
     Vec3 normalize(const Vec3 &vec);
     float dot(const Vec3 &vec1, const Vec3 &vec2);
     float random(float min, float max);
+    int random(int min, int max);
 
     Vec3 randomDir();
     float sign(float val);

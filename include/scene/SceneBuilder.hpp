@@ -40,6 +40,9 @@ private:
     void setObjects(Scene &scene, const std::string &param, const libconfig::Setting &setting);
     void setClusters(Scene &scene, const std::string &param, const libconfig::Setting &setting);
 
+    // Utils
+    static std::string getFileContent(const std::string &path);
+
 };
 
 #endif //EPITECH_RAYTRACER_SCENEBUILDER_HPP
