@@ -28,6 +28,14 @@ float Math::random(const float min, const float max)
     return distribution(generator);
 }
 
+int Math::random(int min, int max)
+{
+    thread_local std::mt19937 generator(std::random_device{}());
+    std::uniform_int_distribution<int> distribution(min, max);
+
+    return distribution(generator);
+}
+
 Vec3 Math::randomDir()
 {
     float x = random(0, 1);

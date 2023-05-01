@@ -17,6 +17,7 @@
 #include <iostream>
 #include <csignal>
 #include "Print.hpp"
+#include <thread>
 
 Network::TcpSocket::TcpSocket()
 {
@@ -119,6 +120,7 @@ bool Network::TcpSocket::receive(void *data, std::size_t size) const
     std::size_t received = 0;
 
     while (received < size) {
+        waitForData();
         ssize_t res = read(_socket, static_cast<char *>(data) + received, size - received);
         if (res < 0)
             return false;
@@ -135,6 +137,8 @@ void Network::TcpSocket::waitForData() const
     FD_SET(_socket, &set);
     if (select(_socket + 1, &set, nullptr, nullptr, nullptr) < 0)
         throw std::runtime_error("Failed to wait for data. Reason: " + std::string(strerror(errno)));
+    if (bytesAvailable(_socket) == 0)
+        throw SocketDisconnectedException();
 }
 
 std::string Network::TcpSocket::getRemoteAddress() const
@@ -182,13 +186,17 @@ int Network::bytesAvailable(int socket)
     return bytes;
 }
 
-void Network::TcpSocket::setupSigpipeHandler()
+void Network::TcpSocket::setSigpipeHandler()
 {
     signal(SIGPIPE, sigpipeHandler);
 }
 
+void Network::TcpSocket::unsetSigpipeHandler()
+{
+    signal(SIGPIPE, SIG_DFL);
+}
+
 void Network::TcpSocket::sigpipeHandler(int signal)
 {
-    (void)signal;
-    throw std::runtime_error("Connection closed.");
+    throw Network::SocketDisconnectedException();
 }

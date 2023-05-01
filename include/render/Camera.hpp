@@ -20,19 +20,17 @@ class Camera {
             UP,
             DOWN
         };
-        Camera(Vec3 pos = Vec3(0, 0, 0), Vec3 rot = Vec3(0, 0, 0), sf::Vector2u size = sf::Vector2u(800, 800)):
-        _pos(pos), _rot(rot), _size(size) {updateRayDirs();};
+        explicit Camera(Vec3 pos = Vec3(0, 0, 0), Vec3 rot = Vec3(0, 0, 0), sf::Vector2u size = sf::Vector2u(800, 800)):
+        _pos(pos), _rot(rot), _size(size) {}
         ~Camera() = default;
 
 
         // Setters
         void setPos(Vec3 pos) {
             _pos = pos;
-            updateRayDirs();
         };
         void setRot(Vec3 rot) {
             _rot = rot;
-            updateRayDirs();
         };
         void setResolution(sf::Vector2u size) {_size = size;};
 

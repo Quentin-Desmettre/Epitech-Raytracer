@@ -26,31 +26,32 @@ Raytracer::Clustering::Client::Client(unsigned short port):
         _array({1, 1})
 {
     _listener.listen(port);
+    _startPoint = {0, 0};
+    _endPoint = {1, 1};
+    buildRendererPool();
 }
 
 void Raytracer::Clustering::Client::run()
 {
     Network::TcpSocket socket;
 
-    // Wait for connection
-    Raytracer::cout << "Waiting for connection..." << std::endl;
-    _listener.accept(socket);
-
-    // Build the scene
-    _startPoint = {0, 0};
-    _endPoint = {1, 1};
-    buildRendererPool();
-
-    // Handle requests
     while (true) {
-        // Handle request
-        Network::Packet message = socket.receive();
-        std::byte type = message.getData()[0];
-        Raytracer::cout << "received request: " << static_cast<int>(type) << std::endl;
-        if (_handlers.find(type) != _handlers.end())
-            (this->*_handlers.at(type))(message, socket);
-        else
-            std::cerr << "Unknown message type: " << static_cast<int>(type) << std::endl;
+        Raytracer::cout << "Waiting for connection..." << std::endl;
+        _listener.accept(socket);
+        try {
+            while (true) {
+                // Handle request
+                Network::Packet message = socket.receive();
+                std::byte type = message.getData()[0];
+                Raytracer::cout << "received request: " << static_cast<int>(type) << std::endl;
+                if (_handlers.find(type) != _handlers.end())
+                    (this->*_handlers.at(type))(message, socket);
+                else
+                    Raytracer::cout << "Unknown message type: " << static_cast<int>(type) << std::endl;
+            }
+        } catch (const Network::SocketDisconnectedException &e) {
+            Raytracer::cout << "Client disconnected" << std::endl;
+        }
     }
 }
 

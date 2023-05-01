@@ -27,7 +27,22 @@ SceneBuilder::SceneBuilder(int ac, char **av)
 
 SceneBuilder::SceneBuilder(const std::string &path)
 {
-    _config.readFile(path.c_str());
+    // Resolve imports, by reading the file and replacing the imports with the file content
+    libconfig::Config imports; imports.readFile(path.c_str());
+    libconfig::Setting &importsSettings = imports.getRoot();
+    if (importsSettings.exists("imports")) {
+        // Fetch imports, and put them in a temporary file
+        std::string tmpFile = "/tmp/raytracer_config_" + std::to_string(Math::random(0, 1000000)) + ".cfg";
+        std::ofstream tmp(tmpFile);
+        if (!tmp.is_open())
+            throw InvalidArgumentsException("Could not open temporary file: " + tmpFile);
+        for (int i = 0; i < importsSettings["imports"].getLength(); i++)
+            tmp << getFileContent(importsSettings["imports"][i]);
+        tmp << getFileContent(path);
+        _file = tmpFile;
+    } else
+        _file = path;
+    _config.readFile(_file.c_str());
     _settings = &_config.getRoot();
     setSetters();
 }
@@ -66,10 +81,12 @@ std::unique_ptr<Scene> SceneBuilder::build()
 {
     std::unique_ptr<Scene> scene = ABuilder<Scene>::build(*_settings);
 
+    scene->getCamera().updateRayDirs();
     std::ifstream file(_file);
     std::string str((std::istreambuf_iterator<char>(file)),
                     std::istreambuf_iterator<char>());
     scene->setRawConfiguration(str);
+    std::cout << "set raw config: " << str << std::endl;
     file.close();
     return scene;
 }
@@ -77,6 +94,7 @@ std::unique_ptr<Scene> SceneBuilder::build()
 void SceneBuilder::setCamera(Scene &scene, const std::string &param,
                                            const libconfig::Setting &setting)
 {
+    std::cout << "Setting camera" << std::endl;
     sf::Vector2u resolution = {
             static_cast<unsigned int>(setting["resolution"]["x"]),
             static_cast<unsigned int>(setting["resolution"]["y"])
@@ -126,4 +144,16 @@ void SceneBuilder::setObjects(Scene &scene, const std::string &param,
 void SceneBuilder::setLights(Scene &scene, const std::string &param,
                                            const libconfig::Setting &setting)
 {
+}
+
+std::string SceneBuilder::getFileContent(const std::string &path)
+{
+    std::ifstream file(path);
+
+    if (!file)
+        throw InvalidArgumentsException("Could not open file: " + path);
+    std::string content((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+    file.close();
+    return content;
 }

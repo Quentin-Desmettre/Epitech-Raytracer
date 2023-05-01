@@ -8,17 +8,15 @@
 #include "render/Drawer.hpp"
 #include "Print.hpp"
 
-Raytracer::Drawer::Drawer(int x, int y) : _window(sf::VideoMode(x, y), "Raytracer")
+Raytracer::Drawer::Drawer(unsigned x, unsigned y)
 {
+    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(x, y), "Raytracer");
 }
 
 void Raytracer::Drawer::draw(const PointArray &array)
 {
-    sf::Event event;
-    while (_window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed)
-            _window.close();
-    }
+    sf::Event event{};
+
     // Draw from RGB pixels
     sf::Clock cl;
     sf::VertexArray vertexArray(sf::Points, array.getSize() / 3);
@@ -34,8 +32,8 @@ void Raytracer::Drawer::draw(const PointArray &array)
         }
     }
     Raytracer::cout << "Time to draw: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
-    _window.draw(vertexArray);
-    _window.display();
+    _window->draw(vertexArray);
+    _window->display();
     #ifdef DEBUG
         static sf::Clock clock;
         static int _nbFrames = 0;
@@ -55,22 +53,27 @@ void Raytracer::Drawer::draw(const PointArray &array)
 void Raytracer::Drawer::saveToFile(const std::string &filename)
 {
     sf::Texture texture;
-    texture.create(_window.getSize().x, _window.getSize().y);
-    texture.update(_window);
+    texture.create(_window->getSize().x, _window->getSize().y);
+    texture.update(*_window);
     texture.copyToImage().saveToFile(filename);
 }
 
 bool Raytracer::Drawer::isOpen() const
 {
-    return _window.isOpen();
+    return _window->isOpen();
 }
 
 bool Raytracer::Drawer::pollEvent(sf::Event &event)
 {
-    return _window.pollEvent(event);
+    return _window->pollEvent(event);
 }
 
 void Raytracer::Drawer::close()
 {
-    _window.close();
+    _window->close();
+}
+
+void Raytracer::Drawer::resize(unsigned x, unsigned y)
+{
+    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(x, y), "Raytracer");
 }

@@ -43,10 +43,7 @@ jobs:
       - name: Check if it compiles
         shell: bash
         run: |
-          make
-          make clean
-          make fclean
-          make re
+          make -j
           ls ${{ env.EXECUTABLES }}
 
       - name: Run tests (functional and unit)
