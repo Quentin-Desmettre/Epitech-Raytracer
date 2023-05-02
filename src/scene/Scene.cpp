@@ -130,6 +130,11 @@ sf::Vector2u Scene::getResolution() const
     return _camera->getResolution();
 }
 
+float Scene::getAntiAliasing() const
+{
+    return _camera->getAntiAliasing();
+}
+
 const IObject *Scene::getClosest(const Ray &ray, const IObject *ignore, bool ignoreLightSources) const
 {
     IObject *closest = nullptr;
@@ -161,6 +166,8 @@ const IObject *Scene::getBetween(const Ray &ray, float dst, const IObject *ignor
         Vec3 vec = obj->getIntersection(ray) - ray.getOrigin();
         float len = Math::length(vec);
         if (dist < len || !Math::sameSign(vec, ray.getDir()) || len > dst)
+            continue;
+        if (obj->getTransparency() && Math::random(0, 1) > obj->getRoughness())
             continue;
         dist = len;
         closest = obj.get();

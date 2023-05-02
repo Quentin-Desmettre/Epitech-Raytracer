@@ -26,6 +26,9 @@ public:
     void setPixel(sf::Vector2u pos, const sf::Vector3f &color);
     void setPixel(sf::Vector2u pos, sf::Color color);
     sf::Color getPixel(sf::Vector2u pos) const;
+    sf::Uint8 operator[](unsigned int i) const {
+        return _pixels[i];
+    }
 
 private:
 

@@ -6,7 +6,6 @@
 */
 
 #include "utils/Math.hpp"
-#include <random>
 
 Vec3 Math::normalize(const Vec3 &vec)
 {
@@ -24,8 +23,7 @@ float Math::dot(const Vec3 &vec1, const Vec3 &vec2)
 
 float Math::random(const float min, const float max)
 {
-    thread_local std::mt19937 generator(std::random_device{}());
-    std::normal_distribution<float> distribution(min, max);
+    thread_local std::normal_distribution<float> distribution(min, max);
 
     return distribution(generator);
 }
@@ -82,4 +80,26 @@ bool Math::sameSign(const Vec3 &a, const Vec3 &b)
 Vec3 Math::proj(const Vec3 &vec1, const Vec3 &vec2)
 {
     return dot(vec1, vec2) / dot(vec2, vec2) * vec2;
+}
+
+Vec3 Math::refract(const Vec3 &incident, const Vec3 &normal, const float eta)
+{
+    float cosi = dot(incident, normal);
+    float cost2 = 1.0f - eta * eta * (1.0f - cosi * cosi);
+    if (cost2 < 0)
+        return VEC3_ZERO;
+    return eta * incident - (eta * cosi + sqrtf(cost2)) * normal;
+}
+
+Vec3 Math::reflect(const Vec3 &incident, const Vec3 &normal)
+{
+    return incident - 2.0f * dot(incident, normal) * normal;
+}
+
+float Math::fresnel(float cosi, float etai, float etat)
+{
+    float r0 = powf((etai - etat) / (etai + etat), 2.0f);
+    float x = 1.0f - (cosi < 0 ? -cosi : cosi);
+    float fresnel = r0 + (1.0f - r0) * powf(x, 5.0f);
+    return fresnel;
 }

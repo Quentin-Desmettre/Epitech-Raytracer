@@ -51,6 +51,7 @@ class Scene {
         std::vector<LightPoint> getLightPoints() const;
         std::string getRawConfiguration() const;
         sf::Vector2u getResolution() const;
+        float getAntiAliasing() const;
         const IObject *getClosest(const Ray &ray, const IObject *ignore = nullptr, bool ignoreLightSources = false) const;
         const IObject *getBetween(const Ray &ray, float dst, const IObject *ignore = nullptr, bool ignoreLightSources = false) const;
 

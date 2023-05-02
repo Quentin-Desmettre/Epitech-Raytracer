@@ -8,9 +8,15 @@
 #include "render/Drawer.hpp"
 #include "Print.hpp"
 
-Raytracer::Drawer::Drawer(unsigned x, unsigned y)
+Raytracer::Drawer::Drawer(unsigned x, unsigned y, float antiAliasing):
+    _antiAliasing(antiAliasing)
 {
-    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(x, y), "Raytracer");
+    _window = std::make_unique<sf::RenderWindow>(
+            sf::VideoMode(x / antiAliasing, y / antiAliasing),
+            "Raytracer",
+            7U,
+            sf::ContextSettings(0, 0, antiAliasing > 1 ? antiAliasing : 0)
+    );
 }
 
 void Raytracer::Drawer::draw(const PointArray &array)
@@ -24,14 +30,19 @@ void Raytracer::Drawer::draw(const PointArray &array)
     for (unsigned i = 0; i < array.getSize(); i += 3) {
         vertexArray[i / 3].position.x = x;
         vertexArray[i / 3].position.y = y;
-        vertexArray[i / 3].color = sf::Color(array.getPixels()[i], array.getPixels()[i + 1], array.getPixels()[i + 2]);
+        vertexArray[i / 3].color = sf::Color(array[i], array[i + 1], array[i + 2]);
         y++;
         if (y >= maxY) {
             y = 0;
             x++;
         }
     }
+    for (unsigned i = 0; i < array.getSize(); i += 3) {
+        vertexArray[i / 3].position.x /= _antiAliasing;
+        vertexArray[i / 3].position.y /= _antiAliasing;
+    }
     Raytracer::cout << "Time to draw: " << cl.getElapsedTime().asSeconds() << "s" << std::endl;
+    _window->clear();
     _window->draw(vertexArray);
     _window->display();
     #ifdef DEBUG
@@ -43,7 +54,7 @@ void Raytracer::Drawer::draw(const PointArray &array)
             avgPerfs = clock.getElapsedTime().asSeconds();
         else
             avgPerfs = (avgPerfs * _nbFrames + clock.getElapsedTime().asSeconds()) / (_nbFrames + 1);
-        Raytracer::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
+        std::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
         << "\t(avg: " << avgPerfs << "s)" << std::endl;
         clock.restart();
         _nbFrames++;
@@ -73,7 +84,12 @@ void Raytracer::Drawer::close()
     _window->close();
 }
 
-void Raytracer::Drawer::resize(unsigned x, unsigned y)
+void Raytracer::Drawer::resize(unsigned x, unsigned y, float antiAliasing)
 {
-    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(x, y), "Raytracer");
+    _window = std::make_unique<sf::RenderWindow>(
+            sf::VideoMode(x / antiAliasing, y / antiAliasing),
+            "Raytracer",
+            7U,
+            sf::ContextSettings(0, 0, antiAliasing > 1 ? antiAliasing : 0)
+    );
 }

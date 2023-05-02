@@ -5,15 +5,14 @@
 ** Tanglecube
 */
 
-#ifndef EPITECH_RAYTRACER_TANGLECUBE_HPP
-#define EPITECH_RAYTRACER_TANGLECUBE_HPP
+#pragma once
+
 #include "Object.hpp"
+#include "render/Ray.hpp"
 
 class Tanglecube: public AObject {
-public:
-    bool intersect(const Ray &ray) const override {}
-    sf::Vector3f getNormal(const Vec3 &inter, const Ray &ray) const override {}
-    sf::Vector3f getIntersection(const Ray &ray) const override {}
+    public:
+        bool intersect(unused const Ray &ray) const override {return false;}
+        sf::Vector3f getNormal(unused const Vec3 &inter, unused const Ray &ray) const override {return VEC3_ZERO;}
+        sf::Vector3f getIntersection(unused const Ray &ray) const override {return VEC3_ZERO;}
 };
-
-#endif //EPITECH_RAYTRACER_TANGLECUBE_HPP

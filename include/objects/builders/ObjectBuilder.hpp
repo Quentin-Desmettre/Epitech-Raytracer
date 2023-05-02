@@ -30,8 +30,9 @@ class ObjectBuilder: public ABuilder<T> {
             this->_objSetters.push_back({"type",                {Type::TypeString,  nullptr,                                                        false}});
             this->_objSetters.push_back({"position",            {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setPosition),          false}});
             this->_objSetters.push_back({"color",               {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setColor),             true}});
-            this->_objSetters.push_back({"transparency",        {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setTransparency),      true}});
-            this->_objSetters.push_back({"reflection",          {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setReflectivity),      true}});
+            this->_objSetters.push_back({"transparency",        {Type::TypeBoolean,   reinterpret_cast<ObjSetterFunc>(&IObject::setTransparency),      true}});
+            this->_objSetters.push_back({"reflection",          {Type::TypeBoolean,   reinterpret_cast<ObjSetterFunc>(&IObject::setReflectivity),      true}});
+            this->_objSetters.push_back({"roughness",           {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setRoughness),           true}});
             this->_objSetters.push_back({"transformations",     {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&IObject::setTransformations),   true}});
             this->_objSetters.push_back({"emission-color",      {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionColor),     true}});
             this->_objSetters.push_back({"emission-intensity",  {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionIntensity), true}});

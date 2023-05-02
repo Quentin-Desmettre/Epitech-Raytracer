@@ -60,7 +60,6 @@ void Raytracer::Raytracer::runNormal()
         handleEvents();
         _renderer->render(*_scene, _array, &time);
         _drawer->draw(_array);
-        _drawer->saveToFile(_scene->getOutputFile());
     }
     _drawer->close();
 }
@@ -125,12 +124,11 @@ void Raytracer::Raytracer::handleEvents()
         } else if (event.type == sf::Event::MouseButtonPressed &&
                    event.mouseButton.button == sf::Mouse::Left &&
                    sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
-            addSphereAtPos(
-                    sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+            addSphereAtPos(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+            updateRayDirs = true;
         } else if (event.type == sf::Event::KeyPressed) {
-            updateRayDirs = handleMovement(event) || updateRayDirs;
+            updateRayDirs = handleMovement(event) ? true : updateRayDirs;
         }
-        usleep(1000000 / 60);
     }
     if (updateRayDirs)
         this->reset(_renderer);
@@ -151,8 +149,8 @@ void Raytracer::Raytracer::reset()
     auto tmpScene = builder.build();
 
     _isClient = false;
-    if (!_scene || tmpScene->getResolution() != _scene->getResolution())
-        _drawer = std::make_unique<Drawer>(tmpScene->getResolution().x, tmpScene->getResolution().y);
+    if (!_scene || tmpScene->getResolution() != _scene->getResolution() || tmpScene->getAntiAliasing() != _scene->getAntiAliasing())
+        _drawer = std::make_unique<Drawer>(tmpScene->getResolution().x, tmpScene->getResolution().y, tmpScene->getAntiAliasing());
     _scene = std::move(tmpScene);
     _renderer = std::make_unique<RendererPool>(sf::Vector2u{0, 0}, _scene->getResolution(), true);
     auto rendererPool = dynamic_cast<RendererPool *>(_renderer.get());

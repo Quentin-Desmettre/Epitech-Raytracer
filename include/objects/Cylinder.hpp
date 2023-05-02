@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Object.hpp"
+#include "render/Ray.hpp"
 
 class Cylinder : public AObject {
     public:

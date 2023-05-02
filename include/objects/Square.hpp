@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Triangle.hpp"
+#include "render/Ray.hpp"
 #include <array>
 
 class Square : public AObject {

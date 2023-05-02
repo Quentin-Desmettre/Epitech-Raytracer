@@ -92,7 +92,7 @@ std::unique_ptr<Scene> SceneBuilder::build()
 }
 
 void SceneBuilder::setCamera(Scene &scene, const std::string &param,
-                                           const libconfig::Setting &setting)
+const libconfig::Setting &setting)
 {
     std::cout << "Setting camera" << std::endl;
     sf::Vector2u resolution = {
@@ -104,14 +104,22 @@ void SceneBuilder::setCamera(Scene &scene, const std::string &param,
             getFloat(setting["position"]["y"]),
             getFloat(setting["position"]["z"])
     };
+    sf::Vector3f focusedPoint = {
+            getFloat(setting["focusedPoint"]["x"]),
+            getFloat(setting["focusedPoint"]["y"]),
+            getFloat(setting["focusedPoint"]["z"])
+    };
+    float antiAliasing = getFloat(setting["antiAliasing"]);
+
     auto cam = std::make_shared<Camera>(position, sf::Vector3f{0, 0, 1}, resolution);
     cam->setPos(position);
-    cam->setRot({0, 0.25, 0});
+    cam->setRot(focusedPoint);
+    cam->setAntiAliasing(antiAliasing);
     setParameter(scene, param, cam);
 }
 
 void SceneBuilder::setClusters(Scene &scene, const std::string &param,
-                                             const libconfig::Setting &setting)
+const libconfig::Setting &setting)
 {
     std::vector<std::string> clustersIps;
 
@@ -129,15 +137,15 @@ void SceneBuilder::setClusters(Scene &scene, const std::string &param,
 }
 
 void SceneBuilder::setObjects(Scene &scene, const std::string &param,
-                                            const libconfig::Setting &setting)
+const libconfig::Setting &setting)
 {
     ObjectFactory objectFactory;
 
     setGroupList(scene, param, setting, &objectFactory);
 }
 
-void SceneBuilder::setLights(Scene &scene, const std::string &param,
-                                           const libconfig::Setting &setting)
+void SceneBuilder::setLights(unused Scene &scene, unused const std::string &param,
+unused const libconfig::Setting &setting)
 {
 }
 
