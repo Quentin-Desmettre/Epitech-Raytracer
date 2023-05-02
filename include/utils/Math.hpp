@@ -19,6 +19,7 @@ namespace Math
     float dot(const Vec3 &vec1, const Vec3 &vec2);
     float random(float min, float max);
     int random(int min, int max);
+    bool isPowerOfTwo(int n);
 
     Vec3 randomDir();
     float sign(float val);

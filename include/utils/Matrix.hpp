@@ -25,7 +25,7 @@ class Mat4 {
 
         static Mat4 translate3D(const Vec3 &vec);
         static Mat4 scale3D(const Vec3 &vec);
-        static Mat4 rotate3D(char axis, double angle);
+        static Mat4 rotate3D(char axis, float angle);
         static Vec3 vecRotate(Vec3 vec, Vec3 dir, Vec3 pos);
 
     protected:

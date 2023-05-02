@@ -55,16 +55,6 @@ void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
     _array->setPixel(pos, color);
 }
 
-sf::Vector3f getRayDir(sf::Vector2f pos, const Scene &scene)
-{
-    unsigned maxX = scene.getResolution().x;
-    unsigned maxY = scene.getResolution().y;
-
-    sf::Vector3f rayDir = Math::normalize(sf::Vector3f (pos.x - maxX / 2.0f,
-                                                        pos.y - maxY / 2.0f, maxX / 2.0f));
-    return Math::normalize(Mat4::vecRotate(rayDir, scene.getCamera().getRot(), scene.getCamera().getPos()));
-}
-
 sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &scene)
 {
     sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);

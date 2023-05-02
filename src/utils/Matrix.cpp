@@ -109,51 +109,25 @@ Mat4 Mat4::inverse() const
 
 Vec3 Mat4::vecRotate(Vec3 vec, Vec3 dir, Vec3 pos)
 {
-    Mat4 mat = Mat4({
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        -pos.x, -pos.y, -pos.z, 1
-    });
-    Mat4 mat2 = Mat4({
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        pos.x, pos.y, pos.z, 1
-    });
     Mat4 mat3 = Mat4({
         1, 0, 0, 0,
-        0, static_cast<float>(cos(dir.x)), static_cast<float>(-sin(dir.x)), 0,
-        0, static_cast<float>(sin(dir.x)), static_cast<float>(cos(dir.x)), 0,
+        0, cosf(dir.x), -sinf(dir.x), 0,
+        0, sinf(dir.x), cosf(dir.x), 0,
         0, 0, 0, 1
     });
     Mat4 mat4 = Mat4({
-        static_cast<float>(cos(dir.y)), 0, static_cast<float>(sin(dir.y)), 0,
+        cosf(dir.y), 0, sinf(dir.y), 0,
         0, 1, 0, 0,
-        static_cast<float>(-sin(dir.y)), 0, static_cast<float>(cos(dir.y)), 0,
+        -sinf(dir.y), 0, cosf(dir.y), 0,
         0, 0, 0, 1
     });
     Mat4 mat5 = Mat4({
-        static_cast<float>(cos(dir.z)), static_cast<float>(-sin(dir.z)), 0, 0,
-        static_cast<float>(sin(dir.z)), static_cast<float>(cos(dir.z)), 0, 0,
+        cosf(dir.z), -sinf(dir.z), 0, 0,
+        sinf(dir.z), cosf(dir.z), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
     });
-    return mat5 * mat4 * mat3 * mat2 * mat * vec;
-    // In one matrix
-//    float cosDirX = cosf(dir.x);
-//    float cosDirY = cosf(dir.y);
-//    float cosDirZ = cosf(dir.z);
-//    float sinDirX = sinf(dir.x);
-//    float sinDirY = sinf(dir.y);
-//    float sinDirZ = sinf(dir.z);
-//    Mat4 mat = Mat4({
-//        cosDirY * cosDirZ,                                  -cosDirY * sinDirZ,                                 sinDirY,            0,
-//        cosDirX * sinDirZ + sinDirX * sinDirY * cosDirZ,    cosDirX * cosDirZ - sinDirX * sinDirY * sinDirZ,    -sinDirX * cosDirY, 0,
-//        sinDirX * sinDirZ - cosDirX * sinDirY * cosDirZ,    sinDirX * cosDirZ + cosDirX * sinDirY * sinDirZ,    cosDirX * cosDirY,  0,
-//        0,                                                  0,                                                  0,                  1
-//    });
-//    return mat * vec;
+    return mat5 * mat4 * mat3 * vec;
 }
 
 Mat4 Mat4::translate3D(const Vec3 &vec)
@@ -176,27 +150,27 @@ Mat4 Mat4::scale3D(const Vec3 &vec)
     });
 }
 
-Mat4 Mat4::rotate3D(char axis, double angle)
+Mat4 Mat4::rotate3D(char axis, float angle)
 {
     switch (axis) {
         case 'x':
             return Mat4({
                 1, 0, 0, 0,
-                0, static_cast<float>(cos(angle)), static_cast<float>(-sin(angle)), 0,
-                0, static_cast<float>(sin(angle)), static_cast<float>(cos(angle)), 0,
+                0, cosf(angle), -sinf(angle), 0,
+                0, sinf(angle), cosf(angle), 0,
                 0, 0, 0, 1
             });
         case 'y':
             return Mat4({
-                static_cast<float>(cos(angle)), 0, static_cast<float>(sin(angle)), 0,
+                cosf(angle), 0, sinf(angle), 0,
                 0, 1, 0, 0,
-                static_cast<float>(-sin(angle)), 0, static_cast<float>(cos(angle)), 0,
+                -sinf(angle), 0, cosf(angle), 0,
                 0, 0, 0, 1
             });
         case 'z':
             return Mat4({
-                static_cast<float>(cos(angle)), static_cast<float>(-sin(angle)), 0, 0,
-                static_cast<float>(sin(angle)), static_cast<float>(cos(angle)), 0, 0,
+                cosf(angle), -sinf(angle), 0, 0,
+                sinf(angle), cosf(angle), 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1
             });

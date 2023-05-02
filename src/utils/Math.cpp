@@ -103,3 +103,8 @@ float Math::fresnel(float cosi, float etai, float etat)
     float fresnel = r0 + (1.0f - r0) * powf(x, 5.0f);
     return fresnel;
 }
+
+bool Math::isPowerOfTwo(int n)
+{
+    return (ceil(log2(n)) == floor(log2(n)));
+}
