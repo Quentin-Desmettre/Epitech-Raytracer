@@ -14,6 +14,7 @@
 Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
 {
     internalSetRange(start, end);
+    _directionalLights.emplace_back();
 }
 
 void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf::Time *time)
@@ -65,7 +66,6 @@ sf::Vector3f getRayDir(sf::Vector2f pos, const Scene &scene)
 
 sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &scene)
 {
-    sf::Vector3f rayColor = sf::Vector3f(1, 1, 1);
     sf::Vector3f light = VEC3_ZERO;
     Ray ray = Ray(scene.getCamera().getPos(), scene.getCamera().getRayDir(pos));
     const IObject *old = nullptr;
@@ -78,19 +78,19 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
             break;
         Vec3 inter = obj->getIntersection(ray);
         Vec3 normal = obj->getNormal(inter, ray);
-        // calcualte light angle with object
-        float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
+
         // add light of object according to its color and other parameters
-        light += obj->getEmissionColor() * rayColor * strength * obj->getEmissionIntensity() * lightIntensity;
+        light += obj->getLight().illuminate(normal, ray.getColor(), ray.getDir()) * lightIntensity;
 
         // updating ray for next iteration
-        rayColor *= obj->getColor();
+        ray.setColor(ray.getColor() * obj->getColor());
         ray.setOrigin(inter);
         ray.reflect(normal, obj);
 
         // adding light of sun and light points
-        light += addSunLight(normal, inter, rayColor, scene, obj) * lightIntensity;
-        light += addLightOfPoints(normal, inter, rayColor, scene, obj) * lightIntensity;
+        for (auto &dirLight : _directionalLights)
+            light += dirLight.illuminate(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
+        light += addLightOfPoints(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
 
         // reducing light intensity for next iteration
         lightIntensity *= 0.6;
@@ -98,7 +98,7 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
     }
 
     // Lumière ambiante
-   light += rayColor * getAmbientLight(pos);
+    light += ray.getColor() * getAmbientLight(pos);
     return light;
 }
 
@@ -115,23 +115,6 @@ Vec3 Raytracer::LocalRenderer::addLightOfPoints(Vec3 normal, Vec3 inter, Vec3 co
         }
     }
     return light;
-}
-
-sf::Vector3f Raytracer::LocalRenderer::addSunLight(sf::Vector3f normal, sf::Vector3f inter, sf::Vector3f color, const Scene &pool, const IObject *obj)
-{
-    static float length = Math::length(_sunLight);
-    const Ray ray(inter, -_sunLight);
-
-    // returns if there is an object between the sun and the intersection
-    if (pool.getBetween(ray, length, obj, true) != nullptr)
-        return VEC3_ZERO;
-    // returns if the sun is not visible from the intersection
-    // if (Math::dot(normal, ray.getDir()) <= 0)
-    //     return VEC3_ZERO;
-    Vec3 result = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * _sunColor;
-    if (obj->getReflectivity() || obj->getTransparency())
-        result *= obj->getRoughness();
-    return result;
 }
 
 void Raytracer::LocalRenderer::setRange(sf::Vector2u start, sf::Vector2u end)

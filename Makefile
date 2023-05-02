@@ -24,7 +24,8 @@ SRC = \
 	./src/render/Ray.cpp \
 	./src/Exceptions.cpp \
 	./src/lights/LightPoint.cpp \
-	./src/lights/Lights.cpp \
+	./src/lights/ObjectLight.cpp \
+	./src/lights/DirectionalLight.cpp \
 	./src/transformations/TransformationFactory.cpp \
 	./src/transformations/Transformation.cpp \
 	./src/objects/Sphere.cpp \

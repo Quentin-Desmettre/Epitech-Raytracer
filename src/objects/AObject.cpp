@@ -10,11 +10,11 @@
 AObject::AObject(Vec3 pos, sf::Color color, sf::Color emmsionColor, float intensity)
 {
     _pos = pos;
-    _intensity = intensity;
     _reflectivity = false;
     _transparency = false;
     _refractiveIndex = 1.0f;
     _roughness = 0.0f;
+    _light.setIntensity(intensity);
     AObject::setColor(color);
     AObject::setEmissionColor(emmsionColor);
 }
@@ -31,12 +31,12 @@ Vec3 AObject::getColor() const
 
 Vec3 AObject::getEmissionColor() const
 {
-    return _emmsionColor;
+    return _light.getColor();
 }
 
 float AObject::getEmissionIntensity() const
 {
-    return _intensity;
+    return _light.getIntensity();
 }
 
 bool AObject::getReflectivity() const
@@ -57,6 +57,11 @@ float AObject::getRoughness() const
 float AObject::getRefractiveIndex() const
 {
     return _refractiveIndex;
+}
+
+const ObjectLight &AObject::getLight() const
+{
+    return _light;
 }
 
 void AObject::setPos(Vec3 pos)
@@ -97,12 +102,12 @@ void AObject::setPosition(const sf::Vector3f &pos)
 void AObject::setEmissionColor(const sf::Color &color)
 {
     if (color != sf::Color::Transparent)
-        _emmsionColor = Vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+        _light.setColor(color);
 }
 
 void AObject::setEmissionIntensity(const float &intensity)
 {
-    _intensity = intensity;
+    _light.setIntensity(intensity);
 }
 
 void AObject::setTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations)
@@ -112,8 +117,8 @@ void AObject::setTransformations(const std::vector<std::shared_ptr<ITransformati
 
 bool AObject::operator==(const AObject &obj) const
 {
-    return _pos == obj._pos && _color == obj._color && _emmsionColor == obj._emmsionColor &&
-        _intensity == obj._intensity && _reflectivity == obj._reflectivity &&
+    return _pos == obj._pos && _color == obj._color && _light.getColor() == obj._light.getColor() &&
+        _light.getIntensity() == obj._light.getIntensity() && _reflectivity == obj._reflectivity &&
         _transparency == obj._transparency;
 }
 

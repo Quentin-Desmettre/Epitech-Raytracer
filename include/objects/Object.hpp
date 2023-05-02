@@ -8,6 +8,7 @@
 #pragma once
 
 #include "ITransformation.hpp"
+#include "lights/ObjectLight.hpp"
 #include "Exceptions.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>
@@ -27,6 +28,7 @@ class IObject {
         virtual bool getTransparency() const = 0;
         virtual float getRoughness() const = 0;
         virtual float getRefractiveIndex() const = 0;
+        virtual const ObjectLight &getLight() const = 0;
 
         // Setters
         virtual void setPos(Vec3 pos) = 0;
@@ -48,8 +50,7 @@ class IObject {
     protected:
         Vec3 _pos;
         Vec3 _color;
-        Vec3 _emmsionColor;
-        float _intensity;
+        ObjectLight _light;
         float _roughness;
         bool _reflectivity;
         bool _transparency;
@@ -84,6 +85,7 @@ class AObject : public IObject {
         bool getTransparency() const override;
         float getRoughness() const override;
         float getRefractiveIndex() const override;
+        const ObjectLight &getLight() const override;
 
         // Setters
         void setPos(Vec3 pos) override;
