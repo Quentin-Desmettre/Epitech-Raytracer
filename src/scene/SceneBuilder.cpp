@@ -121,7 +121,7 @@ const libconfig::Setting &setting)
 void SceneBuilder::setObjects(Scene &scene, const std::string &param,
 const libconfig::Setting &setting)
 {
-    ObjectFactory objectFactory;
+    ObjectFactory objectFactory(scene);
 
     setGroupList(scene, param, setting, &objectFactory);
 }

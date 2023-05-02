@@ -62,3 +62,23 @@ Vec3 Triangle::getNormal(unused const Vec3 &inter, unused const Ray &ray) const
     Vec3 edge2 = _points[2] - _points[0];
     return Math::normalize(Math::cross(edge1, edge2));
 }
+
+bool Triangle::isPointInTriangle(const Vec3 &point) const
+{
+    Vec3 edge1 = _points[1] - _points[0];
+    Vec3 edge2 = _points[2] - _points[0];
+    Vec3 normal = Math::normalize(Math::cross(edge1, edge2));
+    Vec3 point1 = _points[0] - point;
+    Vec3 point2 = _points[1] - point;
+    Vec3 point3 = _points[2] - point;
+    Vec3 normal1 = Math::normalize(Math::cross(edge1, point1));
+    Vec3 normal2 = Math::normalize(Math::cross(edge2, point2));
+    Vec3 normal3 = Math::normalize(Math::cross(edge1, point3));
+    if (Math::dot(normal, normal1) < 0.0f)
+        return false;
+    if (Math::dot(normal, normal2) < 0.0f)
+        return false;
+    if (Math::dot(normal, normal3) < 0.0f)
+        return false;
+    return true;
+}

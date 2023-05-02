@@ -9,8 +9,9 @@
 
 #include "AFactory.hpp"
 #include "builders/ObjectBuilder.hpp"
+#include "scene/Scene.hpp"
 
 class ObjectFactory: public AFactory<AObject> {
     public:
-        explicit ObjectFactory();
+        explicit ObjectFactory(Scene &scene);
 };
