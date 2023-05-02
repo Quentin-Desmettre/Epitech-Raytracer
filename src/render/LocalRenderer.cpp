@@ -87,10 +87,8 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
         ray.setOrigin(inter);
         ray.reflect(normal, obj);
 
-        // adding light of sun and light points
-        for (auto &dirLight : _directionalLights)
-            light += dirLight.illuminate(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
-        light += addLightOfPoints(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
+        // adding light of directional lights and light points
+        light += addLights(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
 
         // reducing light intensity for next iteration
         lightIntensity *= 0.6;
@@ -102,18 +100,14 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
     return light;
 }
 
-Vec3 Raytracer::LocalRenderer::addLightOfPoints(Vec3 normal, Vec3 inter, Vec3 color, const Scene &pool, const IObject *obj)
+Vec3 Raytracer::LocalRenderer::addLights(Vec3 normal, Vec3 inter, Vec3 color, const Scene &scene, const IObject *obj)
 {
     Vec3 light = VEC3_ZERO;
 
-    for (auto &LightPoint : pool.getLightPoints()) {
-        Ray ray(inter, Math::normalize(LightPoint.getPos() - inter));
-        // adding light of light points if there is no object between the intersection and the light point
-        if (pool.getBetween(ray, Math::length(LightPoint.getPos() - inter), obj, true) == nullptr) {
-            Vec3 tmp = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * LightPoint.getColorF();
-            light += tmp;
-        }
-    }
+    for (auto &dirLight : _directionalLights)
+        light += dirLight.illuminate(normal, inter, color, scene, obj);
+    for (auto &lightPoint : scene.getLightPoints())
+        light += lightPoint.illuminate(normal, inter, color, scene, obj);
     return light;
 }
 
