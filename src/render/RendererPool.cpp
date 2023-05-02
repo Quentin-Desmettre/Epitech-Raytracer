@@ -87,7 +87,7 @@ void Raytracer::RendererPool::render(const Scene &scene, PointArray &array, sf::
     if (!_updateRangeOnRender)
         return;
 
-    for (int i = 0; i < _renderers.size(); i++)
+    for (size_t i = 0; i < _renderers.size(); i++)
         Raytracer::cout << "Time taken by renderer " << i << ": " << times[i].asSeconds() << std::endl;
 
     // Split range, according to time taken by each renderer, using the formula:

@@ -51,9 +51,10 @@ void Camera::turn(float x, float y, bool &reset)
 void Camera::updateRayDirs() {
     _rayDirs.clear();
     _rayDirs.reserve(_size.x * _size.y);
-    for (int i = 0; i < _size.x; i++) {
-        for (int j = 0; j < _size.y; j++) {
-            Vec3 rayDir = Math::normalize(Vec3(i - _size.x / 2.0, j - _size.y / 2.0, _size.x / 2.0));
+    for (uint i = 0; i < _size.x; i++) {
+        for (uint j = 0; j < _size.y; j++) {
+            Vec3 rayDir = Math::normalize(Vec3(i - _size.x / 2.0,
+            j - _size.y / 2.0, _size.y / 2.0));
             _rayDirs.push_back(Math::normalize(Mat4::vecRotate(rayDir, _rot, _pos)));
         }
     }

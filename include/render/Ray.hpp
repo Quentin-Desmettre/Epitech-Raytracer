@@ -8,6 +8,7 @@
 #pragma once
 
 #include "utils/Math.hpp"
+#include "objects/Object.hpp"
 #include <SFML/Graphics.hpp>
 
 class Ray {
@@ -25,14 +26,7 @@ class Ray {
         Vec3 getDir() const {return _dir;};
 
         // Methods
-        void reflect(Vec3 normal, float reflectivity) {
-            Vec3 tmp = Math::randomDir();
-            if (Math::dot(tmp, normal) < 0)
-                tmp = -tmp;
-            Vec3 specular = _dir - 2.0f * Math::dot(_dir, normal) * normal;
-            Vec3 diffuse = tmp * Math::sign(Math::dot(normal, tmp));
-            _dir = specular * reflectivity + diffuse * (1.0f - reflectivity);
-        };
+        void reflect(Vec3 normal, const IObject *obj);
     protected:
     private:
         Vec3 _origin;

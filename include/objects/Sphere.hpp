@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Object.hpp"
+#include "render/Ray.hpp"
 #include <iostream>
 
 class Sphere : public AObject {
@@ -17,6 +18,7 @@ class Sphere : public AObject {
         ~Sphere() override = default;
         float getRadius() const {return _radius;};
         void setRadius(const float &radius) {_radius = radius;};
+        void setTransparency(const bool &transparency) override;
         bool intersect(const Ray &ray) const override;
         Vec3 getIntersection(const Ray &ray) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;

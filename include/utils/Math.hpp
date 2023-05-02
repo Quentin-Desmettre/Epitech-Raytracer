@@ -28,4 +28,7 @@ namespace Math
     float length(const Vec3 &vec);
     bool sameSign(const Vec3 &a, const Vec3 &b);
     Vec3 proj(const Vec3 &vec1, const Vec3 &vec2);
+    Vec3 refract(const Vec3 &incident, const Vec3 &normal, float ior);
+    Vec3 reflect(const Vec3 &incident, const Vec3 &normal);
+    float fresnel(float cosi, float etai, float etat);
 }

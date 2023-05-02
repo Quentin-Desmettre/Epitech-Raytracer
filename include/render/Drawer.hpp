@@ -18,17 +18,18 @@ namespace Raytracer {
      */
     class Drawer {
     public:
-        Drawer(unsigned x, unsigned y);
+        Drawer(unsigned x, unsigned y, float antiAliasing);
 
         [[nodiscard]] bool isOpen() const;
         void close();
         void draw(const PointArray &array);
         void saveToFile(const std::string &filename);
         bool pollEvent(sf::Event &event);
-        void resize(unsigned x, unsigned y);
+        void resize(unsigned x, unsigned y, float antiAliasing);
 
     private:
         std::unique_ptr<sf::RenderWindow> _window;
+        float _antiAliasing;
     };
 }
 
