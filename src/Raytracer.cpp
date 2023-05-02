@@ -105,6 +105,8 @@ bool Raytracer::Raytracer::handleMovement(const sf::Event &event)
         _scene->getCamera().turn(0, 0.1f, reset);
     if (event.key.code == sf::Keyboard::Enter)
         _drawer->saveToFile(_scene->getOutputFile());
+    if (event.key.code == sf::Keyboard::Space)
+        _scene->setPreRenderEnabled(_scene->isPreRenderEnabled());
 
     return reset;
 }

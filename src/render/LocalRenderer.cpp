@@ -20,12 +20,14 @@ void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf:
 {
     _array = &array;
     sf::Clock clock;
+    const int raysPerPixel = scene.isPreRenderEnabled() ? 1 : scene.getRaysPerPixel();
+
     for (unsigned x = _start.x; x < _end.x; x++) {
         for (unsigned y = _start.y; y < _end.y; y++) {
             sf::Vector3f colors{0, 0, 0};
-            for (int i = 0; i < scene.getRaysPerPixel(); i++)
+            for (int i = 0; i < raysPerPixel; i++)
                 colors += getPixelFColor(sf::Vector2f(x, y), scene);
-            colors /= static_cast<float>(scene.getRaysPerPixel());
+            colors /= static_cast<float>(raysPerPixel);
             addPixel({x, y}, colors);
         }
     }
@@ -70,8 +72,9 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
     Ray ray = Ray(scene.getCamera().getPos(), scene.getCamera().getRayDir(pos));
     const IObject *old = nullptr;
     float lightIntensity = 1;
+    const int nbBounces = scene.isPreRenderEnabled() ? 0 : scene.getNbBounces();
 
-    for (int bounces = 0; bounces <= scene.getNbBounces(); bounces++) {
+    for (int bounces = 0; bounces <= nbBounces; bounces++) {
         const IObject *obj = scene.getClosest(ray, old);
 
         if (!obj)
