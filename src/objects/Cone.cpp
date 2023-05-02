@@ -23,8 +23,8 @@ bool Cone::intersect(const Ray &ray) const
     float b = 2 * oc.x * ray.getDir().x - 2 * oc.y * ray.getDir().y + 2 * oc.z * ray.getDir().z;
     float c = oc.x * oc.x - oc.y * oc.y + oc.z * oc.z;
     float delta = b * b - 4 * a * c;
-    float t1 = (-b + sqrt(delta)) / (2 * a);
-    float t2 = (-b - sqrt(delta)) / (2 * a);
+    float t1 = (-b + sqrtf(delta)) / (2 * a);
+    float t2 = (-b - sqrtf(delta)) / (2 * a);
     if (_isCapped) {
         Vec3 inter1 = ray.getOrigin() + ray.getDir() * t1;
         Vec3 inter2 = ray.getOrigin() + ray.getDir() * t2;
@@ -53,8 +53,8 @@ Vec3 Cone::getIntersection(const Ray &ray) const
     float b = 2 * oc.x * ray.getDir().x - 2 * oc.y * ray.getDir().y + 2 * oc.z * ray.getDir().z;
     float c = oc.x * oc.x - oc.y * oc.y + oc.z * oc.z;
     float delta = b * b - 4 * a * c;
-    float t1 = (-b + sqrt(delta)) / (2 * a);
-    float t2 = (-b - sqrt(delta)) / (2 * a);
+    float t1 = (-b + sqrtf(delta)) / (2 * a);
+    float t2 = (-b - sqrtf(delta)) / (2 * a);
     if (_isCapped) {
         Vec3 inter1 = ray.getOrigin() + ray.getDir() * t1;
         Vec3 inter2 = ray.getOrigin() + ray.getDir() * t2;

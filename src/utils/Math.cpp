@@ -6,7 +6,6 @@
 */
 
 #include "utils/Math.hpp"
-#include <random>
 
 Vec3 Math::normalize(const Vec3 &vec)
 {
@@ -14,7 +13,7 @@ Vec3 Math::normalize(const Vec3 &vec)
 
     if (len == 0)
         return VEC3_ZERO;
-    return Vec3(vec.x / len, vec.y / len, vec.z / len);
+    return {vec.x / len, vec.y / len, vec.z / len};
 }
 
 float Math::dot(const Vec3 &vec1, const Vec3 &vec2)
@@ -24,8 +23,7 @@ float Math::dot(const Vec3 &vec1, const Vec3 &vec2)
 
 float Math::random(const float min, const float max)
 {
-    thread_local std::mt19937 generator(std::random_device{}());
-    std::normal_distribution<float> distribution(min, max);
+    thread_local std::normal_distribution<float> distribution(min, max);
 
     return distribution(generator);
 }
@@ -46,9 +44,9 @@ float Math::sign(const float val)
 
 Vec3 Math::cross(const Vec3 &vec1, const Vec3 &vec2)
 {
-    return Vec3(vec1.y * vec2.z - vec1.z * vec2.y,
+    return {vec1.y * vec2.z - vec1.z * vec2.y,
                 vec1.z * vec2.x - vec1.x * vec2.z,
-                vec1.x * vec2.y - vec1.y * vec2.x);
+                vec1.x * vec2.y - vec1.y * vec2.x};
 }
 
 double Math::toRad(const double deg)
@@ -63,7 +61,7 @@ Vec3 Math::lerp(const Vec3 &vec1, const Vec3 &vec2, const float t)
 
 float Math::length(const Vec3 &vec)
 {
-    return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    return sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
 
 bool Math::sameSign(const Vec3 &a, const Vec3 &b)
@@ -74,4 +72,26 @@ bool Math::sameSign(const Vec3 &a, const Vec3 &b)
 Vec3 Math::proj(const Vec3 &vec1, const Vec3 &vec2)
 {
     return dot(vec1, vec2) / dot(vec2, vec2) * vec2;
+}
+
+Vec3 Math::refract(const Vec3 &incident, const Vec3 &normal, const float eta)
+{
+    float cosi = dot(incident, normal);
+    float cost2 = 1.0f - eta * eta * (1.0f - cosi * cosi);
+    if (cost2 < 0)
+        return VEC3_ZERO;
+    return eta * incident - (eta * cosi + sqrtf(cost2)) * normal;
+}
+
+Vec3 Math::reflect(const Vec3 &incident, const Vec3 &normal)
+{
+    return incident - 2.0f * dot(incident, normal) * normal;
+}
+
+float Math::fresnel(float cosi, float etai, float etat)
+{
+    float r0 = powf((etai - etat) / (etai + etat), 2.0f);
+    float x = 1.0f - (cosi < 0 ? -cosi : cosi);
+    float fresnel = r0 + (1.0f - r0) * powf(x, 5.0f);
+    return fresnel;
 }
