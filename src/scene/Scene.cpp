@@ -141,8 +141,8 @@ const IObject *Scene::getClosest(const Ray &ray, const IObject *ignore, bool ign
     float dist = INF;
 
     for (const auto &obj : _pool) {
-        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)
-                                    && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
+        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != VEC3_ZERO
+        && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
             continue;
         Vec3 vec = obj->getIntersection(ray) - ray.getOrigin();
         float len = Math::length(vec);
@@ -160,14 +160,14 @@ const IObject *Scene::getBetween(const Ray &ray, float dst, const IObject *ignor
     float dist = INF;
 
     for (auto &obj : _pool) {
-        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)
-                                    && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
+        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != VEC3_ZERO
+        && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
             continue;
         Vec3 vec = obj->getIntersection(ray) - ray.getOrigin();
         float len = Math::length(vec);
         if (dist < len || !Math::sameSign(vec, ray.getDir()) || len > dst)
             continue;
-        if (obj->getTransparency() && Math::random(0, 1) > obj->getRoughness())
+        if (obj->getTransparency() && Math::randomf(0, 1) > obj->getRoughness())
             continue;
         dist = len;
         closest = obj.get();

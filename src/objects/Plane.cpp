@@ -36,7 +36,7 @@ void Plane::setPosition(const float &position) {
 void Plane::setTransparency(const bool &transparency)
 {
     _transparency = transparency;
-    _refractiveIndex = 0.5f;
+    _refractiveIndex = 1.0f;
 }
 
 bool Plane::intersect(const Ray &ray) const

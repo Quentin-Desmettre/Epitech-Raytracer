@@ -51,7 +51,7 @@ Vec3 Sphere::getIntersection(const Ray &ray) const
     float t = getIntersections(ray);
 
     if (t < 0 || t != t) // t != t is a check for NaN
-        return {0, 0, 0};
+        return VEC3_INF;
     return ray.getOrigin() + ray.getDir() * t;
 }
 
