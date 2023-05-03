@@ -6,17 +6,25 @@
 */
 
 #include "objects/Object.hpp"
+#include "Exceptions.hpp"
 
-AObject::AObject(Vec3 pos, sf::Color color, sf::Color emmsionColor, float intensity)
+AObject::AObject(Vec3 pos,
+                 sf::Color color,
+                 sf::Color emmsionColor,
+                 float intensity,
+                 bool reflective,
+                 bool transparent,
+                 float roughness
+)
 {
-    _pos = pos;
-    _intensity = intensity;
-    _reflectivity = false;
-    _transparency = false;
-    _refractiveIndex = 1.0f;
-    _roughness = 0.0f;
+    AObject::setPos(pos);
     AObject::setColor(color);
     AObject::setEmissionColor(emmsionColor);
+    AObject::setEmissionIntensity(intensity);
+    AObject::setReflectivity(reflective);
+    AObject::setTransparency(transparent);
+    AObject::setRoughness(roughness);
+    AObject::setRefractiveIndex(1.0f);
 }
 
 Vec3 AObject::getPos() const
@@ -76,6 +84,8 @@ void AObject::setTransparency(const bool &transparency)
 
 void AObject::setRoughness(const float &roughness)
 {
+    if (roughness < 0.0f || roughness > 1.0f)
+        throw InvalidParameterValueException("Roughness must be between 0.0 and 1.0");
     _roughness = roughness;
 }
 
@@ -102,6 +112,8 @@ void AObject::setEmissionColor(const sf::Color &color)
 
 void AObject::setEmissionIntensity(const float &intensity)
 {
+    if (intensity < 0.0f)
+        throw InvalidParameterValueException("Emission intensity must be >= 0");
     _intensity = intensity;
 }
 

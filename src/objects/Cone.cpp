@@ -84,3 +84,8 @@ Vec3 Cone::getNormal(const Vec3 &inter, unused const Ray &ray) const
     normal = Math::normalize(normal);
     return normal;
 }
+
+void Cone::setHeight(const float &height)
+{
+    _height = height;
+}

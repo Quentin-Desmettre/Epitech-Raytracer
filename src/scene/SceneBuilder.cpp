@@ -120,7 +120,7 @@ const libconfig::Setting &setting)
     };
 
     // Fetch antiAliasing
-    float antiAliasing = getFloat(setting["antiAliasing"]);
+    float antiAliasing = setting.exists("antiAliasing") ? getFloat(setting["antiAliasing"]) : 1;
     if (antiAliasing <= 0 || !Math::isPowerOfTwo(antiAliasing))
         throw InvalidParameterValueException("Invalid antiAliasing");
 

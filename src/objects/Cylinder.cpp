@@ -87,3 +87,17 @@ Vec3 Cylinder::getNormal(const Vec3 &inter, unused const Ray &ray) const
     Vec3 normal = dist - proj;
     return Math::normalize(normal);
 }
+
+void Cylinder::setHeight(const float &height)
+{
+    if (height <= 0)
+        throw InvalidParameterValueException("cylinder height must be positive");
+    _length = height;
+}
+
+void Cylinder::setRadius(const float &radius)
+{
+    if (radius <= 0)
+        throw InvalidParameterValueException("cylinder radius must be positive");
+    _radius = radius;
+}

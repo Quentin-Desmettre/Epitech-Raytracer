@@ -20,6 +20,12 @@ class Triangle : public AObject {
         Vec3 getIntersection(const Ray &ray) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
 
+        // Setters
+        template <size_t N>
+        void setPoint(const Vec3 &point) {
+            _points[N] = point;
+        }
+
     protected:
     private:
         std::array<Vec3, 3> _points;

@@ -12,7 +12,7 @@
 
 class TanglecubeBuilder: ObjectBuilder<Tanglecube> {
     public:
-        explicit TanglecubeBuilder() {}
+        explicit TanglecubeBuilder() = default;
 };
 
 #endif //EPITECH_RAYTRACER_TANGLECUBEBUILDER_HPP

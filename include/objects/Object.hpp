@@ -45,16 +45,6 @@ class IObject {
         virtual Vec3 getIntersection(const Ray &ray) const = 0;
         virtual Vec3 getNormal(const Vec3 &inter, const Ray &ray) const = 0;
 
-    protected:
-        Vec3 _pos;
-        Vec3 _color;
-        Vec3 _emmsionColor;
-        float _intensity;
-        float _roughness;
-        bool _reflectivity;
-        bool _transparency;
-        float _refractiveIndex;
-    private:
 };
 
 /**
@@ -67,8 +57,14 @@ class IObject {
  */
 class AObject : public IObject {
     public:
-        explicit AObject(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red,
-        sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f);
+        explicit AObject(Vec3 pos = Vec3(0, 0, 0),
+                         sf::Color color = sf::Color::Red,
+                         sf::Color emmsionColor = sf::Color::Transparent,
+                         float intensity = 0.0f,
+                         bool reflective = false,
+                         bool transparent = false,
+                         float roughness = 0.0f
+        );
         ~AObject() override = default;
 
         // Operators
@@ -99,4 +95,12 @@ class AObject : public IObject {
 
     protected:
         std::vector<std::shared_ptr<ITransformation>> _transformations;
+        Vec3 _pos;
+        Vec3 _color;
+        Vec3 _emmsionColor;
+        float _intensity;
+        float _roughness;
+        bool _reflectivity;
+        bool _transparency;
+        float _refractiveIndex;
 };
