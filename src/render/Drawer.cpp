@@ -21,8 +21,6 @@ Raytracer::Drawer::Drawer(unsigned x, unsigned y, float antiAliasing):
 
 void Raytracer::Drawer::draw(const PointArray &array)
 {
-    sf::Event event{};
-
     // Draw from RGB pixels
     sf::Clock cl;
     sf::VertexArray vertexArray(sf::Points, array.getSize() / 3);
