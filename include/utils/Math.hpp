@@ -17,7 +17,7 @@ namespace Math
     static thread_local std::mt19937 generator(std::random_device{}());
     Vec3 normalize(const Vec3 &vec);
     float dot(const Vec3 &vec1, const Vec3 &vec2);
-    float random(float min, float max);
+    float randomf(float min, float max);
     int random(int min, int max);
 
     Vec3 randomDir();

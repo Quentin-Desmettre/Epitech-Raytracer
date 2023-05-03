@@ -38,7 +38,7 @@ namespace Raytracer {
         void internalSetRange(sf::Vector2u start, sf::Vector2u end);
         void addPixel(sf::Vector2u pos, sf::Vector3f color);
         sf::Vector3f getPixelFColor(sf::Vector2f pos, const Scene &pool);
-        Vec3 addLights(Vec3 normal, Vec3 inter, Vec3 color, const Scene &pool, const IObject *obj);
+        Vec3 addLights(const Vec3 &normal, const Vec3 &inter, const Vec3 &color, const Scene &pool, const IObject *obj);
 
         PointArray *_array;
         sf::Vector2u _start, _end;
