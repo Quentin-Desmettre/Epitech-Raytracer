@@ -29,6 +29,7 @@ namespace Raytracer {
 
     private:
         std::unique_ptr<sf::RenderWindow> _window;
+        sf::Clock _clock;
         float _antiAliasing;
     };
 }

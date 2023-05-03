@@ -86,7 +86,6 @@ std::unique_ptr<Scene> SceneBuilder::build()
     std::string str((std::istreambuf_iterator<char>(file)),
                     std::istreambuf_iterator<char>());
     scene->setRawConfiguration(str);
-    std::cout << "set raw config: " << str << std::endl;
     file.close();
     return scene;
 }
@@ -94,7 +93,6 @@ std::unique_ptr<Scene> SceneBuilder::build()
 void SceneBuilder::setCamera(Scene &scene, const std::string &param,
 const libconfig::Setting &setting)
 {
-    std::cout << "Setting camera" << std::endl;
     sf::Vector2u resolution = {
             static_cast<unsigned int>(setting["resolution"]["x"]),
             static_cast<unsigned int>(setting["resolution"]["y"])

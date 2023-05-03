@@ -45,20 +45,19 @@ void Raytracer::Drawer::draw(const PointArray &array)
     _window->clear();
     _window->draw(vertexArray);
     _window->display();
-    #ifdef DEBUG
-        static sf::Clock clock;
-        static int _nbFrames = 0;
-        static float avgPerfs = 0;
 
-        if (_nbFrames == 0)
-            avgPerfs = clock.getElapsedTime().asSeconds();
-        else
-            avgPerfs = (avgPerfs * _nbFrames + clock.getElapsedTime().asSeconds()) / (_nbFrames + 1);
-        std::cout << "Render in " << clock.getElapsedTime().asSeconds() << "s"
-        << "\t(avg: " << avgPerfs << "s)" << std::endl;
-        clock.restart();
-        _nbFrames++;
-    #endif
+    // Printing render time and average
+    static int nbFrames = 0;
+    static float avgPerfs = 0;
+
+    if (nbFrames == 0)
+        avgPerfs = _clock.getElapsedTime().asSeconds();
+    else
+        avgPerfs = (avgPerfs * nbFrames + _clock.getElapsedTime().asSeconds()) / (nbFrames + 1);
+    Raytracer::cout << "Render in " << _clock.getElapsedTime().asSeconds() << "s"
+    << "\t(avg: " << avgPerfs << "s)" << std::endl;
+    _clock.restart();
+    nbFrames++;
 }
 
 void Raytracer::Drawer::saveToFile(const std::string &filename)

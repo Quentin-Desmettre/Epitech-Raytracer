@@ -21,7 +21,7 @@ float Math::dot(const Vec3 &vec1, const Vec3 &vec2)
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
 }
 
-float Math::random(const float min, const float max)
+float Math::randomf(const float min, const float max)
 {
     thread_local std::normal_distribution<float> distribution(min, max);
 
@@ -38,9 +38,9 @@ int Math::random(int min, int max)
 
 Vec3 Math::randomDir()
 {
-    float x = random(0, 1);
-    float y = random(0, 1);
-    float z = random(0, 1);
+    float x = randomf(0, 1);
+    float y = randomf(0, 1);
+    float z = randomf(0, 1);
 
     return normalize(Vec3(x, y, z));
 }

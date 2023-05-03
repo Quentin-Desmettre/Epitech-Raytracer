@@ -100,7 +100,7 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
     return light;
 }
 
-Vec3 Raytracer::LocalRenderer::addLights(Vec3 normal, Vec3 inter, Vec3 color, const Scene &scene, const IObject *obj)
+Vec3 Raytracer::LocalRenderer::addLights(const Vec3 &normal, const Vec3 &inter, const Vec3 &color, const Scene &scene, const IObject *obj)
 {
     Vec3 light = VEC3_ZERO;
 
