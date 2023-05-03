@@ -24,8 +24,8 @@ class IObject {
         virtual Vec3 getColor() const = 0;
         virtual Vec3 getEmissionColor() const = 0;
         virtual float getEmissionIntensity() const = 0;
-        virtual bool getReflectivity() const = 0;
-        virtual bool getTransparency() const = 0;
+        virtual bool isReflective() const = 0;
+        virtual bool isTransparent() const = 0;
         virtual float getRoughness() const = 0;
         virtual float getRefractiveIndex() const = 0;
         virtual const ObjectLight &getLight() const = 0;
@@ -81,8 +81,8 @@ class AObject : public IObject {
         Vec3 getColor() const override;
         Vec3 getEmissionColor() const override;
         float getEmissionIntensity() const override;
-        bool getReflectivity() const override;
-        bool getTransparency() const override;
+        bool isReflective() const override;
+        bool isTransparent() const override;
         float getRoughness() const override;
         float getRefractiveIndex() const override;
         const ObjectLight &getLight() const override;

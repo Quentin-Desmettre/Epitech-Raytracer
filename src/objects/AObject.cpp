@@ -39,12 +39,12 @@ float AObject::getEmissionIntensity() const
     return _light.getIntensity();
 }
 
-bool AObject::getReflectivity() const
+bool AObject::isReflective() const
 {
     return _reflectivity;
 }
 
-bool AObject::getTransparency() const
+bool AObject::isTransparent() const
 {
     return _transparency;
 }

@@ -10,11 +10,6 @@
 Sphere::Sphere(Vec3 pos, sf::Color color, float radius, sf::Color emmsionColor, float intensity) :
 AObject(pos, color, emmsionColor, intensity), _radius(radius)
 {
-}
-
-void Sphere::setTransparency(const bool &transparency)
-{
-    _transparency = transparency;
     _refractiveIndex = 1.5f;
 }
 
@@ -51,7 +46,7 @@ Vec3 Sphere::getIntersection(const Ray &ray) const
     float t = getIntersections(ray);
 
     if (t < 0 || t != t) // t != t is a check for NaN
-        return {0, 0, 0};
+        return VEC3_INF;
     return ray.getOrigin() + ray.getDir() * t;
 }
 

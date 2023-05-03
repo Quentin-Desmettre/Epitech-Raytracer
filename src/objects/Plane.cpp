@@ -11,6 +11,7 @@ Plane::Plane(Vec3 pos, Vec3 dir, sf::Color color, sf::Color emmsionColor, float 
 AObject(pos, color, emmsionColor, intensity)
 {
     _dir = dir;
+    _refractiveIndex = 1.0f;
 }
 
 void Plane::setAxis(const std::string &axis) {
@@ -31,12 +32,6 @@ void Plane::setAxis(const std::string &axis) {
 }
 void Plane::setPosition(const float &position) {
     _pos = _dir * position;
-}
-
-void Plane::setTransparency(const bool &transparency)
-{
-    _transparency = transparency;
-    _refractiveIndex = 0.5f;
 }
 
 bool Plane::intersect(const Ray &ray) const

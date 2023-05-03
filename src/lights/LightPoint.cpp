@@ -25,7 +25,7 @@ const Scene &pool, const IObject *obj) const
     // adding light of light points if there is no object between the intersection and the light point
     if (pool.getBetween(ray, Math::length(_pos - inter), obj, true) == nullptr) {
         result = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * _color;
-        if (obj->getReflectivity() || obj->getTransparency())
+        if (obj->isReflective() || obj->isTransparent())
             result *= obj->getRoughness();
     }
     return result;

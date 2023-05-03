@@ -53,12 +53,12 @@ Vec3 Cylinder::getIntersection(const Ray &ray) const
     float delta = powf(b, 2) - 4 * a * c;
 
     if (delta < 0)
-        return VEC3_ZERO;
+        return VEC3_INF;
     float t1 = (-b - sqrtf(delta)) / (2 * a);
     float t2 = (-b + sqrtf(delta)) / (2 * a);
     if (_length == INF) {
         if (t1 < 0 && t2 < 0)
-            return VEC3_ZERO;
+            return VEC3_INF;
         if (t1 < 0)
             return ray.getOrigin() + ray.getDir() * t2;
         if (t2 < 0)
@@ -72,7 +72,7 @@ Vec3 Cylinder::getIntersection(const Ray &ray) const
     float proj1 = Math::dot(dist1, _dir);
     float proj2 = Math::dot(dist2, _dir);
     if ((proj1 < 0 || proj1 > _length ) && (proj2 < 0 || proj2 > _length))
-        return VEC3_ZERO;
+        return VEC3_INF;
     if (proj1 < 0 || proj1 > _length)
         return inter2;
     if (proj2 < 0 || proj2 > _length)

@@ -26,7 +26,7 @@ const Scene &pool, const IObject *obj) const
     // if (Math::dot(normal, ray.getDir()) <= 0)
     //     return VEC3_ZERO;
     Vec3 result = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * _color;
-    if (obj->getReflectivity() || obj->getTransparency())
+    if (obj->isReflective() || obj->isTransparent())
         result *= obj->getRoughness();
     return result;
 }

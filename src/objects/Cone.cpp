@@ -63,14 +63,14 @@ Vec3 Cone::getIntersection(const Ray &ray) const
         float proj1 = Math::dot(dist1, _dir);
         float proj2 = Math::dot(dist2, _dir);
         if ((proj1 < 0 || proj1 > _height) && (proj2 < 0 || proj2 > _height))
-            return VEC3_ZERO;
+            return VEC3_INF;
         if (proj1 < 0 || proj1 > _height)
             return inter2;
         if (proj2 < 0 || proj2 > _height)
             return inter1;
     }
     if (t1 < 0 && t2 < 0)
-        return VEC3_ZERO;
+        return VEC3_INF;
     if (t1 < 0 || t2 < 0)
         return ray.getOrigin() + ray.getDir() * (t1 < 0 ? t2 : t1);
     return ray.getOrigin() + ray.getDir() * (t1 < t2 ? t1 : t2);

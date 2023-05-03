@@ -14,7 +14,7 @@
 Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
 {
     internalSetRange(start, end);
-    _directionalLights.emplace_back();
+    // _directionalLights.emplace_back();
 }
 
 void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf::Time *time)
@@ -23,7 +23,7 @@ void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf:
     sf::Clock clock;
     for (unsigned x = _start.x; x < _end.x; x++) {
         for (unsigned y = _start.y; y < _end.y; y++) {
-            sf::Vector3f colors{0, 0, 0};
+            sf::Vector3f colors = VEC3_ZERO;
             for (int i = 0; i < scene.getRaysPerPixel(); i++)
                 colors += getPixelFColor(sf::Vector2f(x, y), scene);
             colors /= static_cast<float>(scene.getRaysPerPixel());
