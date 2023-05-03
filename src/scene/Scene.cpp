@@ -167,7 +167,7 @@ const IObject *Scene::getBetween(const Ray &ray, float dst, const IObject *ignor
         float len = Math::length(vec);
         if (dist < len || !Math::sameSign(vec, ray.getDir()) || len > dst)
             continue;
-        if (obj->getTransparency() && Math::randomf(0, 1) > obj->getRoughness())
+        if (obj->isTransparent() && Math::randomf(0, 1) > obj->getRoughness())
             continue;
         dist = len;
         closest = obj.get();
