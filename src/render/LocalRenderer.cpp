@@ -10,11 +10,13 @@
 #include "utils/Math.hpp"
 #include "utils/Matrix.hpp"
 #include "Print.hpp"
+#include <semaphore.h>
+#include <mutex>
 
 Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
 {
     internalSetRange(start, end);
-    // _directionalLights.emplace_back();
+    _directionalLights.emplace_back();
 }
 
 void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf::Time *time)
@@ -70,9 +72,10 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
     Ray ray = Ray(scene.getCamera().getPos(), scene.getCamera().getRayDir(pos));
     const IObject *old = nullptr;
     float lightIntensity = 1;
+    const IObject *obj = nullptr;
 
     for (int bounces = 0; bounces <= scene.getNbBounces(); bounces++) {
-        const IObject *obj = scene.getClosest(ray, old);
+        obj = scene.getClosest(ray, old);
 
         if (!obj)
             break;
@@ -96,7 +99,13 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
     }
 
     // Lumière ambiante
-    light += ray.getColor() * getAmbientLight(pos);
+    if (lightIntensity == 1 || !old) {
+        light += ray.getColor() * getBackgroundLight(pos);
+    } else if (old->isReflective()) {
+        light += ray.getColor() * getAmbientLight(pos) * old->getRoughness();
+        light += ray.getColor() * getBackgroundLight(pos) * (1.0f - old->getRoughness());
+    } else
+        light += ray.getColor() * getAmbientLight(pos);
     return light;
 }
 
@@ -129,7 +138,12 @@ int Raytracer::LocalRenderer::getThreadsCount() const
 
 Vec3 Raytracer::LocalRenderer::getAmbientLight(unused sf::Vector2f pos) const
 {
-    return {50 / 255.0f, 50 / 255.0f, 50 / 255.0f};
+    return {255 / 255.0f, 255 / 255.0f, 255 / 255.0f};
+}
+
+Vec3 Raytracer::LocalRenderer::getBackgroundLight(unused sf::Vector2f pos) const
+{
+    return {50 / 255.0f, 200 / 255.0f, 50 / 255.0f};
 }
 
 std::pair<sf::Vector2u, sf::Vector2u> Raytracer::LocalRenderer::getRange() const

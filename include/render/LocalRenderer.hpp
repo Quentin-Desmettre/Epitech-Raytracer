@@ -47,6 +47,7 @@ namespace Raytracer {
 
         // TODO: get these from the scene
         sf::Vector3f getAmbientLight(sf::Vector2f pos) const;
+        sf::Vector3f getBackgroundLight(sf::Vector2f pos) const;
         std::vector<DirectionalLight> _directionalLights;
     };
 } // Raytracer

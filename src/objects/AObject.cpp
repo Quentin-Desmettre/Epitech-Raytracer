@@ -13,7 +13,7 @@ AObject::AObject(Vec3 pos, sf::Color color, sf::Color emmsionColor, float intens
     _reflectivity = false;
     _transparency = false;
     _refractiveIndex = 1.0f;
-    _roughness = 0.0f;
+    _roughness = 1.0f;
     _light.setIntensity(intensity);
     AObject::setColor(color);
     AObject::setEmissionColor(emmsionColor);

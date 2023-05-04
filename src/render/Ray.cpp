@@ -31,7 +31,7 @@ void Ray::reflect(Vec3 normal, const IObject *obj)
         }
     } else if (obj->isReflective()) {
         Vec3 reflectionDirection = _dir - 2.0f * hitAngle * normal;
-        _dir = Math::normalize(reflectionDirection + roughness * randDir);
+        _dir = Math::normalize(Math::lerp(reflectionDirection, randDir, roughness));
     } else
         _dir = randDir * Math::sign(Math::dot(normal, randDir));
 }
