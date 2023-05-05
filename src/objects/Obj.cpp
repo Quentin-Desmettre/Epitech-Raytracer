@@ -10,8 +10,7 @@
 #include "scene/Scene.hpp"
 
 std::regex Obj::_verticesRegex = std::regex("v (-?[0-9]+.[0-9]+) (-?[0-9]+.[0-9]+) (-?[0-9]+.[0-9]+)");
-std::regex Obj::_trianglesRegex = std::regex("f ([0-9]+) ([0-9]+) ([0-9]+)");
-std::regex Obj::_trianglesRegexx = std::regex("f ([0-9]+)/[0-9]+? ([0-9]+)/[0-9]+? ([0-9]+)/[0-9]+?");
+std::regex Obj::_trianglesRegex = std::regex("f ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]*");
 std::regex Obj::_squaresRegex = std::regex("f ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 
@@ -44,20 +43,11 @@ void Obj::setPath(const std::string &path)
             _scene->addObject(std::make_unique<Triangle>(triangle2));
             continue;
         }
-        // if (std::regex_match(line, _trianglesRegex)) {
-        //     std::regex_search(line, match, _trianglesRegex);
-        //     Triangle triangle(_vertices[std::stoi(match[3]) - 1], _vertices[std::stoi(match[2]) - 1], _vertices[std::stoi(match[1]) - 1] , color, emmsionColor, _intensity);
-        //     _triangles.emplace_back(triangle);
-        //     _scene->addObject(std::make_unique<Triangle>(triangle));
-        //     _scene->test();
-        //     continue;
-        // }
-        if (std::regex_match(line, _trianglesRegexx)) {
-            std::regex_search(line, match, _trianglesRegexx);
+        if (std::regex_match(line, _trianglesRegex)) {
+            std::regex_search(line, match, _trianglesRegex);
             Triangle triangle(_vertices[std::stoi(match[3]) - 1], _vertices[std::stoi(match[2]) - 1], _vertices[std::stoi(match[1]) - 1] , color, emmsionColor, _intensity);
             _triangles.emplace_back(triangle);
             _scene->addObject(std::make_unique<Triangle>(triangle));
-            _scene->test();
             continue;
         }
         std::cout << "Unknown line: " << line << std::endl;
