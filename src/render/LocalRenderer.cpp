@@ -85,23 +85,23 @@ Vec3 Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &sce
         // add light of object according to its color and other parameters
         light += obj->getLight().illuminate(normal, ray.getColor(), ray.getDir()) * lightIntensity;
 
-        // adding light of directional lights and light points
-        light += addLights(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
-
         // updating ray for next iteration
         ray.setColor(ray.getColor() * obj->getColor());
         ray.setOrigin(inter);
         ray.reflect(normal, obj);
 
+        // adding light of directional lights and light points
+        light += addLights(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
+
         // reducing light intensity for next iteration
-        lightIntensity *= 0.6;
+        lightIntensity *= 0.7;
         old = obj;
     }
 
     // Lumière ambiante
-    if (lightIntensity == 1 || !old) {
+    if (lightIntensity == 1 || !old)
         light += ray.getColor() * getBackgroundLight(pos);
-    } else if (old->isReflective()) {
+    else if (old->isReflective() || old->isTransparent()) {
         light += ray.getColor() * getAmbientLight(pos) * old->getRoughness();
         if (!obj)
             light += ray.getColor() * getBackgroundLight(pos) * (1.0f - old->getRoughness());

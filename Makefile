@@ -83,9 +83,9 @@ tests_run:
 
 clean:
 	rm -f $(OBJ)
-	find . -name "vgcore.*" -delete
-	find . -name "*~" -delete
-	find . -name "\#*" -delete
+	find . -name "vgcore.*" -delete || true
+	find . -name "*~" -delete || true
+	find . -name "\#*" -delete || true
 
 fclean:    clean
 	rm -f $(NAME)
