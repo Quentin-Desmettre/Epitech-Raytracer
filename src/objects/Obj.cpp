@@ -11,6 +11,8 @@
 
 std::regex Obj::_verticesRegex = std::regex("v (-?[0-9]+.[0-9]+) (-?[0-9]+.[0-9]+) (-?[0-9]+.[0-9]+)");
 std::regex Obj::_trianglesRegex = std::regex("f ([0-9]+) ([0-9]+) ([0-9]+)");
+std::regex Obj::_trianglesRegexx = std::regex("f ([0-9]+)/[0-9]+? ([0-9]+)/[0-9]+? ([0-9]+)/[0-9]+?");
+std::regex Obj::_squaresRegex = std::regex("f ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 
 void Obj::setPath(const std::string &path)
@@ -28,13 +30,32 @@ void Obj::setPath(const std::string &path)
     while (std::getline(ifs, line)) {
         if (std::regex_match(line, _verticesRegex)) {
             std::regex_search(line, match, _verticesRegex);
-            Vec3 tmp = Vec3(std::stof(match[1]), std::stof(match[2]), std::stof(match[3]));
+            Vec3 tmp = Vec3(-std::stof(match[1]), -std::stof(match[2]), -std::stof(match[3]));
             _vertices.emplace_back(tmp + pos);
             continue;
         }
-        if (std::regex_match(line, _trianglesRegex)) {
-            std::regex_search(line, match, _trianglesRegex);
-            Triangle triangle(_vertices[std::stoi(match[1]) - 1], _vertices[std::stoi(match[2]) - 1], _vertices[std::stoi(match[3]) - 1], color, emmsionColor, _intensity);
+        if (std::regex_match(line, _squaresRegex)) {
+            std::regex_search(line, match, _squaresRegex);
+            Triangle triangle1(_vertices[std::stoi(match[1]) - 1], _vertices[std::stoi(match[2]) - 1], _vertices[std::stoi(match[3]) - 1], color, emmsionColor, _intensity);
+            Triangle triangle2(_vertices[std::stoi(match[1]) - 1], _vertices[std::stoi(match[3]) - 1], _vertices[std::stoi(match[4]) - 1], color, emmsionColor, _intensity);
+            _triangles.emplace_back(triangle1);
+            _triangles.emplace_back(triangle2);
+            _scene->addObject(std::make_unique<Triangle>(triangle1));
+            _scene->addObject(std::make_unique<Triangle>(triangle2));
+            continue;
+        }
+        // if (std::regex_match(line, _trianglesRegex)) {
+        //     std::regex_search(line, match, _trianglesRegex);
+        //     Triangle triangle(_vertices[std::stoi(match[3]) - 1], _vertices[std::stoi(match[2]) - 1], _vertices[std::stoi(match[1]) - 1] , color, emmsionColor, _intensity);
+        //     _triangles.emplace_back(triangle);
+        //     _scene->addObject(std::make_unique<Triangle>(triangle));
+        //     _scene->test();
+        //     continue;
+        // }
+        if (std::regex_match(line, _trianglesRegexx)) {
+            std::regex_search(line, match, _trianglesRegexx);
+            Triangle triangle(_vertices[std::stoi(match[3]) - 1], _vertices[std::stoi(match[2]) - 1], _vertices[std::stoi(match[1]) - 1] , color, emmsionColor, _intensity);
+            _triangles.emplace_back(triangle);
             _scene->addObject(std::make_unique<Triangle>(triangle));
             _scene->test();
             continue;
@@ -51,17 +72,17 @@ AObject(pos, color, emmsionColor, intensity)
     _scene = scene;
 }
 
-bool Obj::intersect(const Ray &ray) const
+bool Obj::intersect(const unused Ray &ray) const
 {
     return false;
 }
 
-Vec3 Obj::getIntersection(const Ray &ray) const
+Vec3 Obj::getIntersection(const unused Ray &ray) const
 {
     return VEC3_ZERO;
 }
 
-Vec3 Obj::getNormal(const Vec3 &inter, const Ray &ray) const
+Vec3 Obj::getNormal(const unused Vec3 &inter, const unused Ray &ray) const
 {
     return VEC3_ZERO;
 }

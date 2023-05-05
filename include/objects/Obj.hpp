@@ -26,6 +26,8 @@ class Obj: public AObject {
 
         static std::regex _verticesRegex;
         static std::regex _trianglesRegex;
+        static std::regex _trianglesRegexx;
+        static std::regex _squaresRegex;
 
     private:
         std::string _path;

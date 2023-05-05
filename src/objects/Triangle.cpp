@@ -18,16 +18,17 @@ AObject(point1, color, emmsionColor, intensity)
 
 bool Triangle::intersect(const Ray &ray) const
 {
+    std::array<Vec3, 3> points = getTmpPoints(ray);
     Vec3 origin = ray.getOrigin();
     Vec3 dir = ray.getDir();
-    Vec3 edge1 = _points[1] - _points[0];
-    Vec3 edge2 = _points[2] - _points[0];
+    Vec3 edge1 = points[1] - points[0];
+    Vec3 edge2 = points[2] - points[0];
     Vec3 pvec = Math::cross(dir, edge2);
     float det = Math::dot(edge1, pvec);
 
     if (det < 0.0001f)
         return false;
-    Vec3 tvec = origin - _points[0];
+    Vec3 tvec = origin - points[0];
     float u = Math::dot(tvec, pvec);
     if (u < 0.0f || u > det)
         return false;
@@ -56,29 +57,28 @@ Vec3 Triangle::getIntersection(const Ray &ray) const
     return origin + dir * t;
 }
 
-Vec3 Triangle::getNormal(unused const Vec3 &inter, unused const Ray &ray) const
-{
-    Vec3 edge1 = _points[1] - _points[0];
-    Vec3 edge2 = _points[2] - _points[0];
-    return Math::normalize(Math::cross(edge1, edge2));
-}
 
-bool Triangle::isPointInTriangle(const Vec3 &point) const
+std::array<Vec3, 3> Triangle::getTmpPoints(const Ray &ray) const
 {
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];
     Vec3 normal = Math::normalize(Math::cross(edge1, edge2));
-    Vec3 point1 = _points[0] - point;
-    Vec3 point2 = _points[1] - point;
-    Vec3 point3 = _points[2] - point;
-    Vec3 normal1 = Math::normalize(Math::cross(edge1, point1));
-    Vec3 normal2 = Math::normalize(Math::cross(edge2, point2));
-    Vec3 normal3 = Math::normalize(Math::cross(edge1, point3));
-    if (Math::dot(normal, normal1) < 0.0f)
-        return false;
-    if (Math::dot(normal, normal2) < 0.0f)
-        return false;
-    if (Math::dot(normal, normal3) < 0.0f)
-        return false;
-    return true;
+    float dir = Math::dot(normal, ray.getDir());
+    
+    if (dir < 0) {
+        return _points;
+    } else {
+        return std::array<Vec3, 3>{_points[2], _points[1], _points[0]};
+    }
+}
+
+Vec3 Triangle::getNormal(unused const Vec3 &inter, const Ray &ray) const
+{
+    Vec3 edge1 = _points[1] - _points[0];
+    Vec3 edge2 = _points[2] - _points[0];
+    Vec3 normal = Math::normalize(Math::cross(edge1, edge2));
+    float dir = Math::dot(normal, ray.getDir());
+    if (dir < 0)
+        return normal;
+    return -normal;
 }
