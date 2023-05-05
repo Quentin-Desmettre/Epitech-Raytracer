@@ -36,6 +36,7 @@ class ObjectBuilder: public ABuilder<T> {
             this->_objSetters.push_back({"transformations",     {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&IObject::setTransformations),   true}});
             this->_objSetters.push_back({"emission-color",      {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionColor),     true}});
             this->_objSetters.push_back({"emission-intensity",  {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionIntensity), true}});
+            this->_objSetters.push_back({"refractive-index",    {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setRefractiveIndex), true}});
 
             // Groups
             this->_objGroupSetters.push_back({"position",   static_cast<ABuilder<T>::BuilderSetterFunc>(&ObjectBuilder::setPosition)});

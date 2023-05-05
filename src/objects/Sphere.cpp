@@ -10,7 +10,6 @@
 Sphere::Sphere(Vec3 pos, sf::Color color, float radius, sf::Color emmsionColor, float intensity) :
 AObject(pos, color, emmsionColor, intensity), _radius(radius)
 {
-    _refractiveIndex = 1.5f;
 }
 
 float Sphere::getDelta(const Ray &ray) const

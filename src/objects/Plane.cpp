@@ -11,7 +11,6 @@ Plane::Plane(Vec3 pos, Vec3 dir, sf::Color color, sf::Color emmsionColor, float 
 AObject(pos, color, emmsionColor, intensity)
 {
     _dir = dir;
-    _refractiveIndex = 1.0f;
 }
 
 void Plane::setAxis(const std::string &axis) {
