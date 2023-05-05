@@ -23,6 +23,7 @@ class Obj: public AObject {
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
         Vec3 getIntersection(const Ray &ray) const override;
         void setPath(const std::string &path);
+        void createTriangle(unsigned long x, unsigned long y, unsigned long z);
 
         static std::regex _verticesRegex;
         static std::regex _trianglesRegex;
@@ -32,6 +33,9 @@ class Obj: public AObject {
         std::string _path;
         std::vector<Vec3> _vertices;
         std::vector<Triangle> _triangles;
+        sf::Color colorInt;
+        sf::Color emmsionColorInt;
+
         Scene *_scene;
 
 };
