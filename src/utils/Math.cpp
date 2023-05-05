@@ -36,13 +36,14 @@ int Math::random(int min, int max)
     return distribution(generator);
 }
 
-Vec3 Math::randomDir()
+Vec3 Math::randomDir(const Vec3 &normal)
 {
-    float x = randomf(0, 1);
-    float y = randomf(0, 1);
-    float z = randomf(0, 1);
+    int maxIterations = 100;
+    Vec3 dir = {randomf(-1, 1), randomf(-1, 1), randomf(-1, 1)};
 
-    return normalize(Vec3(x, y, z));
+    while (dot(dir, normal) < 0 && maxIterations-- > 0)
+        dir = {randomf(-1, 1), randomf(-1, 1), randomf(-1, 1)};
+    return normalize(dir);
 }
 
 float Math::sign(const float val)
@@ -82,18 +83,24 @@ Vec3 Math::proj(const Vec3 &vec1, const Vec3 &vec2)
     return dot(vec1, vec2) / dot(vec2, vec2) * vec2;
 }
 
-Vec3 Math::refract(const Vec3 &incident, const Vec3 &normal, const float eta)
+Vec3 Math::refract(const Vec3 &incident, const Vec3 &normal, float n1, float n2)
 {
     float cosi = dot(incident, normal);
-    float cost2 = 1.0f - eta * eta * (1.0f - cosi * cosi);
-    if (cost2 < 0)
-        return VEC3_ZERO;
-    return eta * incident - (eta * cosi + sqrtf(cost2)) * normal;
-}
+    float etai = n1;
+    float etat = n2;
+    Vec3 n = normal;
 
-Vec3 Math::reflect(const Vec3 &incident, const Vec3 &normal)
-{
-    return incident - 2.0f * dot(incident, normal) * normal;
+    if (cosi < 0)
+        cosi = -cosi;
+    else {
+        std::swap(etai, etat);
+        n = -n;
+    }
+    float eta = etai / etat;
+    float k = 1 - eta * eta * (1 - cosi * cosi);
+    if (k < 0)
+        return VEC3_ZERO;
+    return eta * incident + (eta * cosi - sqrtf(k)) * n;
 }
 
 float Math::fresnel(float cosi, float etai, float etat)

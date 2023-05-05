@@ -36,8 +36,8 @@ namespace Raytracer {
 
     private:
         void internalSetRange(sf::Vector2u start, sf::Vector2u end);
-        void addPixel(sf::Vector2u pos, sf::Vector3f color);
-        sf::Vector3f getPixelFColor(sf::Vector2f pos, const Scene &pool);
+        void addPixel(sf::Vector2u pos, Vec3 color);
+        Vec3 getPixelFColor(sf::Vector2f pos, const Scene &pool);
         Vec3 addLights(const Vec3 &normal, const Vec3 &inter, const Vec3 &color, const Scene &pool, const IObject *obj);
 
         PointArray *_array;
@@ -46,8 +46,8 @@ namespace Raytracer {
         std::vector<std::unique_ptr<IRenderer>> _subRenderers;
 
         // TODO: get these from the scene
-        sf::Vector3f getAmbientLight(sf::Vector2f pos) const;
-        sf::Vector3f getBackgroundLight(sf::Vector2f pos) const;
+        Vec3 getAmbientLight(const sf::Vector2f &pos) const;
+        Vec3 getBackgroundLight(const sf::Vector2f &pos) const;
         std::vector<DirectionalLight> _directionalLights;
     };
 } // Raytracer
