@@ -19,8 +19,7 @@ class Sphere : public AObject {
         float getRadius() const {return _radius;};
         void setRadius(const float &radius) {_radius = radius;};
         void setTransparency(const bool &transparency) override;
-        bool intersect(const Ray &ray) const override;
-        Vec3 getIntersection(const Ray &ray) const override;
+        bool intersect(const Ray &ray, Vec3 &intersection) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
 
     protected:

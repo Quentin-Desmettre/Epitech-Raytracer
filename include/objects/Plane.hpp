@@ -21,8 +21,7 @@ class Plane : public AObject {
         void setPosition(const float &position);
         void setTransparency(const bool &transparency) override;
 
-        bool intersect(const Ray &ray) const override;
-        Vec3 getIntersection(const Ray &ray) const override;
+        bool intersect(const Ray &ray, Vec3 &intersection) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
     protected:
     private:

@@ -39,17 +39,12 @@ void Plane::setTransparency(const bool &transparency)
     _refractiveIndex = 1.5f;
 }
 
-bool Plane::intersect(const Ray &ray) const
+bool Plane::intersect(const Ray &ray, Vec3 &intersection) const
 {
     float dot = Math::dot(ray.getDir(), _dir);
+    float t = Math::dot(_pos - ray.getOrigin(), _dir) / (dot != 0 ? dot : 1);
+    intersection = ray.getOrigin() + ray.getDir() * t;
     return dot != 0;
-}
-
-Vec3 Plane::getIntersection(const Ray &ray) const
-{
-    float dot = Math::dot(ray.getDir(), _dir);
-    float t = Math::dot(_pos - ray.getOrigin(), _dir) / dot;
-    return ray.getOrigin() + ray.getDir() * t;
 }
 
 Vec3 Plane::getNormal(unused const Vec3 &inter, unused const Ray &ray) const

@@ -87,6 +87,8 @@ std::unique_ptr<Scene> SceneBuilder::build()
                     std::istreambuf_iterator<char>());
     scene->setRawConfiguration(str);
     file.close();
+    for (auto obj: scene->getPool())
+        obj->computeTransformations();
     return scene;
 }
 

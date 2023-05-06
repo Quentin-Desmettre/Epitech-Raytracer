@@ -16,7 +16,7 @@ AObject(point1, color, emmsionColor, intensity)
     _points[2] = point3;
 }
 
-bool Triangle::intersect(const Ray &ray) const
+bool Triangle::intersect(const Ray &ray, Vec3 &intersection) const
 {
     Vec3 origin = ray.getOrigin();
     Vec3 dir = ray.getDir();
@@ -38,22 +38,8 @@ bool Triangle::intersect(const Ray &ray) const
     float t = Math::dot(edge2, qvec) / det;
     if (t < 0.0f)
         return false;
+    intersection = origin + dir * t;
     return true;
-}
-
-Vec3 Triangle::getIntersection(const Ray &ray) const
-{
-    Vec3 origin = ray.getOrigin();
-    Vec3 dir = ray.getDir();
-    Vec3 edge1 = _points[1] - _points[0];
-    Vec3 edge2 = _points[2] - _points[0];
-    Vec3 pvec = Math::cross(dir, edge2);
-    float det = Math::dot(edge1, pvec);
-
-    Vec3 tvec = origin - _points[0];
-    Vec3 qvec = Math::cross(tvec, edge1);
-    float t = Math::dot(edge2, qvec) / det;
-    return origin + dir * t;
 }
 
 Vec3 Triangle::getNormal(unused const Vec3 &inter, unused const Ray &ray) const

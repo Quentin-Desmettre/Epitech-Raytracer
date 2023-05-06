@@ -32,6 +32,11 @@ float &Mat4::operator()(int x, int y)
     return _matrix[x * 4 + y];
 }
 
+float Mat4::operator()(int x, int y) const
+{
+    return _matrix[x * 4 + y];
+}
+
 Mat4 Mat4::operator*(const Mat4 &other) const
 {
     Mat4 result;
@@ -58,6 +63,12 @@ Vec3 Mat4::operator*(const Vec3 &vec) const
     return result;
 }
 
+Mat4 Mat4::operator*=(const Mat4 &other)
+{
+    *this = *this * other;
+    return *this;
+}
+
 std::array<float, 4> Mat4::operator*(const std::array<float, 4> &vec) const
 {
     std::array<float, 4> result;
@@ -73,37 +84,129 @@ std::array<float, 4> Mat4::operator*(const std::array<float, 4> &vec) const
 Mat4 Mat4::inverse() const
 {
     Mat4 inv;
-    float det = 0;
+    float det;
+    int i;
 
-    inv._matrix[0] = _matrix[5]  * _matrix[10] * _matrix[15] -
-                     _matrix[5]  * _matrix[11] * _matrix[14] -
-                     _matrix[9]  * _matrix[6]  * _matrix[15] +
-                     _matrix[9]  * _matrix[7]  * _matrix[14] +
-                     _matrix[13] * _matrix[6]  * _matrix[11] -
-                     _matrix[13] * _matrix[7]  * _matrix[10];
+    inv[0] = _matrix[5]  * _matrix[10] * _matrix[15] -
+             _matrix[5]  * _matrix[11] * _matrix[14] -
+             _matrix[9]  * _matrix[6]  * _matrix[15] +
+             _matrix[9]  * _matrix[7]  * _matrix[14] +
+             _matrix[13] * _matrix[6]  * _matrix[11] -
+             _matrix[13] * _matrix[7]  * _matrix[10];
 
-    det = _matrix[0] * inv._matrix[0] + _matrix[1] * inv._matrix[4] + _matrix[2] * inv._matrix[8] + _matrix[3] * inv._matrix[12];
+    inv[4] = -_matrix[4]  * _matrix[10] * _matrix[15] +
+             _matrix[4]  * _matrix[11] * _matrix[14] +
+             _matrix[8]  * _matrix[6]  * _matrix[15] -
+             _matrix[8]  * _matrix[7]  * _matrix[14] -
+             _matrix[12] * _matrix[6]  * _matrix[11] +
+             _matrix[12] * _matrix[7]  * _matrix[10];
+
+    inv[8] = _matrix[4]  * _matrix[9] * _matrix[15] -
+             _matrix[4]  * _matrix[11] * _matrix[13] -
+             _matrix[8]  * _matrix[5] * _matrix[15] +
+             _matrix[8]  * _matrix[7] * _matrix[13] +
+             _matrix[12] * _matrix[5] * _matrix[11] -
+             _matrix[12] * _matrix[7] * _matrix[9];
+
+    inv[12] = -_matrix[4]  * _matrix[9] * _matrix[14] +
+              _matrix[4]  * _matrix[10] * _matrix[13] +
+              _matrix[8]  * _matrix[5] * _matrix[14] -
+              _matrix[8]  * _matrix[6] * _matrix[13] -
+              _matrix[12] * _matrix[5] * _matrix[10] +
+              _matrix[12] * _matrix[6] * _matrix[9];
+
+    inv[1] = -_matrix[1]  * _matrix[10] * _matrix[15] +
+             _matrix[1]  * _matrix[11] * _matrix[14] +
+             _matrix[9]  * _matrix[2] * _matrix[15] -
+             _matrix[9]  * _matrix[3] * _matrix[14] -
+             _matrix[13] * _matrix[2] * _matrix[11] +
+             _matrix[13] * _matrix[3] * _matrix[10];
+
+    inv[5] = _matrix[0]  * _matrix[10] * _matrix[15] -
+             _matrix[0]  * _matrix[11] * _matrix[14] -
+             _matrix[8]  * _matrix[2] * _matrix[15] +
+             _matrix[8]  * _matrix[3] * _matrix[14] +
+             _matrix[12] * _matrix[2] * _matrix[11] -
+             _matrix[12] * _matrix[3] * _matrix[10];
+
+    inv[9] = -_matrix[0]  * _matrix[9] * _matrix[15] +
+             _matrix[0]  * _matrix[11] * _matrix[13] +
+             _matrix[8]  * _matrix[1] * _matrix[15] -
+             _matrix[8]  * _matrix[3] * _matrix[13] -
+             _matrix[12] * _matrix[1] * _matrix[11] +
+             _matrix[12] * _matrix[3] * _matrix[9];
+
+    inv[13] = _matrix[0]  * _matrix[9] * _matrix[14] -
+              _matrix[0]  * _matrix[10] * _matrix[13] -
+              _matrix[8]  * _matrix[1] * _matrix[14] +
+              _matrix[8]  * _matrix[2] * _matrix[13] +
+              _matrix[12] * _matrix[1] * _matrix[10] -
+              _matrix[12] * _matrix[2] * _matrix[9];
+
+    inv[2] = _matrix[1]  * _matrix[6] * _matrix[15] -
+             _matrix[1]  * _matrix[7] * _matrix[14] -
+             _matrix[5]  * _matrix[2] * _matrix[15] +
+             _matrix[5]  * _matrix[3] * _matrix[14] +
+             _matrix[13] * _matrix[2] * _matrix[7] -
+             _matrix[13] * _matrix[3] * _matrix[6];
+
+    inv[6] = -_matrix[0]  * _matrix[6] * _matrix[15] +
+             _matrix[0]  * _matrix[7] * _matrix[14] +
+             _matrix[4]  * _matrix[2] * _matrix[15] -
+             _matrix[4]  * _matrix[3] * _matrix[14] -
+             _matrix[12] * _matrix[2] * _matrix[7] +
+             _matrix[12] * _matrix[3] * _matrix[6];
+
+    inv[10] = _matrix[0]  * _matrix[5] * _matrix[15] -
+              _matrix[0]  * _matrix[7] * _matrix[13] -
+              _matrix[4]  * _matrix[1] * _matrix[15] +
+              _matrix[4]  * _matrix[3] * _matrix[13] +
+              _matrix[12] * _matrix[1] * _matrix[7] -
+              _matrix[12] * _matrix[3] * _matrix[5];
+
+    inv[14] = -_matrix[0]  * _matrix[5] * _matrix[14] +
+              _matrix[0]  * _matrix[6] * _matrix[13] +
+              _matrix[4]  * _matrix[1] * _matrix[14] -
+              _matrix[4]  * _matrix[2] * _matrix[13] -
+              _matrix[12] * _matrix[1] * _matrix[6] +
+              _matrix[12] * _matrix[2] * _matrix[5];
+
+    inv[3] = -_matrix[1] * _matrix[6] * _matrix[11] +
+             _matrix[1] * _matrix[7] * _matrix[10] +
+             _matrix[5] * _matrix[2] * _matrix[11] -
+             _matrix[5] * _matrix[3] * _matrix[10] -
+             _matrix[9] * _matrix[2] * _matrix[7] +
+             _matrix[9] * _matrix[3] * _matrix[6];
+
+    inv[7] = _matrix[0] * _matrix[6] * _matrix[11] -
+             _matrix[0] * _matrix[7] * _matrix[10] -
+             _matrix[4] * _matrix[2] * _matrix[11] +
+             _matrix[4] * _matrix[3] * _matrix[10] +
+             _matrix[8] * _matrix[2] * _matrix[7] -
+             _matrix[8] * _matrix[3] * _matrix[6];
+
+    inv[11] = -_matrix[0] * _matrix[5] * _matrix[11] +
+              _matrix[0] * _matrix[7] * _matrix[9] +
+              _matrix[4] * _matrix[1] * _matrix[11] -
+              _matrix[4] * _matrix[3] * _matrix[9] -
+              _matrix[8] * _matrix[1] * _matrix[7] +
+              _matrix[8] * _matrix[3] * _matrix[5];
+
+    inv[15] = _matrix[0] * _matrix[5] * _matrix[10] -
+              _matrix[0] * _matrix[6] * _matrix[9] -
+              _matrix[4] * _matrix[1] * _matrix[10] +
+              _matrix[4] * _matrix[2] * _matrix[9] +
+              _matrix[8] * _matrix[1] * _matrix[6] -
+              _matrix[8] * _matrix[2] * _matrix[5];
+
+    det = _matrix[0] * inv[0] + _matrix[1] * inv[4] + _matrix[2] * inv[8] + _matrix[3] * inv[12];
+
     if (det == 0)
-        return Mat4();
-    det = 1.0 / det;
+        return {};
 
-    inv._matrix[0] = det * inv._matrix[0];
-    inv._matrix[1] = det * inv._matrix[1];
-    inv._matrix[2] = det * inv._matrix[2];
-    inv._matrix[3] = det * inv._matrix[3];
-    inv._matrix[4] = det * inv._matrix[4];
-    inv._matrix[5] = det * inv._matrix[5];
-    inv._matrix[6] = det * inv._matrix[6];
-    inv._matrix[7] = det * inv._matrix[7];
-    inv._matrix[8] = det * inv._matrix[8];
-    inv._matrix[9] = det * inv._matrix[9];
-    inv._matrix[10] = det * inv._matrix[10];
-    inv._matrix[11] = det * inv._matrix[11];
-    inv._matrix[12] = det * inv._matrix[12];
-    inv._matrix[13] = det * inv._matrix[13];
-    inv._matrix[14] = det * inv._matrix[14];
-    inv._matrix[15] = det * inv._matrix[15];
-
+    det = 1.0f / det;
+    for (i = 0; i < 16; i++)
+        inv[i] *= det;
     return inv;
 }
 
@@ -133,10 +236,10 @@ Vec3 Mat4::vecRotate(Vec3 vec, Vec3 dir, Vec3 pos)
 Mat4 Mat4::translate3D(const Vec3 &vec)
 {
     return Mat4({
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        vec.x, vec.y, vec.z, 1
+        1, 0, 0, vec.x,
+        0, 1, 0, vec.y,
+        0, 0, 1, vec.z,
+        0, 0, 0, 1
     });
 }
 

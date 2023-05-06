@@ -7,6 +7,7 @@
 
 #include "objects/Object.hpp"
 #include "Exceptions.hpp"
+#include "Raytracer.hpp"
 
 AObject::AObject(Vec3 pos,
                  sf::Color color,
@@ -117,9 +118,9 @@ void AObject::setEmissionIntensity(const float &intensity)
     _intensity = intensity;
 }
 
-void AObject::setTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations)
+void AObject::addTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations)
 {
-    _transformations = transformations;
+    _transformations.insert(_transformations.end(), transformations.begin(), transformations.end());
 }
 
 bool AObject::operator==(const AObject &obj) const
@@ -132,4 +133,36 @@ bool AObject::operator==(const AObject &obj) const
 bool AObject::operator!=(const AObject &obj) const
 {
     return !(*this == obj);
+}
+
+void AObject::computeTransformations()
+{
+    Mat4 inverse = Mat4::translate3D(_pos);
+
+    for (auto &trans: _transformations) {
+        for (auto &mat: trans->getMatrices())
+            inverse *= mat;
+    }
+    _transformationsMatrix = inverse;
+    _inverseTransformations = inverse.inverse();
+}
+
+Ray AObject::transformRay(const Ray &ray) const
+{
+    // Manually compute the new direction
+    Vec3 newDir;
+    newDir.x = _inverseTransformations(0, 0) * ray.getDir().x + _inverseTransformations(0, 1) * ray.getDir().y + _inverseTransformations(0, 2) * ray.getDir().z;
+    newDir.y = _inverseTransformations(1, 0) * ray.getDir().x + _inverseTransformations(1, 1) * ray.getDir().y + _inverseTransformations(1, 2) * ray.getDir().z;
+    newDir.z = _inverseTransformations(2, 0) * ray.getDir().x + _inverseTransformations(2, 1) * ray.getDir().y + _inverseTransformations(2, 2) * ray.getDir().z;
+
+    // Manually compute the new origin
+    Vec3 newOrigin;
+    newOrigin.x = _inverseTransformations(0, 0) * ray.getOrigin().x + _inverseTransformations(0, 1) * ray.getOrigin().y + _inverseTransformations(0, 2) * ray.getOrigin().z + _inverseTransformations(0, 3);
+    newOrigin.y = _inverseTransformations(1, 0) * ray.getOrigin().x + _inverseTransformations(1, 1) * ray.getOrigin().y + _inverseTransformations(1, 2) * ray.getOrigin().z + _inverseTransformations(1, 3);
+    newOrigin.z = _inverseTransformations(2, 0) * ray.getOrigin().x + _inverseTransformations(2, 1) * ray.getOrigin().y + _inverseTransformations(2, 2) * ray.getOrigin().z + _inverseTransformations(2, 3);
+
+    return {
+        newOrigin,
+        newDir
+    };
 }

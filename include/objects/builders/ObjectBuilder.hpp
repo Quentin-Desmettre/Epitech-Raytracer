@@ -33,7 +33,7 @@ class ObjectBuilder: public ABuilder<T> {
             this->_objSetters.push_back({"transparency",        {Type::TypeBoolean,   reinterpret_cast<ObjSetterFunc>(&IObject::setTransparency),      true}});
             this->_objSetters.push_back({"reflection",          {Type::TypeBoolean,   reinterpret_cast<ObjSetterFunc>(&IObject::setReflectivity),      true}});
             this->_objSetters.push_back({"roughness",           {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setRoughness),           true}});
-            this->_objSetters.push_back({"transformations",     {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&IObject::setTransformations),   true}});
+            this->_objSetters.push_back({"transformations",     {Type::TypeList,    reinterpret_cast<ObjSetterFunc>(&IObject::addTransformations),   true}});
             this->_objSetters.push_back({"emission-color",      {Type::TypeGroup,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionColor),     true}});
             this->_objSetters.push_back({"emission-intensity",  {Type::TypeFloat,   reinterpret_cast<ObjSetterFunc>(&IObject::setEmissionIntensity), true}});
 
@@ -44,7 +44,7 @@ class ObjectBuilder: public ABuilder<T> {
 
             // Lists
             // transformations MUST BE AFTER POSITION
-            this->_objListSetters.push_back({"transformations", static_cast<ABuilder<T>::BuilderSetterFunc>(&ObjectBuilder::setTransformations)});
+            this->_objListSetters.push_back({"transformations", static_cast<ABuilder<T>::BuilderSetterFunc>(&ObjectBuilder::addTransformations)});
 #pragma GCC diagnostic pop
 
         }
@@ -98,7 +98,7 @@ class ObjectBuilder: public ABuilder<T> {
             ABuilder<T>::setParameter(obj, argName, getColor(setting));
         }
 
-        void setTransformations(T &obj, const std::string &argName, const libconfig::Setting &setting)
+        void addTransformations(T &obj, const std::string &argName, const libconfig::Setting &setting)
         {
             TransformationFactory transformationFactory(obj);
 

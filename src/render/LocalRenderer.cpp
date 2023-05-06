@@ -69,7 +69,7 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
 
         if (!obj)
             break;
-        Vec3 inter = obj->getIntersection(ray);
+        Vec3 inter; obj->intersect(ray, inter);
         Vec3 normal = obj->getNormal(inter, ray);
         // calcualte light angle with object
         float strength = std::max(Math::dot(normal, -ray.getDir()), 0.0f);
