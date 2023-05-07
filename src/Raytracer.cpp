@@ -63,6 +63,7 @@ void Raytracer::Raytracer::generateRandomScene()
         sphere->setTransparency(Math::random(0, 1));
         sphere->setRoughness(Math::realRandomf(0, 1));
         sphere->setRefractiveIndex(1.5f);
+        sphere->computeTransformations();
         _scene->addObject(std::move(sphere));
     }
 }
@@ -98,6 +99,7 @@ void Raytracer::Raytracer::addSphereAtPos(const sf::Vector2f &pos)
         else
             sphere->setPos({0, 0, 0});
     }
+    sphere->computeTransformations();
     _scene->addObject(std::move(sphere));
     this->reset(_renderer);
 }
