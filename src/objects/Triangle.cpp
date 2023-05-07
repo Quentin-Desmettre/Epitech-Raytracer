@@ -18,8 +18,9 @@ AObject(point1, color, emmsionColor, intensity)
 
 bool Triangle::intersect(const Ray &ray, Vec3 &intersection) const
 {
-    Vec3 origin = ray.getOrigin();
-    Vec3 dir = ray.getDir();
+    Ray r = transformRay(ray);
+    Vec3 origin = r.getOrigin();
+    Vec3 dir = r.getDir();
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];
     Vec3 pvec = Math::cross(dir, edge2);
@@ -39,6 +40,7 @@ bool Triangle::intersect(const Ray &ray, Vec3 &intersection) const
     if (t < 0.0f)
         return false;
     intersection = origin + dir * t;
+    intersection = _transformationsMatrix * intersection;
     return true;
 }
 

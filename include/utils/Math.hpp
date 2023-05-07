@@ -20,11 +20,12 @@ namespace Math
     float random(float min, float max);
     int random(int min, int max);
     bool isPowerOfTwo(int n);
+    float toDeg(float rad);
+    float toRad(float deg);
 
     Vec3 randomDir();
     float sign(float val);
     Vec3 cross(const Vec3 &vec1, const Vec3 &vec2);
-    double toRad(double deg);
     Vec3 lerp(const Vec3 &vec1, const Vec3 &vec2, float t);
     float length(const Vec3 &vec);
     bool sameSign(const Vec3 &a, const Vec3 &b);

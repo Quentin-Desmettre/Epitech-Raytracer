@@ -29,8 +29,14 @@ void Plane::setAxis(const std::string &axis) {
     else
         throw InvalidParameterValueException("axis");
 }
+
 void Plane::setPosition(const float &position) {
     _pos = _dir * position;
+}
+
+void Plane::computeTransformations()
+{
+    AObject::computeTransformations();
 }
 
 void Plane::setTransparency(const bool &transparency)
@@ -41,9 +47,11 @@ void Plane::setTransparency(const bool &transparency)
 
 bool Plane::intersect(const Ray &ray, Vec3 &intersection) const
 {
-    float dot = Math::dot(ray.getDir(), _dir);
-    float t = Math::dot(_pos - ray.getOrigin(), _dir) / (dot != 0 ? dot : 1);
-    intersection = ray.getOrigin() + ray.getDir() * t;
+    Ray r = transformRay(ray);
+    float dot = Math::dot(r.getDir(), _dir);
+    float t = Math::dot(-r.getOrigin(), _dir) / (dot != 0 ? dot : 1);
+    intersection = r.getOrigin() + r.getDir() * t;
+    intersection = _transformationsMatrix * intersection;
     return dot != 0;
 }
 

@@ -16,13 +16,14 @@ class Plane : public AObject {
         sf::Color color = sf::Color::Red, sf::Color emissionColor = sf::Color::Black, float intensity = 1.0f);
         ~Plane() override = default;
 
-        // TODO
         void setAxis(const std::string &axis);
         void setPosition(const float &position);
         void setTransparency(const bool &transparency) override;
 
         bool intersect(const Ray &ray, Vec3 &intersection) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
+
+        void computeTransformations() override;
     protected:
     private:
         Vec3 _dir;

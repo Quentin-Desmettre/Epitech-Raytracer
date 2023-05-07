@@ -91,7 +91,7 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
     if (static_cast<std::string>(settings["around"]) == "origin") {
         rotate->setMatrices({Mat4::rotate3D(
             axis,
-            getFloat(settings["angle"])
+            Math::toRad(getFloat(settings["angle"]))
         )});
         return rotate;
     }
@@ -110,7 +110,7 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
     // 2. Rotate the object
     Mat4 rotateAroundCenter = Mat4::rotate3D(
         axis,
-        getFloat(settings["angle"])
+        Math::toRad(getFloat(settings["angle"]))
     );
 
     // 3. Translate the object back to its original position

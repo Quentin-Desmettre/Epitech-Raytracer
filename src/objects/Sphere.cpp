@@ -55,5 +55,5 @@ bool Sphere::intersect(const Ray &ray, Vec3 &intersection) const
 
 Vec3 Sphere::getNormal(const Vec3 &inter, unused const Ray &ray) const
 {
-    return Math::normalize(inter - _pos);
+    return Math::normalize(inter);
 }
