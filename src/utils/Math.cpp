@@ -58,11 +58,6 @@ Vec3 Math::cross(const Vec3 &vec1, const Vec3 &vec2)
                 vec1.x * vec2.y - vec1.y * vec2.x};
 }
 
-double Math::toRad(const double deg)
-{
-    return deg * M_PI / 180.0;
-}
-
 Vec3 Math::lerp(const Vec3 &vec1, const Vec3 &vec2, const float t)
 {
     return vec1 + t * (vec2 - vec1);
@@ -109,4 +104,19 @@ float Math::fresnel(float cosi, float etai, float etat)
     float x = 1.0f - (cosi < 0 ? -cosi : cosi);
     float fresnel = r0 + (1.0f - r0) * powf(x, 5.0f);
     return fresnel;
+}
+
+bool Math::isPowerOfTwo(int n)
+{
+    return (ceil(log2(n)) == floor(log2(n)));
+}
+
+float Math::toRad(float deg)
+{
+    return deg * M_PIf / 180.0f;
+}
+
+float Math::toDeg(float rad)
+{
+    return rad * 180.0f / M_PIf;
 }

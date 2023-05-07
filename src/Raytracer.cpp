@@ -73,8 +73,13 @@ void Raytracer::Raytracer::addSphereAtPos(const sf::Vector2f &pos)
     auto sphere = std::make_unique<Sphere>(inter, sf::Color(255, 64, 64), 0.5f);
 
     // setting sphere position if there is an intersection
-    if (obj != nullptr)
-        sphere->setPos(obj->getIntersection(ray));
+    if (obj != nullptr) {
+        Vec3 intersection;
+        if (obj->intersect(ray, intersection))
+            sphere->setPos(intersection);
+        else
+            sphere->setPos({0, 0, 0});
+    }
     _scene->addObject(std::move(sphere));
     this->reset(_renderer);
 }
@@ -105,6 +110,8 @@ bool Raytracer::Raytracer::handleMovement(const sf::Event &event)
         _scene->getCamera().turn(0, 0.1f, reset);
     if (event.key.code == sf::Keyboard::Enter)
         _drawer->saveToFile(_scene->getOutputFile());
+    if (event.key.code == sf::Keyboard::Space)
+        _scene->setPreRenderEnabled(!_scene->isPreRenderEnabled());
 
     return reset;
 }

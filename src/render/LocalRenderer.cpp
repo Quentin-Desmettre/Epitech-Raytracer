@@ -23,12 +23,14 @@ void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf:
 {
     _array = &array;
     sf::Clock clock;
+    const int raysPerPixel = scene.isPreRenderEnabled() ? 1 : scene.getRaysPerPixel();
+
     for (unsigned x = _start.x; x < _end.x; x++) {
         for (unsigned y = _start.y; y < _end.y; y++) {
             Vec3 colors = VEC3_ZERO;
-            for (int i = 0; i < scene.getRaysPerPixel(); i++)
+            for (int i = 0; i < raysPerPixel; i++)
                 colors += getPixelFColor(sf::Vector2f(x, y), scene);
-            colors /= static_cast<float>(scene.getRaysPerPixel());
+            colors /= static_cast<float>(raysPerPixel);
             addPixel({x, y}, colors);
         }
     }
@@ -56,16 +58,6 @@ void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, Vec3 color)
     _array->setPixel(pos, color);
 }
 
-Vec3 getRayDir(sf::Vector2f pos, const Scene &scene)
-{
-    unsigned maxX = scene.getResolution().x;
-    unsigned maxY = scene.getResolution().y;
-
-    Vec3 rayDir = Math::normalize(Vec3 (pos.x - maxX / 2.0f,
-                                                        pos.y - maxY / 2.0f, maxX / 2.0f));
-    return Math::normalize(Mat4::vecRotate(rayDir, scene.getCamera().getRot(), scene.getCamera().getPos()));
-}
-
 Vec3 Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &scene)
 {
     Ray ray = Ray(scene.getCamera().getPos(), scene.getCamera().getRayDir(pos));
@@ -73,13 +65,14 @@ Vec3 Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &sce
     const IObject *old = nullptr;
     float lightIntensity = 1;
     Vec3 light = VEC3_ZERO;
+    const int nbBounces = scene.isPreRenderEnabled() ? 0 : scene.getNbBounces();
 
-    for (int bounces = 0; bounces <= scene.getNbBounces(); bounces++) {
-        obj = scene.getClosest(ray, old);
+    for (int bounces = 0; bounces <= nbBounces; bounces++) {
+        const IObject *obj = scene.getClosest(ray, old);
 
         if (!obj)
             break;
-        Vec3 inter = obj->getIntersection(ray);
+        Vec3 inter; obj->intersect(ray, inter);
         Vec3 normal = obj->getNormal(inter, ray);
 
         // add light of object according to its color and other parameters

@@ -12,7 +12,7 @@
 
 class TorusBuilder: ObjectBuilder<Torus> {
     public:
-        explicit TorusBuilder() {}
+        explicit TorusBuilder();
 };
 
 #endif //EPITECH_RAYTRACER_TORUSBUILDER_HPP

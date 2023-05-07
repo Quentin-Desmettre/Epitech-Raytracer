@@ -12,7 +12,7 @@
 
 class ConeBuilder: ObjectBuilder<Cone> {
     public:
-        explicit ConeBuilder() {}
+        explicit ConeBuilder();
 };
 
 #endif //EPITECH_RAYTRACER_CONEBUILDER_HPP

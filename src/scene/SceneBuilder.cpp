@@ -87,32 +87,54 @@ std::unique_ptr<Scene> SceneBuilder::build()
                     std::istreambuf_iterator<char>());
     scene->setRawConfiguration(str);
     file.close();
+    for (auto obj: scene->getPool())
+        obj->computeTransformations();
     return scene;
 }
 
 void SceneBuilder::setCamera(Scene &scene, const std::string &param,
 const libconfig::Setting &setting)
 {
+    std::cout << "Setting camera" << std::endl;
+    if (!setting.exists("resolution"))      throw InvalidParameterValueException("Missing resolution for camera");
+    if (!setting.exists("position"))        throw InvalidParameterValueException("Missing position for camera");
+    if (!setting.exists("antiAliasing"))    throw InvalidParameterValueException("Missing antiAliasing for camera");
+    if (!setting.exists("rotation"))        throw InvalidParameterValueException("Missing rotation for camera");
+
+    // Fetch resolution
     sf::Vector2u resolution = {
             static_cast<unsigned int>(setting["resolution"]["x"]),
             static_cast<unsigned int>(setting["resolution"]["y"])
     };
+    if (resolution.x <= 0 || resolution.y <= 0)
+        throw InvalidParameterValueException("Invalid resolution for camera");
+
+    // Fetch position and rotation
     sf::Vector3f position = {
             getFloat(setting["position"]["x"]),
             getFloat(setting["position"]["y"]),
             getFloat(setting["position"]["z"])
     };
-    sf::Vector3f focusedPoint = {
-            getFloat(setting["focusedPoint"]["x"]),
-            getFloat(setting["focusedPoint"]["y"]),
-            getFloat(setting["focusedPoint"]["z"])
+    sf::Vector3f rot = {
+            getFloat(setting["rotation"]["x"]),
+            getFloat(setting["rotation"]["y"]),
+            getFloat(setting["rotation"]["z"])
     };
-    float antiAliasing = getFloat(setting["antiAliasing"]);
 
-    auto cam = std::make_shared<Camera>(position, sf::Vector3f{0, 0, 1}, resolution);
-    cam->setPos(position);
-    cam->setRot(focusedPoint);
+    // Fetch antiAliasing
+    float antiAliasing = setting.exists("antiAliasing") ? getFloat(setting["antiAliasing"]) : 1;
+    if (antiAliasing <= 0 || !Math::isPowerOfTwo(antiAliasing))
+        throw InvalidParameterValueException("Invalid antiAliasing");
+
+    // Fetch fov
+    float fov = setting.exists("fieldOfView") ? getFloat(setting["fieldOfView"]) : 90;
+    if (fov <= 0 || fov > 180)
+        throw InvalidParameterValueException("Invalid fieldOfView");
+
+    // Build camera
+    auto cam = std::make_shared<Camera>(position, rot, resolution);
     cam->setAntiAliasing(antiAliasing);
+    cam->setFov(fov);
     setParameter(scene, param, cam);
 }
 

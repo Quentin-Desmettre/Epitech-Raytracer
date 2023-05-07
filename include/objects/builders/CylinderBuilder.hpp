@@ -12,7 +12,7 @@
 
 class CylinderBuilder: ObjectBuilder<Cylinder> {
     public:
-        explicit CylinderBuilder() {}
+        explicit CylinderBuilder();
 };
 
 
