@@ -24,7 +24,8 @@ SRC = \
 	./src/render/Ray.cpp \
 	./src/Exceptions.cpp \
 	./src/lights/LightPoint.cpp \
-	./src/lights/Lights.cpp \
+	./src/lights/ObjectLight.cpp \
+	./src/lights/DirectionalLight.cpp \
 	./src/transformations/TransformationFactory.cpp \
 	./src/transformations/Transformation.cpp \
 	./src/objects/Sphere.cpp \
@@ -82,9 +83,9 @@ tests_run:
 
 clean:
 	rm -f $(OBJ)
-	find . -name "vgcore.*" -delete
-	find . -name "*~" -delete
-	find . -name "\#*" -delete
+	find . -name "vgcore.*" -delete || true
+	find . -name "*~" -delete || true
+	find . -name "\#*" -delete || true
 
 fclean:    clean
 	rm -f $(NAME)

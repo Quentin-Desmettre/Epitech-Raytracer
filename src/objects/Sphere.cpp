@@ -12,12 +12,6 @@ AObject(pos, color, emmsionColor, intensity), _radius(radius)
 {
 }
 
-void Sphere::setTransparency(const bool &transparency)
-{
-    _transparency = transparency;
-    _refractiveIndex = 1.5f;
-}
-
 float Sphere::getDelta(const Ray &ray) const
 {
     Vec3 origin = ray.getOrigin();

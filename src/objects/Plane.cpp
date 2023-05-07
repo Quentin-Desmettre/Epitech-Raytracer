@@ -39,12 +39,6 @@ void Plane::computeTransformations()
     AObject::computeTransformations();
 }
 
-void Plane::setTransparency(const bool &transparency)
-{
-    _transparency = transparency;
-    _refractiveIndex = 1.5f;
-}
-
 bool Plane::intersect(const Ray &ray, Vec3 &intersection) const
 {
     Ray r = transformRay(ray);

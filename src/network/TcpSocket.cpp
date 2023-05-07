@@ -17,6 +17,7 @@
 #include <iostream>
 #include <csignal>
 #include "Print.hpp"
+#include "render/Sfml.hpp"
 #include <thread>
 
 Network::TcpSocket::TcpSocket()
@@ -196,7 +197,7 @@ void Network::TcpSocket::unsetSigpipeHandler()
     signal(SIGPIPE, SIG_DFL);
 }
 
-void Network::TcpSocket::sigpipeHandler(int signal)
+void Network::TcpSocket::sigpipeHandler(unused int signal)
 {
     throw Network::SocketDisconnectedException();
 }
