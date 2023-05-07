@@ -137,7 +137,7 @@ Vec3 Raytracer::LocalRenderer::getAmbientLight(unused const sf::Vector2f &pos) c
 
 Vec3 Raytracer::LocalRenderer::getBackgroundLight(unused const sf::Vector2f &pos) const
 {
-    return {50 / 255.0f, 50 / 255.0f, 50 / 255.0f};
+    return {213 / 255.0f, 231 / 255.0f, 255 / 255.0f};
 }
 
 std::pair<sf::Vector2u, sf::Vector2u> Raytracer::LocalRenderer::getRange() const
