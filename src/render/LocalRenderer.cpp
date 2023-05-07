@@ -25,7 +25,7 @@ void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf:
     sf::Clock clock;
     for (unsigned x = _start.x; x < _end.x; x++) {
         for (unsigned y = _start.y; y < _end.y; y++) {
-            sf::Vector3f colors = VEC3_ZERO;
+            Vec3 colors = VEC3_ZERO;
             for (int i = 0; i < scene.getRaysPerPixel(); i++)
                 colors += getPixelFColor(sf::Vector2f(x, y), scene);
             colors /= static_cast<float>(scene.getRaysPerPixel());
@@ -37,7 +37,7 @@ void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf:
     _nbFrames++;
 }
 
-void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
+void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, Vec3 color)
 {
     color *= 255.0f;
     color.x = std::min(color.x, 255.0f);
@@ -45,8 +45,8 @@ void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
     color.z = std::min(color.z, 255.0f);
     if (_nbFrames != 0) {
         sf::Color old = _array->getPixel(pos);
-        sf::Vector3f oldColor = sf::Vector3f(old.r, old.g, old.b);
-        if (oldColor == sf::Vector3f{0,0,0} || color == sf::Vector3f{0,0,0})
+        Vec3 oldColor = Vec3(old.r, old.g, old.b);
+        if (oldColor == VEC3_ZERO || color == VEC3_ZERO)
             color += oldColor;
         else {
             float weight = 1.0f / (_nbFrames + 1);
@@ -56,23 +56,23 @@ void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, sf::Vector3f color)
     _array->setPixel(pos, color);
 }
 
-sf::Vector3f getRayDir(sf::Vector2f pos, const Scene &scene)
+Vec3 getRayDir(sf::Vector2f pos, const Scene &scene)
 {
     unsigned maxX = scene.getResolution().x;
     unsigned maxY = scene.getResolution().y;
 
-    sf::Vector3f rayDir = Math::normalize(sf::Vector3f (pos.x - maxX / 2.0f,
+    Vec3 rayDir = Math::normalize(Vec3 (pos.x - maxX / 2.0f,
                                                         pos.y - maxY / 2.0f, maxX / 2.0f));
     return Math::normalize(Mat4::vecRotate(rayDir, scene.getCamera().getRot(), scene.getCamera().getPos()));
 }
 
-sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &scene)
+Vec3 Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &scene)
 {
-    sf::Vector3f light = VEC3_ZERO;
     Ray ray = Ray(scene.getCamera().getPos(), scene.getCamera().getRayDir(pos));
+    const IObject *obj = nullptr;
     const IObject *old = nullptr;
     float lightIntensity = 1;
-    const IObject *obj = nullptr;
+    Vec3 light = VEC3_ZERO;
 
     for (int bounces = 0; bounces <= scene.getNbBounces(); bounces++) {
         obj = scene.getClosest(ray, old);
@@ -94,16 +94,17 @@ sf::Vector3f Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Sc
         light += addLights(normal, inter, ray.getColor(), scene, obj) * lightIntensity;
 
         // reducing light intensity for next iteration
-        lightIntensity *= 0.6;
+        lightIntensity *= 0.7;
         old = obj;
     }
 
     // Lumière ambiante
-    if (lightIntensity == 1 || !old) {
+    if (lightIntensity == 1 || !old)
         light += ray.getColor() * getBackgroundLight(pos);
-    } else if (old->isReflective()) {
+    else if (old->isReflective() || old->isTransparent()) {
         light += ray.getColor() * getAmbientLight(pos) * old->getRoughness();
-        light += ray.getColor() * getBackgroundLight(pos) * (1.0f - old->getRoughness());
+        if (!obj)
+            light += ray.getColor() * getBackgroundLight(pos) * (1.0f - old->getRoughness());
     } else
         light += ray.getColor() * getAmbientLight(pos);
     return light;
@@ -136,14 +137,14 @@ int Raytracer::LocalRenderer::getThreadsCount() const
     return 1;
 }
 
-Vec3 Raytracer::LocalRenderer::getAmbientLight(unused sf::Vector2f pos) const
+Vec3 Raytracer::LocalRenderer::getAmbientLight(unused const sf::Vector2f &pos) const
 {
     return {255 / 255.0f, 255 / 255.0f, 255 / 255.0f};
 }
 
-Vec3 Raytracer::LocalRenderer::getBackgroundLight(unused sf::Vector2f pos) const
+Vec3 Raytracer::LocalRenderer::getBackgroundLight(unused const sf::Vector2f &pos) const
 {
-    return {50 / 255.0f, 200 / 255.0f, 50 / 255.0f};
+    return {50 / 255.0f, 50 / 255.0f, 50 / 255.0f};
 }
 
 std::pair<sf::Vector2u, sf::Vector2u> Raytracer::LocalRenderer::getRange() const
