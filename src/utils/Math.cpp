@@ -21,11 +21,20 @@ float Math::dot(const Vec3 &vec1, const Vec3 &vec2)
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
 }
 
-float Math::randomf(const float min, const float max)
+float Math::realRandomf(float min, float max)
 {
-    thread_local std::normal_distribution<float> distribution(min, max);
+    thread_local std::mt19937 generator(std::random_device{}());
+    std::uniform_real_distribution<float> distribution(min, max);
 
     return distribution(generator);
+}
+
+float Math::randomf(float min, float max)
+{
+    float theta = realRandomf(0, 1) * 2 * M_PI;
+    float rho = sqrt(-2 * std::log(realRandomf(0, 1)));
+
+    return rho * cos(theta) * (max - min) + min;
 }
 
 int Math::random(int min, int max)
@@ -38,12 +47,10 @@ int Math::random(int min, int max)
 
 Vec3 Math::randomDir(const Vec3 &normal)
 {
-    int maxIterations = 100;
-    Vec3 dir = {randomf(-1, 1), randomf(-1, 1), randomf(-1, 1)};
+    Vec3 dir(randomf(-1, 1), randomf(-1, 1), randomf(-1, 1));
 
-    while (dot(dir, normal) < 0 && maxIterations-- > 0)
-        dir = {randomf(-1, 1), randomf(-1, 1), randomf(-1, 1)};
-    return normalize(dir);
+    dir = normalize(dir);
+    return dir * sign(dot(dir, normal));
 }
 
 float Math::sign(const float val)
