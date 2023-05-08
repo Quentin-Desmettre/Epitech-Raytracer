@@ -44,10 +44,6 @@ namespace Raytracer {
         sf::Vector2u _start, _end;
         int _nbFrames{};
         std::vector<std::unique_ptr<IRenderer>> _subRenderers;
-
-        // TODO: get these from the scene
-        Vec3 getAmbientLight(const sf::Vector2f &pos) const;
-        Vec3 getBackgroundLight(const sf::Vector2f &pos) const;
     };
 } // Raytracer
 

@@ -99,7 +99,6 @@ const libconfig::Setting &setting)
     std::cout << "Setting camera" << std::endl;
     if (!setting.exists("resolution"))      throw InvalidParameterValueException("Missing resolution for camera");
     if (!setting.exists("position"))        throw InvalidParameterValueException("Missing position for camera");
-    if (!setting.exists("antiAliasing"))    throw InvalidParameterValueException("Missing antiAliasing for camera");
     if (!setting.exists("rotation"))        throw InvalidParameterValueException("Missing rotation for camera");
 
     // Fetch resolution

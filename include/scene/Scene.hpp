@@ -11,6 +11,7 @@
 #include "objects/Object.hpp"
 #include "lights/LightPoint.hpp"
 #include "lights/DirectionalLight.hpp"
+#include "lights/BackgroundLight.hpp"
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -19,7 +20,7 @@
 
 class Scene {
     public:
-        Scene() = default;
+        Scene() : _backgroundLight(BackgroundLight(WHITE)), _ambientLight(ALight(WHITE)) {};
         ~Scene() = default;
 
         // Setters
@@ -51,6 +52,8 @@ class Scene {
         std::vector<std::shared_ptr<IObject>> getPool() const;
         std::vector<std::shared_ptr<LightPoint>> getLightPoints() const;
         std::vector<std::shared_ptr<DirectionalLight>> getDirectionalLights() const;
+        Vec3 getBackgroundLight() const;
+        Vec3 getAmbientLight() const;
         std::string getRawConfiguration() const;
         sf::Vector2u getResolution() const;
         float getAntiAliasing() const;
@@ -60,6 +63,8 @@ class Scene {
         // Methods
         void addLightPoint(std::shared_ptr<LightPoint> light);
         void addObject(std::unique_ptr<IObject> &&object);
+        void addBackgroundLight(std::shared_ptr<BackgroundLight> light);
+        void addAmbientLight(std::shared_ptr<ALight> light);
 
     protected:
     private:
@@ -68,6 +73,8 @@ class Scene {
         std::vector<std::shared_ptr<LightPoint>> _lightsPoints;
         std::string _rawConfig;
         std::shared_ptr<Camera> _camera;
+        BackgroundLight _backgroundLight;
+        ALight _ambientLight;
         bool _multithreadingEnabled = false;
         std::vector<std::string> _clusters;
         bool _preRenderEnabled = false;

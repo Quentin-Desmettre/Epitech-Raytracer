@@ -64,6 +64,10 @@ void Scene::setLights(const std::vector<std::shared_ptr<ALight>> &lights)
             _lightsPoints.push_back(std::dynamic_pointer_cast<LightPoint>(light));
         else if (dynamic_cast<const DirectionalLight *>(light.get()))
             _directionalLights.push_back(std::dynamic_pointer_cast<DirectionalLight>(light));
+        else if (dynamic_cast<const BackgroundLight *>(light.get()))
+            addBackgroundLight(std::dynamic_pointer_cast<BackgroundLight>(light));
+        else
+            addAmbientLight(light);
     }
 }
 
@@ -197,6 +201,16 @@ std::vector<std::shared_ptr<DirectionalLight>> Scene::getDirectionalLights() con
     return _directionalLights;
 }
 
+Vec3 Scene::getBackgroundLight() const
+{
+    return _backgroundLight.getColor() * _backgroundLight.getIntensity();
+}
+
+Vec3 Scene::getAmbientLight() const
+{
+    return _ambientLight.getColor() * _ambientLight.getIntensity();
+}
+
 //======================//
 //        METHODS       //
 //======================//
@@ -208,4 +222,20 @@ void Scene::addLightPoint(std::shared_ptr<LightPoint> light)
 void Scene::addObject(std::unique_ptr<IObject> &&object)
 {
     _pool.push_back(std::move(object));
+}
+
+void Scene::addBackgroundLight(std::shared_ptr<BackgroundLight> light)
+{
+    sf::Color newColor = {(sf::Uint8)(light->getColor().x * _backgroundLight.getColor().x * 255),
+                          (sf::Uint8)(light->getColor().y * _backgroundLight.getColor().y * 255),
+                          (sf::Uint8)(light->getColor().z * _backgroundLight.getColor().z * 255)};
+    _backgroundLight.setColor(newColor);
+}
+
+void Scene::addAmbientLight(std::shared_ptr<ALight> light)
+{
+    sf::Color newColor = {(sf::Uint8)(light->getColor().x * _ambientLight.getColor().x * 255),
+                          (sf::Uint8)(light->getColor().y * _ambientLight.getColor().y * 255),
+                          (sf::Uint8)(light->getColor().z * _ambientLight.getColor().z * 255)};
+    _ambientLight.setColor(newColor);
 }
