@@ -23,6 +23,12 @@ namespace Math
     float toDeg(float rad);
     float toRad(float deg);
 
+    // Solvers
+    std::vector<float> solveLinear(const float coeffs[2]);
+    std::vector<float> solveQuadratic(const float coeffs[3]);
+    std::vector<float> solveCubic(const float coeffs[4]);
+    std::vector<float> solveQuartic(const float coeffs[5]);
+
     Vec3 randomDir();
     float sign(float val);
     Vec3 cross(const Vec3 &vec1, const Vec3 &vec2);
