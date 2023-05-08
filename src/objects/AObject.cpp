@@ -156,18 +156,17 @@ Ray AObject::transformRay(const Ray &ray) const
 {
     // Manually compute the new direction
     Vec3 newDir;
-    newDir.x = _inverseTransformations(0, 0) * ray.getDir().x + _inverseTransformations(0, 1) * ray.getDir().y + _inverseTransformations(0, 2) * ray.getDir().z;
-    newDir.y = _inverseTransformations(1, 0) * ray.getDir().x + _inverseTransformations(1, 1) * ray.getDir().y + _inverseTransformations(1, 2) * ray.getDir().z;
-    newDir.z = _inverseTransformations(2, 0) * ray.getDir().x + _inverseTransformations(2, 1) * ray.getDir().y + _inverseTransformations(2, 2) * ray.getDir().z;
+    Vec3 old = ray.getDir();
+    newDir.x = _inverseTransformations[0] * old.x + _inverseTransformations[1] * old.y + _inverseTransformations[2] * old.z;
+    newDir.y = _inverseTransformations[4] * old.x + _inverseTransformations[5] * old.y + _inverseTransformations[6] * old.z;
+    newDir.z = _inverseTransformations[8] * old.x + _inverseTransformations[9] * old.y + _inverseTransformations[10] * old.z;
 
     // Manually compute the new origin
     Vec3 newOrigin;
-    newOrigin.x = _inverseTransformations(0, 0) * ray.getOrigin().x + _inverseTransformations(0, 1) * ray.getOrigin().y + _inverseTransformations(0, 2) * ray.getOrigin().z + _inverseTransformations(0, 3);
-    newOrigin.y = _inverseTransformations(1, 0) * ray.getOrigin().x + _inverseTransformations(1, 1) * ray.getOrigin().y + _inverseTransformations(1, 2) * ray.getOrigin().z + _inverseTransformations(1, 3);
-    newOrigin.z = _inverseTransformations(2, 0) * ray.getOrigin().x + _inverseTransformations(2, 1) * ray.getOrigin().y + _inverseTransformations(2, 2) * ray.getOrigin().z + _inverseTransformations(2, 3);
+    old = ray.getOrigin();
+    newOrigin.x = _inverseTransformations[0] * old.x + _inverseTransformations[1] * old.y + _inverseTransformations[2] * old.z + _inverseTransformations[3];
+    newOrigin.y = _inverseTransformations[4] * old.x + _inverseTransformations[5] * old.y + _inverseTransformations[6] * old.z + _inverseTransformations[7];
+    newOrigin.z = _inverseTransformations[8] * old.x + _inverseTransformations[9] * old.y + _inverseTransformations[10] * old.z + _inverseTransformations[11];
 
-    return {
-        newOrigin,
-        newDir
-    };
+    return {newOrigin, newDir};
 }

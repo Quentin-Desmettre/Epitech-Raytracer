@@ -27,6 +27,11 @@ float &Mat4::operator[](int index)
     return _matrix[index];
 }
 
+float Mat4::operator[](int index) const
+{
+    return _matrix[index];
+}
+
 float &Mat4::operator()(int x, int y)
 {
     return _matrix[x * 4 + y];

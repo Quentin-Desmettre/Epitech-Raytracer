@@ -37,6 +37,7 @@ namespace Raytracer {
         void runNormal();
         void addSphereAtPos(const sf::Vector2f &pos);
         bool handleMovement(const sf::Event &ev);
+        void generateRandomScene();
 
         /**
          * @brief Reset a renderer
