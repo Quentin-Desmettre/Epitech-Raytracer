@@ -10,6 +10,7 @@
 #include "scene/SceneBuilder.hpp"
 #include "Exceptions.hpp"
 #include "objects/ObjectFactory.hpp"
+#include "lights/LightFactory.hpp"
 #include <fstream>
 #include "network/TcpSocket.hpp"
 
@@ -98,7 +99,6 @@ const libconfig::Setting &setting)
     std::cout << "Setting camera" << std::endl;
     if (!setting.exists("resolution"))      throw InvalidParameterValueException("Missing resolution for camera");
     if (!setting.exists("position"))        throw InvalidParameterValueException("Missing position for camera");
-    if (!setting.exists("antiAliasing"))    throw InvalidParameterValueException("Missing antiAliasing for camera");
     if (!setting.exists("rotation"))        throw InvalidParameterValueException("Missing rotation for camera");
 
     // Fetch resolution
@@ -167,6 +167,9 @@ const libconfig::Setting &setting)
 void SceneBuilder::setLights(unused Scene &scene, unused const std::string &param,
 unused const libconfig::Setting &setting)
 {
+    LightFactory lightFactory;
+
+    setGroupList(scene, param, setting, &lightFactory);
 }
 
 std::string SceneBuilder::getFileContent(const std::string &path)

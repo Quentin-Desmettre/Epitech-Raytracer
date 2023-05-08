@@ -15,7 +15,7 @@ class DirectionalLight : public ALight {
         ~DirectionalLight() = default;
 
         Vec3 getDir() {return _dir;};
-        void setDir(Vec3 dir) {_dir = dir;};
+        void setDir(const Vec3 &dir) {_dir = Math::normalize(dir);};
         Vec3 illuminate(const Vec3 &normal, const Vec3 &inter, const Vec3 &color, const Scene &pool, const IObject *obj) const;
     protected:
     private:
