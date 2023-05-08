@@ -10,6 +10,7 @@
 #include "scene/SceneBuilder.hpp"
 #include "Exceptions.hpp"
 #include "objects/ObjectFactory.hpp"
+#include "lights/LightFactory.hpp"
 #include <fstream>
 #include "network/TcpSocket.hpp"
 
@@ -167,6 +168,9 @@ const libconfig::Setting &setting)
 void SceneBuilder::setLights(unused Scene &scene, unused const std::string &param,
 unused const libconfig::Setting &setting)
 {
+    LightFactory lightFactory;
+
+    setGroupList(scene, param, setting, &lightFactory);
 }
 
 std::string SceneBuilder::getFileContent(const std::string &path)

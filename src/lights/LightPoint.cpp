@@ -28,5 +28,5 @@ const Scene &pool, const IObject *obj) const
         if (obj->isReflective() || obj->isTransparent())
             result *= obj->getRoughness();
     }
-    return result;
+    return result * _intensity;
 }

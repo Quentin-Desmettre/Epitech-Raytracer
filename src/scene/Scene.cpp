@@ -57,9 +57,14 @@ void Scene::setObjects(const std::vector<std::shared_ptr<IObject>> &objects)
     _pool = objects;
 }
 
-void Scene::setLights(const std::vector<LightPoint> &lights)
+void Scene::setLights(const std::vector<std::shared_ptr<ALight>> &lights)
 {
-    _lightsPoints = lights;
+    for (auto &light : lights) {
+        if (dynamic_cast<const LightPoint *>(light.get()))
+            _lightsPoints.push_back(std::dynamic_pointer_cast<LightPoint>(light));
+        else if (dynamic_cast<const DirectionalLight *>(light.get()))
+            _directionalLights.push_back(std::dynamic_pointer_cast<DirectionalLight>(light));
+    }
 }
 
 void Scene::setRawConfiguration(const std::string &raw)
@@ -182,15 +187,20 @@ std::vector<std::shared_ptr<IObject>> Scene::getPool() const
     return _pool;
 }
 
-std::vector<LightPoint> Scene::getLightPoints() const
+std::vector<std::shared_ptr<LightPoint>> Scene::getLightPoints() const
 {
     return _lightsPoints;
+}
+
+std::vector<std::shared_ptr<DirectionalLight>> Scene::getDirectionalLights() const
+{
+    return _directionalLights;
 }
 
 //======================//
 //        METHODS       //
 //======================//
-void Scene::addLightPoint(const LightPoint& light)
+void Scene::addLightPoint(std::shared_ptr<LightPoint> light)
 {
     _lightsPoints.push_back(light);
 }

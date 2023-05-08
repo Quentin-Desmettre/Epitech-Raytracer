@@ -16,7 +16,6 @@
 Raytracer::LocalRenderer::LocalRenderer(sf::Vector2u start, sf::Vector2u end)
 {
     internalSetRange(start, end);
-    _directionalLights.emplace_back();
 }
 
 void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf::Time *time)
@@ -107,10 +106,10 @@ Vec3 Raytracer::LocalRenderer::addLights(const Vec3 &normal, const Vec3 &inter, 
 {
     Vec3 light = VEC3_ZERO;
 
-    for (auto &dirLight : _directionalLights)
-        light += dirLight.illuminate(normal, inter, color, scene, obj);
+    for (auto &dirLight : scene.getDirectionalLights())
+        light += dirLight->illuminate(normal, inter, color, scene, obj);
     for (auto &lightPoint : scene.getLightPoints())
-        light += lightPoint.illuminate(normal, inter, color, scene, obj);
+        light += lightPoint->illuminate(normal, inter, color, scene, obj);
     return light;
 }
 

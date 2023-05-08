@@ -10,6 +10,7 @@
 #include "render/Ray.hpp"
 #include "objects/Object.hpp"
 #include "lights/LightPoint.hpp"
+#include "lights/DirectionalLight.hpp"
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -32,7 +33,7 @@ class Scene {
         void setRaysPerPixel(const int &rays);
         void setCamera(const std::shared_ptr<Camera> &camera);
         void setObjects(const std::vector<std::shared_ptr<IObject>> &objects);
-        void setLights(const std::vector<LightPoint> &lights);
+        void setLights(const std::vector<std::shared_ptr<ALight>> &lights);
         void setRawConfiguration(const std::string &raw);
 
 
@@ -48,7 +49,8 @@ class Scene {
         const Camera &getCamera() const;
         Camera &getCamera();
         std::vector<std::shared_ptr<IObject>> getPool() const;
-        std::vector<LightPoint> getLightPoints() const;
+        std::vector<std::shared_ptr<LightPoint>> getLightPoints() const;
+        std::vector<std::shared_ptr<DirectionalLight>> getDirectionalLights() const;
         std::string getRawConfiguration() const;
         sf::Vector2u getResolution() const;
         float getAntiAliasing() const;
@@ -56,13 +58,14 @@ class Scene {
         const IObject *getBetween(const Ray &ray, float dst, const IObject *ignore = nullptr, bool ignoreLightSources = false) const;
 
         // Methods
-        void addLightPoint(const LightPoint& light);
+        void addLightPoint(std::shared_ptr<LightPoint> light);
         void addObject(std::unique_ptr<IObject> &&object);
 
     protected:
     private:
         std::vector<std::shared_ptr<IObject>> _pool;
-        std::vector<LightPoint> _lightsPoints;
+        std::vector<std::shared_ptr<DirectionalLight>> _directionalLights;
+        std::vector<std::shared_ptr<LightPoint>> _lightsPoints;
         std::string _rawConfig;
         std::shared_ptr<Camera> _camera;
         bool _multithreadingEnabled = false;
