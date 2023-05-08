@@ -8,6 +8,7 @@
 #pragma once
 
 #include "ITransformation.hpp"
+#include "lights/ObjectLight.hpp"
 #include "Exceptions.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>
@@ -23,10 +24,11 @@ class IObject {
         virtual Vec3 getColor() const = 0;
         virtual Vec3 getEmissionColor() const = 0;
         virtual float getEmissionIntensity() const = 0;
-        virtual bool getReflectivity() const = 0;
-        virtual bool getTransparency() const = 0;
+        virtual bool isReflective() const = 0;
+        virtual bool isTransparent() const = 0;
         virtual float getRoughness() const = 0;
         virtual float getRefractiveIndex() const = 0;
+        virtual const ObjectLight &getLight() const = 0;
 
         // Setters
         virtual void setPos(Vec3 pos) = 0;
@@ -44,7 +46,6 @@ class IObject {
         virtual bool intersect(const Ray &ray, Vec3 &intersection) const = 0;
         virtual Vec3 getNormal(const Vec3 &inter, const Ray &ray) const = 0;
         virtual void computeTransformations() = 0;
-
 };
 
 /**
@@ -76,10 +77,11 @@ class AObject : public IObject {
         Vec3 getColor() const override;
         Vec3 getEmissionColor() const override;
         float getEmissionIntensity() const override;
-        bool getReflectivity() const override;
-        bool getTransparency() const override;
+        bool isReflective() const override;
+        bool isTransparent() const override;
         float getRoughness() const override;
         float getRefractiveIndex() const override;
+        const ObjectLight &getLight() const override;
 
         // Setters
         void setPos(Vec3 pos) override;
@@ -102,8 +104,7 @@ class AObject : public IObject {
         Mat4 _transformationsMatrix;
         mutable Vec3 _pos;
         Vec3 _color;
-        Vec3 _emmsionColor;
-        float _intensity;
+        ObjectLight _light;
         float _roughness;
         bool _reflectivity;
         bool _transparency;
