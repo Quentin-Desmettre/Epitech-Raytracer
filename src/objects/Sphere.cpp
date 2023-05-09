@@ -12,17 +12,6 @@ AObject(pos, color, emmsionColor, intensity), _radius(radius)
 {
 }
 
-float Sphere::getDelta(const Ray &ray) const
-{
-    Vec3 origin = ray.getOrigin();
-    Vec3 dir = ray.getDir();
-    float a = Math::dot(dir, dir);
-    float b = 2 * Math::dot(dir, origin);
-    float c = Math::dot(origin, origin) - _radius * _radius;
-
-    return b * b - 4 * a * c;
-}
-
 float Sphere::getIntersections(const Ray &ray) const
 {
     Vec3 origin = ray.getOrigin();
@@ -43,11 +32,11 @@ bool Sphere::intersect(const Ray &ray, Vec3 &intersection) const
     if (t < 0 || t != t) // t != t is a check for NaN
         return false;
     // Get the intersection point, and put it back in the world space
-    intersection = _transformationsMatrix * (r.getOrigin() + r.getDir() * t);
+    intersection = transformPosInverse(r.getOrigin() + r.getDir() * t);
     return true;
 }
 
 Vec3 Sphere::getNormal(const Vec3 &inter, unused const Ray &ray) const
 {
-    return Math::normalize(inter - _pos);
+    return Math::normalize(transformDirInverse(transformPos(inter)));
 }
