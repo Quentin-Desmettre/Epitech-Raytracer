@@ -140,6 +140,7 @@ void Raytracer::Raytracer::handleEvents()
 {
     sf::Event event;
     bool updateRayDirs = false;
+    bool preRender = _scene->isPreRenderEnabled();
 
     while (_drawer->pollEvent(event)) {
         if (event.type == sf::Event::Closed ||
@@ -159,6 +160,8 @@ void Raytracer::Raytracer::handleEvents()
     }
     if (updateRayDirs)
         this->reset(_renderer);
+    else if (preRender != _scene->isPreRenderEnabled())
+        _renderer->reset();
 }
 
 void Raytracer::Raytracer::reset(const std::unique_ptr<IRenderer> &renderer)
