@@ -50,6 +50,7 @@ SRC = \
 	./src/objects/builders/TanglecubeBuilder.cpp \
 	./src/objects/builders/TriangleBuilder.cpp \
 	./src/objects/builders/PlaneBuilder.cpp \
+	./src/objects/builders/SquareBuilder.cpp \
 	./src/utils/Math.cpp \
 	./src/utils/Matrix.cpp \
 	./src/Raytracer.cpp \

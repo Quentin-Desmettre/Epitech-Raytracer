@@ -7,13 +7,48 @@
 
 #include "objects/Square.hpp"
 
-Square::Square(Vec3 corner1, Vec3 corner2, sf::Color color, sf::Color emmsionColor, float intensity) :
-AObject(corner1, color, emmsionColor, intensity)
+Square::Square(Vec3 point1, Vec3 point2, Vec3 point3, Vec3 point4,
+sf::Color color, sf::Color emmsionColor, float intensity) :
+AObject(point1, color, emmsionColor, intensity)
 {
-    _triangles[0] = Triangle(corner1, corner2, Vec3(corner1.x, corner1.y, corner2.z), color, emmsionColor, intensity);
-    _triangles[1] = Triangle(corner1, Vec3(corner2.x, corner1.y, corner1.z), corner2, color, emmsionColor, intensity);
-    _triangles[2] = Triangle(corner1, Vec3(corner1.x, corner2.y, corner2.z), Vec3(corner2.x, corner1.y, corner1.z), color, emmsionColor, intensity);
-    _triangles[3] = Triangle(Vec3(corner2.x, corner1.y, corner1.z), Vec3(corner1.x, corner2.y, corner2.z), corner2, color, emmsionColor, intensity);
+    _triangles[0] = Triangle(point1, point2, point3, color, emmsionColor, intensity);
+    _triangles[1] = Triangle(point1, point3, point4, color, emmsionColor, intensity);
+
+    _triangles[2] = Triangle(point1, point4, point3, color, emmsionColor, intensity);
+    _triangles[3] = Triangle(point1, point3, point2, color, emmsionColor, intensity);
+}
+
+void Square::setPosition(const Vec3 &position)
+{
+    _triangles[0].setPosition(position);
+    _triangles[1].setPosition(position);
+    _triangles[2].setPosition(position);
+    _triangles[3].setPosition(position);
+
+    _triangles[0].setPoint<0>(position);
+    _triangles[1].setPoint<0>(position);
+    _triangles[2].setPoint<0>(position);
+    _triangles[3].setPoint<0>(position);
+}
+
+void Square::setPoint2(const Vec3 &point)
+{
+    _triangles[0].setPoint<1>(point);
+    _triangles[3].setPoint<2>(point);
+}
+
+void Square::setPoint3(const Vec3 &point)
+{
+    _triangles[0].setPoint<2>(point);
+    _triangles[1].setPoint<1>(point);
+    _triangles[2].setPoint<2>(point);
+    _triangles[3].setPoint<1>(point);
+}
+
+void Square::setPoint4(const Vec3 &point)
+{
+    _triangles[1].setPoint<2>(point);
+    _triangles[2].setPoint<1>(point);
 }
 
 bool Square::intersect(const Ray &ray, Vec3 &intersection) const
@@ -24,5 +59,8 @@ bool Square::intersect(const Ray &ray, Vec3 &intersection) const
 
 Vec3 Square::getNormal(const Vec3 &inter, const Ray &ray) const
 {
-    return _triangles[0].getNormal(inter, ray);
+    Vec3 tmp;
+    if (_triangles[0].intersect(ray, tmp))
+        return _triangles[0].getNormal(inter, ray);
+    return _triangles[2].getNormal(inter, ray);
 }

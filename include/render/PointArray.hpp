@@ -15,7 +15,7 @@ class PointArray {
 public:
     explicit PointArray(sf::Vector2u size);
 
-    sf::Uint8 *getPixels() const;
+    float *getPixels() const;
 
     void resize(sf::Vector2u size);
 
@@ -26,15 +26,13 @@ public:
 
     void setPixel(sf::Vector2u pos, const Vec3 &color);
     void setPixel(sf::Vector2u pos, sf::Color color);
-    sf::Color getPixel(sf::Vector2u pos) const;
-    sf::Uint8 operator[](unsigned int i) const {
-        return _pixels[i];
-    }
+    Vec3 getPixel(sf::Vector2u pos) const;
+    float operator[](unsigned int i) const {return _pixels[i];}
 
 private:
 
     // List of pixels in RGB format, ordered by column
-    std::unique_ptr<sf::Uint8 []> _pixels;
+    std::unique_ptr<float []> _pixels;
     sf::Vector2u _size;
     sf::Vector2u _start;
 
