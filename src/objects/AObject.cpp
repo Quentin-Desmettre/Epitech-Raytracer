@@ -97,6 +97,8 @@ void AObject::setRoughness(const float &roughness)
 
 void AObject::setRefractiveIndex(const float &refractiveIndex)
 {
+    if (refractiveIndex < 0)
+        throw InvalidParameterValueException("Refractive index must be >= 0");
     _refractiveIndex = refractiveIndex;
 }
 
