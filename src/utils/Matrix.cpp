@@ -27,6 +27,11 @@ float &Mat4::operator[](int index)
     return _matrix[index];
 }
 
+float Mat4::operator[](int index) const
+{
+    return _matrix[index];
+}
+
 float &Mat4::operator()(int x, int y)
 {
     return _matrix[x * 4 + y];
@@ -210,7 +215,7 @@ Mat4 Mat4::inverse() const
     return inv;
 }
 
-Vec3 Mat4::vecRotate(Vec3 vec, Vec3 dir, Vec3 pos)
+Vec3 Mat4::vecRotate(Vec3 vec, Vec3 dir, unused Vec3 pos)
 {
     Mat4 mat3 = Mat4({
         1, 0, 0, 0,

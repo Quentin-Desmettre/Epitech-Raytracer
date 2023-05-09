@@ -20,6 +20,7 @@ class Mat4 {
         Mat4 operator*=(const Mat4 &other);
         Vec3 operator*(const Vec3 &vec) const;
         float &operator[](int index);
+        float operator[](int index) const;
         float &operator()(int x, int y);
         float operator()(int x, int y) const;
         std::array<float, 4> operator*(const std::array<float, 4> &vec) const;

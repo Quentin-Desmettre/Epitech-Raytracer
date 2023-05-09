@@ -43,11 +43,9 @@ bool Cone::intersect(const Ray &ray, Vec3 &intersection) const
 
 Vec3 Cone::getNormal(const Vec3 &inter, unused const Ray &ray) const
 {
-    Ray r {_pos, _dir};
-    r = transformRay(r);
-    Vec3 dist = inter - r.getOrigin();
-    float proj = Math::dot(dist, r.getDir());
-    Vec3 normal = dist - r.getDir() * proj;
+    Vec3 dist = inter - _pos;
+    float proj = Math::dot(dist, _dir);
+    Vec3 normal = dist - _dir * proj;
     normal = Math::normalize(normal);
     return normal;
 }

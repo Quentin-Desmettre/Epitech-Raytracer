@@ -51,10 +51,29 @@ void Raytracer::Raytracer::runClient()
     client.run();
 }
 
+void Raytracer::Raytracer::generateRandomScene()
+{
+    for (int i = 0; i < 50; i++) {
+        float radius = 0.5f;
+        if (Math::random(0, 100) < 5)
+            radius = 2.0f;
+        auto sphere = std::make_unique<Sphere>(Vec3(Math::realRandomf(-10, 10), -radius + 0.5f, Math::realRandomf(-9, 5)),
+        sf::Color(Math::random(0, 255), Math::random(0, 255), Math::random(0, 255)), radius);
+        sphere->setReflectivity(Math::random(0, 1));
+        sphere->setTransparency(Math::random(0, 1));
+        sphere->setRoughness(Math::realRandomf(0, 1));
+        sphere->setRefractiveIndex(1.5f);
+        sphere->computeTransformations();
+        _scene->addObject(std::move(sphere));
+    }
+}
+
 void Raytracer::Raytracer::runNormal()
 {
     sf::Time time;
 
+    // uncomment to generate random scene populated with spheres
+    // generateRandomScene();
     while (_run) {
         checkConfigChanges();
         handleEvents();
@@ -80,6 +99,7 @@ void Raytracer::Raytracer::addSphereAtPos(const sf::Vector2f &pos)
         else
             sphere->setPos({0, 0, 0});
     }
+    sphere->computeTransformations();
     _scene->addObject(std::move(sphere));
     this->reset(_renderer);
 }

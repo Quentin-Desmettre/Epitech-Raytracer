@@ -10,6 +10,7 @@
 #include "scene/SceneBuilder.hpp"
 #include "Exceptions.hpp"
 #include "objects/ObjectFactory.hpp"
+#include "lights/LightFactory.hpp"
 #include <fstream>
 #include "network/TcpSocket.hpp"
 
@@ -61,7 +62,7 @@ void SceneBuilder::setSetters()
             {"hot-reload",          {Type::TypeBoolean, reinterpret_cast<SetterFunc>(&Scene::setHotReloadEnabled),          true}},
             {"number-of-bounces",   {Type::TypeInt,     reinterpret_cast<SetterFunc>(&Scene::setNumberOfBounces),           true}},
             {"rays-per-pixel",      {Type::TypeInt,     reinterpret_cast<SetterFunc>(&Scene::setRaysPerPixel),              true}},
-            {"objects",             {Type::TypeList,    reinterpret_cast<SetterFunc>(&Scene::setObjects),                   true}},
+            {"objects",             {Type::TypeList,    reinterpret_cast<SetterFunc>(&Scene::addObjects),                   true}},
             {"lights",              {Type::TypeList,    reinterpret_cast<SetterFunc>(&Scene::setLights),                    true}}
     };
 
@@ -98,7 +99,6 @@ const libconfig::Setting &setting)
     std::cout << "Setting camera" << std::endl;
     if (!setting.exists("resolution"))      throw InvalidParameterValueException("Missing resolution for camera");
     if (!setting.exists("position"))        throw InvalidParameterValueException("Missing position for camera");
-    if (!setting.exists("antiAliasing"))    throw InvalidParameterValueException("Missing antiAliasing for camera");
     if (!setting.exists("rotation"))        throw InvalidParameterValueException("Missing rotation for camera");
 
     // Fetch resolution
@@ -159,7 +159,7 @@ const libconfig::Setting &setting)
 void SceneBuilder::setObjects(Scene &scene, const std::string &param,
 const libconfig::Setting &setting)
 {
-    ObjectFactory objectFactory;
+    ObjectFactory objectFactory(scene);
 
     setGroupList(scene, param, setting, &objectFactory);
 }
@@ -167,6 +167,9 @@ const libconfig::Setting &setting)
 void SceneBuilder::setLights(unused Scene &scene, unused const std::string &param,
 unused const libconfig::Setting &setting)
 {
+    LightFactory lightFactory;
+
+    setGroupList(scene, param, setting, &lightFactory);
 }
 
 std::string SceneBuilder::getFileContent(const std::string &path)

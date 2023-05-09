@@ -22,7 +22,7 @@ void Torus::setThickness(const float &thickness)
     _thickness = thickness;
 }
 
-bool Torus::intersect(const Ray &ray, Vec3 &intersection) const
+bool Torus::intersect(unused const Ray &ray, unused Vec3 &intersection) const
 {
     Ray r = transformRay(ray);
     float

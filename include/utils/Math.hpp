@@ -14,10 +14,10 @@
 
 namespace Math
 {
-    static thread_local std::mt19937 generator(std::random_device{}());
     Vec3 normalize(const Vec3 &vec);
     float dot(const Vec3 &vec1, const Vec3 &vec2);
     float randomf(float min, float max);
+    float realRandomf(float min, float max);
     int random(int min, int max);
     bool isPowerOfTwo(int n);
     float toDeg(float rad);
