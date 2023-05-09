@@ -8,11 +8,17 @@
 #ifndef EPITECH_RAYTRACER_TCPSOCKET_HPP
 #define EPITECH_RAYTRACER_TCPSOCKET_HPP
 #include <string>
+#include <stdexcept>
 #include "network/Packet.hpp"
 
 namespace Network {
     bool isIpPortValid(const std::string &ipPort);
     int bytesAvailable(int socket);
+
+    class SocketDisconnectedException : public std::runtime_error {
+        public:
+        SocketDisconnectedException() : std::runtime_error("Socket disconnected") {};
+    };
 
     class TcpSocket {
     public:
@@ -74,7 +80,8 @@ namespace Network {
         bool send(const void *data, std::size_t size) const;
         bool receive(void *data, std::size_t size) const;
 
-        static void setupSigpipeHandler() __attribute__((constructor));
+        static void setSigpipeHandler();
+        static void unsetSigpipeHandler();
         static void sigpipeHandler(int signal);
 
 

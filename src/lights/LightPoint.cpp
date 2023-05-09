@@ -5,50 +5,28 @@
 ** LightPoint
 */
 
+#include "scene/Scene.hpp"
+#include "render/Ray.hpp"
 #include "lights/LightPoint.hpp"
 
-LightPoint::LightPoint(Vec3 pos, sf::Color color, float intensity)
+LightPoint::LightPoint(Vec3 pos, Vec3 color, float intensity)
 {
     _pos = pos;
     _color = color;
     _intensity = intensity;
 }
 
-LightPoint::~LightPoint()
+Vec3 LightPoint::illuminate(const Vec3 &normal, const Vec3 &inter, const Vec3 &color,
+const Scene &pool, const IObject *obj) const
 {
-}
+    Ray ray(inter, Math::normalize(_pos - inter));
+    Vec3 result = VEC3_ZERO;
 
-Vec3 LightPoint::getPos() const
-{
-    return _pos;
+    // adding light of light points if there is no object between the intersection and the light point
+    if (pool.getBetween(ray, Math::length(_pos - inter), obj, true) == nullptr) {
+        result = std::max(Math::dot(normal, ray.getDir()), 0.0f) * color * _color;
+        if (obj->isReflective() || obj->isTransparent())
+            result *= obj->getRoughness();
+    }
+    return result * _intensity;
 }
-
-sf::Color LightPoint::getColor() const
-{
-    return _color;
-}
-
-Vec3 LightPoint::getColorF() const
-{
-    Vec3 colorF;
-    colorF.x = _color.r / 255.0f;
-    colorF.y = _color.g / 255.0f;
-    colorF.z = _color.b / 255.0f;
-    return colorF;
-}
-
-float LightPoint::getIntensity() const
-{
-    return _intensity;
-}
-
-void LightPoint::setPos(Vec3 pos)
-{
-    pos = _pos;
-}
-
-void LightPoint::setColor(sf::Color color)
-{
-    color = _color;
-}
-

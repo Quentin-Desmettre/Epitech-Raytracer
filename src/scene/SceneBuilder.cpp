@@ -10,6 +10,7 @@
 #include "scene/SceneBuilder.hpp"
 #include "Exceptions.hpp"
 #include "objects/ObjectFactory.hpp"
+#include "lights/LightFactory.hpp"
 #include <fstream>
 #include "network/TcpSocket.hpp"
 
@@ -27,7 +28,22 @@ SceneBuilder::SceneBuilder(int ac, char **av)
 
 SceneBuilder::SceneBuilder(const std::string &path)
 {
-    _config.readFile(path.c_str());
+    // Resolve imports, by reading the file and replacing the imports with the file content
+    libconfig::Config imports; imports.readFile(path.c_str());
+    libconfig::Setting &importsSettings = imports.getRoot();
+    if (importsSettings.exists("imports")) {
+        // Fetch imports, and put them in a temporary file
+        std::string tmpFile = "/tmp/raytracer_config_" + std::to_string(Math::random(0, 1000000)) + ".cfg";
+        std::ofstream tmp(tmpFile);
+        if (!tmp.is_open())
+            throw InvalidArgumentsException("Could not open temporary file: " + tmpFile);
+        for (int i = 0; i < importsSettings["imports"].getLength(); i++)
+            tmp << getFileContent(importsSettings["imports"][i]);
+        tmp << getFileContent(path);
+        _file = tmpFile;
+    } else
+        _file = path;
+    _config.readFile(_file.c_str());
     _settings = &_config.getRoot();
     setSetters();
 }
@@ -66,37 +82,59 @@ std::unique_ptr<Scene> SceneBuilder::build()
 {
     std::unique_ptr<Scene> scene = ABuilder<Scene>::build(*_settings);
 
+    scene->getCamera().updateRayDirs();
     std::ifstream file(_file);
     std::string str((std::istreambuf_iterator<char>(file)),
                     std::istreambuf_iterator<char>());
     scene->setRawConfiguration(str);
     file.close();
+    for (auto obj: scene->getPool())
+        obj->computeTransformations();
     return scene;
 }
 
 void SceneBuilder::setCamera(Scene &scene, const std::string &param,
 const libconfig::Setting &setting)
 {
+    std::cout << "Setting camera" << std::endl;
+    if (!setting.exists("resolution"))      throw InvalidParameterValueException("Missing resolution for camera");
+    if (!setting.exists("position"))        throw InvalidParameterValueException("Missing position for camera");
+    if (!setting.exists("rotation"))        throw InvalidParameterValueException("Missing rotation for camera");
+
+    // Fetch resolution
     sf::Vector2u resolution = {
             static_cast<unsigned int>(setting["resolution"]["x"]),
             static_cast<unsigned int>(setting["resolution"]["y"])
     };
+    if (resolution.x <= 0 || resolution.y <= 0)
+        throw InvalidParameterValueException("Invalid resolution for camera");
+
+    // Fetch position and rotation
     sf::Vector3f position = {
             getFloat(setting["position"]["x"]),
             getFloat(setting["position"]["y"]),
             getFloat(setting["position"]["z"])
     };
-    sf::Vector3f focusedPoint = {
-            getFloat(setting["focusedPoint"]["x"]),
-            getFloat(setting["focusedPoint"]["y"]),
-            getFloat(setting["focusedPoint"]["z"])
+    sf::Vector3f rot = {
+            getFloat(setting["rotation"]["x"]),
+            getFloat(setting["rotation"]["y"]),
+            getFloat(setting["rotation"]["z"])
     };
-    float antiAliasing = getFloat(setting["antiAliasing"]);
 
-    auto cam = std::make_shared<Camera>(position, sf::Vector3f{0, 0, 1}, resolution);
-    cam->setPos(position);
-    cam->setRot(focusedPoint);
+    // Fetch antiAliasing
+    float antiAliasing = setting.exists("antiAliasing") ? getFloat(setting["antiAliasing"]) : 1;
+    if (antiAliasing <= 0 || !Math::isPowerOfTwo(antiAliasing))
+        throw InvalidParameterValueException("Invalid antiAliasing");
+
+    // Fetch fov
+    float fov = setting.exists("fieldOfView") ? getFloat(setting["fieldOfView"]) : 90;
+    if (fov <= 0 || fov > 180)
+        throw InvalidParameterValueException("Invalid fieldOfView");
+
+    // Build camera
+    auto cam = std::make_shared<Camera>(position, rot, resolution);
     cam->setAntiAliasing(antiAliasing);
+    cam->setFov(fov);
     setParameter(scene, param, cam);
 }
 
@@ -129,4 +167,19 @@ const libconfig::Setting &setting)
 void SceneBuilder::setLights(unused Scene &scene, unused const std::string &param,
 unused const libconfig::Setting &setting)
 {
+    LightFactory lightFactory;
+
+    setGroupList(scene, param, setting, &lightFactory);
+}
+
+std::string SceneBuilder::getFileContent(const std::string &path)
+{
+    std::ifstream file(path);
+
+    if (!file)
+        throw InvalidArgumentsException("Could not open file: " + path);
+    std::string content((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+    file.close();
+    return content;
 }

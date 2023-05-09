@@ -159,19 +159,17 @@
 
 int main(int ac, char **av)
 {
+//#ifndef DEBUG
+//    try {
+//        Raytracer::Raytracer raytracer(ac, av);
+//        raytracer.run();
+//    } catch (std::exception &e) {
+//        std::cerr << e.what() << std::endl;
+//        return 84;
+//    }
+//#else
     Raytracer::Raytracer raytracer(ac, av);
-//
     raytracer.run();
-//    render r;
-//    Scene scene;
-//    Camera camera;
-//
-//    srand(time(NULL));
-//    addObjects(scene, camera);
-//    // infiniteCylinders(scene, camera);
-//    // addSolarSystem(scene, camera);
-//    // r.smoothImage(false);
-//    r.useThreads(true);
-//    r.run(&scene, camera);
+//#endif
     return 0;
 }

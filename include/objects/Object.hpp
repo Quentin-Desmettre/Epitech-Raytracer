@@ -8,6 +8,7 @@
 #pragma once
 
 #include "ITransformation.hpp"
+#include "lights/ObjectLight.hpp"
 #include "Exceptions.hpp"
 #include <memory>
 #include <SFML/Graphics.hpp>
@@ -23,10 +24,11 @@ class IObject {
         virtual Vec3 getColor() const = 0;
         virtual Vec3 getEmissionColor() const = 0;
         virtual float getEmissionIntensity() const = 0;
-        virtual bool getReflectivity() const = 0;
-        virtual bool getTransparency() const = 0;
+        virtual bool isReflective() const = 0;
+        virtual bool isTransparent() const = 0;
         virtual float getRoughness() const = 0;
         virtual float getRefractiveIndex() const = 0;
+        virtual const ObjectLight &getLight() const = 0;
 
         // Setters
         virtual void setPos(Vec3 pos) = 0;
@@ -38,23 +40,12 @@ class IObject {
         virtual void setPosition(const sf::Vector3f &pos) = 0;
         virtual void setEmissionColor(const sf::Color &color) = 0;
         virtual void setEmissionIntensity(const float &intensity) = 0;
-        virtual void setTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations) = 0;
+        virtual void addTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations) = 0;
 
         // Methods
-        virtual bool intersect(const Ray &ray) const = 0;
-        virtual Vec3 getIntersection(const Ray &ray) const = 0;
+        virtual bool intersect(const Ray &ray, Vec3 &intersection) const = 0;
         virtual Vec3 getNormal(const Vec3 &inter, const Ray &ray) const = 0;
-
-    protected:
-        Vec3 _pos;
-        Vec3 _color;
-        Vec3 _emmsionColor;
-        float _intensity;
-        float _roughness;
-        bool _reflectivity;
-        bool _transparency;
-        float _refractiveIndex;
-    private:
+        virtual void computeTransformations() = 0;
 };
 
 /**
@@ -67,8 +58,14 @@ class IObject {
  */
 class AObject : public IObject {
     public:
-        explicit AObject(Vec3 pos = Vec3(0, 0, 0), sf::Color color = sf::Color::Red,
-        sf::Color emmsionColor = sf::Color::Transparent, float intensity = 1.0f);
+        explicit AObject(Vec3 pos = Vec3(0, 0, 0),
+                         sf::Color color = sf::Color::Red,
+                         sf::Color emmsionColor = sf::Color::Transparent,
+                         float intensity = 0.0f,
+                         bool reflective = false,
+                         bool transparent = false,
+                         float roughness = 0.0f
+        );
         ~AObject() override = default;
 
         // Operators
@@ -80,10 +77,11 @@ class AObject : public IObject {
         Vec3 getColor() const override;
         Vec3 getEmissionColor() const override;
         float getEmissionIntensity() const override;
-        bool getReflectivity() const override;
-        bool getTransparency() const override;
+        bool isReflective() const override;
+        bool isTransparent() const override;
         float getRoughness() const override;
         float getRefractiveIndex() const override;
+        const ObjectLight &getLight() const override;
 
         // Setters
         void setPos(Vec3 pos) override;
@@ -95,8 +93,20 @@ class AObject : public IObject {
         void setPosition(const sf::Vector3f &pos) override;
         void setEmissionColor(const sf::Color &color) override;
         void setEmissionIntensity(const float &intensity) override;
-        void setTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations);
+        void addTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations) override;
+        void computeTransformations() override;
 
     protected:
+        Ray transformRay(const Ray &ray) const;
+
         std::vector<std::shared_ptr<ITransformation>> _transformations;
+        Mat4 _inverseTransformations;
+        Mat4 _transformationsMatrix;
+        mutable Vec3 _pos;
+        Vec3 _color;
+        ObjectLight _light;
+        float _roughness;
+        bool _reflectivity;
+        bool _transparency;
+        float _refractiveIndex;
 };

@@ -57,9 +57,18 @@ void Scene::addObjects(const std::vector<std::shared_ptr<IObject>> &objects)
     _pool.insert(_pool.end(), objects.begin(), objects.end());
 }
 
-void Scene::setLights(const std::vector<LightPoint> &lights)
+void Scene::setLights(const std::vector<std::shared_ptr<ALight>> &lights)
 {
-    _lightsPoints = lights;
+    for (auto &light : lights) {
+        if (dynamic_cast<const LightPoint *>(light.get()))
+            _lightsPoints.push_back(std::dynamic_pointer_cast<LightPoint>(light));
+        else if (dynamic_cast<const DirectionalLight *>(light.get()))
+            _directionalLights.push_back(std::dynamic_pointer_cast<DirectionalLight>(light));
+        else if (dynamic_cast<const BackgroundLight *>(light.get()))
+            addBackgroundLight(std::dynamic_pointer_cast<BackgroundLight>(light));
+        else
+            addAmbientLight(light);
+    }
 }
 
 void Scene::setRawConfiguration(const std::string &raw)
@@ -67,9 +76,9 @@ void Scene::setRawConfiguration(const std::string &raw)
     _rawConfig = raw;
 }
 
-// ======================
-//        GETTERS
-// ======================
+//======================//
+//        GETTERS       //
+//======================//
 bool Scene::isMultithreadingEnabled() const
 {
     return _multithreadingEnabled;
@@ -139,12 +148,13 @@ const IObject *Scene::getClosest(const Ray &ray, const IObject *ignore, bool ign
 {
     IObject *closest = nullptr;
     float dist = INF;
+    Vec3 intersection;
 
     for (const auto &obj : _pool) {
-        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)
-                                    && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
+        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != VEC3_ZERO
+                                    && obj->getEmissionIntensity() > 0) || !obj->intersect(ray, intersection))
             continue;
-        Vec3 vec = obj->getIntersection(ray) - ray.getOrigin();
+        Vec3 vec = intersection - ray.getOrigin();
         float len = Math::length(vec);
         if (dist < len || !Math::sameSign(vec, ray.getDir()))
             continue;
@@ -158,16 +168,17 @@ const IObject *Scene::getBetween(const Ray &ray, float dst, const IObject *ignor
 {
     IObject *closest = nullptr;
     float dist = INF;
+    Vec3 intersection;
 
     for (auto &obj : _pool) {
-        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != Vec3(0, 0, 0)
-                                    && obj->getEmissionIntensity() > 0) || !obj->intersect(ray))
+        if (obj.get() == ignore || (ignoreLightSources && obj->getEmissionColor() != VEC3_ZERO
+                                    && obj->getEmissionIntensity() > 0) || !obj->intersect(ray, intersection))
             continue;
-        Vec3 vec = obj->getIntersection(ray) - ray.getOrigin();
-        float len = Math::length(vec);
-        if (dist < len || !Math::sameSign(vec, ray.getDir()) || len > dst)
+        intersection -= ray.getOrigin();
+        float len = Math::length(intersection);
+        if (dist < len || !Math::sameSign(intersection, ray.getDir()) || len > dst)
             continue;
-        if (obj->getTransparency() && Math::random(0, 1) > obj->getRoughness())
+        if (obj->isTransparent() && Math::randomf(0, 1) > obj->getRoughness())
             continue;
         dist = len;
         closest = obj.get();
@@ -180,15 +191,30 @@ std::vector<std::shared_ptr<IObject>> Scene::getPool() const
     return _pool;
 }
 
-std::vector<LightPoint> Scene::getLightPoints() const
+std::vector<std::shared_ptr<LightPoint>> Scene::getLightPoints() const
 {
     return _lightsPoints;
 }
 
-//======================
-//        METHODS
-//======================
-void Scene::addLightPoint(const LightPoint& light)
+std::vector<std::shared_ptr<DirectionalLight>> Scene::getDirectionalLights() const
+{
+    return _directionalLights;
+}
+
+Vec3 Scene::getBackgroundLight() const
+{
+    return _backgroundLight.getColor() * _backgroundLight.getIntensity();
+}
+
+Vec3 Scene::getAmbientLight() const
+{
+    return _ambientLight.getColor() * _ambientLight.getIntensity();
+}
+
+//======================//
+//        METHODS       //
+//======================//
+void Scene::addLightPoint(std::shared_ptr<LightPoint> light)
 {
     _lightsPoints.push_back(light);
 }
@@ -196,4 +222,20 @@ void Scene::addLightPoint(const LightPoint& light)
 void Scene::addObject(std::unique_ptr<IObject> &&object)
 {
     _pool.push_back(std::move(object));
+}
+
+void Scene::addBackgroundLight(std::shared_ptr<BackgroundLight> light)
+{
+    sf::Color newColor = {(sf::Uint8)(light->getColor().x * _backgroundLight.getColor().x * 255),
+                          (sf::Uint8)(light->getColor().y * _backgroundLight.getColor().y * 255),
+                          (sf::Uint8)(light->getColor().z * _backgroundLight.getColor().z * 255)};
+    _backgroundLight.setColor(newColor);
+}
+
+void Scene::addAmbientLight(std::shared_ptr<ALight> light)
+{
+    sf::Color newColor = {(sf::Uint8)(light->getColor().x * _ambientLight.getColor().x * 255),
+                          (sf::Uint8)(light->getColor().y * _ambientLight.getColor().y * 255),
+                          (sf::Uint8)(light->getColor().z * _ambientLight.getColor().z * 255)};
+    _ambientLight.setColor(newColor);
 }

@@ -8,20 +8,16 @@
 #pragma once
 
 #include "render/Sfml.hpp"
+#include "ILight.hpp"
 
-class LightPoint {
+class LightPoint : public ALight {
     public:
-        LightPoint(Vec3 pos, sf::Color color = sf::Color::White, float intensity = 1.0f);
-        ~LightPoint();
-        Vec3 getPos() const;
-        sf::Color getColor() const;
-        Vec3 getColorF() const;
-        float getIntensity() const;
-        void setPos(Vec3 pos);
-        void setColor(sf::Color color);
-        void setIntensity(float intensity);
+        LightPoint(Vec3 pos = VEC3_ZERO, Vec3 color = WHITE, float intensity = 1.0f);
+        ~LightPoint() = default;
+
+        Vec3 getPos() const {return _pos;};
+        void setPos(const Vec3 &pos) {_pos = pos;};
+        Vec3 illuminate(const Vec3 &normal, const Vec3 &inter, const Vec3 &color, const Scene &pool, const IObject *obj) const;
     private:
         Vec3 _pos;
-        sf::Color _color;
-        float _intensity;
 };

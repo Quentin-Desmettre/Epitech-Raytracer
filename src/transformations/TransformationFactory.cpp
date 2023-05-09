@@ -7,6 +7,9 @@
 
 #include "transformations/TransformationFactory.hpp"
 #include "transformations/Transformation.hpp"
+#include "objects/builders/ObjectBuilder.hpp"
+#include "objects/Triangle.hpp"
+#define getFloat ABuilder<Transformation>::getFloat
 
 const std::map<std::string, TransformationFactory::Builder> TransformationFactory::_builders = {
     {"translate",   &TransformationFactory::buildTranslate},
@@ -49,9 +52,9 @@ SharedITransformation TransformationFactory::buildTranslate(const libconfig::Set
 
     translate->setMatrices({Mat4::translate3D(
         sf::Vector3f{
-              settings["x"],
-              settings["y"],
-              settings["z"]
+              getFloat(settings["x"]),
+              getFloat(settings["y"]),
+              getFloat(settings["z"])
       }
     )});
     return translate;
@@ -88,7 +91,7 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
     if (static_cast<std::string>(settings["around"]) == "origin") {
         rotate->setMatrices({Mat4::rotate3D(
             axis,
-            settings["angle"]
+            Math::toRad(getFloat(settings["angle"]))
         )});
         return rotate;
     }
@@ -107,7 +110,7 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
     // 2. Rotate the object
     Mat4 rotateAroundCenter = Mat4::rotate3D(
         axis,
-        settings["angle"]
+        Math::toRad(getFloat(settings["angle"]))
     );
 
     // 3. Translate the object back to its original position
@@ -118,7 +121,6 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
                 _obj.getPos().z
         }
     );
-    // TODO: use getFloat instead
 
     // Then set theses 3 matrices
     rotate->setMatrices({translateToOrigin, rotateAroundCenter, translateBack});
@@ -146,9 +148,9 @@ SharedITransformation TransformationFactory::buildScale(
     auto scale = std::make_shared<Transformation>("scale");
     scale->setMatrices({Mat4::scale3D(
         sf::Vector3f{
-              settings["x"],
-              settings["y"],
-              settings["z"]
+              getFloat(settings["x"]),
+              getFloat(settings["y"]),
+              getFloat(settings["z"])
       }
     )});
     return scale;
@@ -169,7 +171,7 @@ SharedITransformation TransformationFactory::buildMatrix(
     Mat4 matrix;
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
-            matrix(i, j) = ABuilder<Transformation>::getFloat(settings["matrix"][i * 4 + j]);
+            matrix(i, j) = getFloat(settings["matrix"][i * 4 + j]);
     auto matrixTransformation = std::make_shared<Transformation>("matrix");
     matrixTransformation->setMatrices({matrix});
     return matrixTransformation;

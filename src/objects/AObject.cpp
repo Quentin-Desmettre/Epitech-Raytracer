@@ -6,17 +6,26 @@
 */
 
 #include "objects/Object.hpp"
+#include "Exceptions.hpp"
+#include "Raytracer.hpp"
 
-AObject::AObject(Vec3 pos, sf::Color color, sf::Color emmsionColor, float intensity)
+AObject::AObject(Vec3 pos,
+                 sf::Color color,
+                 sf::Color emmsionColor,
+                 float intensity,
+                 bool reflective,
+                 bool transparent,
+                 float roughness
+)
 {
-    _pos = pos;
-    _intensity = intensity;
-    _reflectivity = false;
-    _transparency = false;
-    _refractiveIndex = 1.0f;
-    _roughness = 0.0f;
+    AObject::setPos(pos);
     AObject::setColor(color);
     AObject::setEmissionColor(emmsionColor);
+    AObject::setEmissionIntensity(intensity);
+    AObject::setReflectivity(reflective);
+    AObject::setTransparency(transparent);
+    AObject::setRoughness(roughness);
+    AObject::setRefractiveIndex(1.0f);
 }
 
 Vec3 AObject::getPos() const
@@ -31,20 +40,20 @@ Vec3 AObject::getColor() const
 
 Vec3 AObject::getEmissionColor() const
 {
-    return _emmsionColor;
+    return _light.getColor();
 }
 
 float AObject::getEmissionIntensity() const
 {
-    return _intensity;
+    return _light.getIntensity();
 }
 
-bool AObject::getReflectivity() const
+bool AObject::isReflective() const
 {
     return _reflectivity;
 }
 
-bool AObject::getTransparency() const
+bool AObject::isTransparent() const
 {
     return _transparency;
 }
@@ -57,6 +66,11 @@ float AObject::getRoughness() const
 float AObject::getRefractiveIndex() const
 {
     return _refractiveIndex;
+}
+
+const ObjectLight &AObject::getLight() const
+{
+    return _light;
 }
 
 void AObject::setPos(Vec3 pos)
@@ -76,6 +90,8 @@ void AObject::setTransparency(const bool &transparency)
 
 void AObject::setRoughness(const float &roughness)
 {
+    if (roughness < 0.0f || roughness > 1.0f)
+        throw InvalidParameterValueException("Roughness must be between 0.0 and 1.0");
     _roughness = roughness;
 }
 
@@ -97,27 +113,60 @@ void AObject::setPosition(const sf::Vector3f &pos)
 void AObject::setEmissionColor(const sf::Color &color)
 {
     if (color != sf::Color::Transparent)
-        _emmsionColor = Vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+        _light.setColor(color);
 }
 
 void AObject::setEmissionIntensity(const float &intensity)
 {
-    _intensity = intensity;
+    if (intensity < 0.0f)
+        throw InvalidParameterValueException("Emission intensity must be >= 0");
+    _light.setIntensity(intensity);
 }
 
-void AObject::setTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations)
+void AObject::addTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations)
 {
-    _transformations = transformations;
+    _transformations.insert(_transformations.end(), transformations.begin(), transformations.end());
 }
 
 bool AObject::operator==(const AObject &obj) const
 {
-    return _pos == obj._pos && _color == obj._color && _emmsionColor == obj._emmsionColor &&
-        _intensity == obj._intensity && _reflectivity == obj._reflectivity &&
+    return _pos == obj._pos && _color == obj._color && _light.getColor() == obj._light.getColor() &&
+        _light.getIntensity() == obj._light.getIntensity() && _reflectivity == obj._reflectivity &&
         _transparency == obj._transparency;
 }
 
 bool AObject::operator!=(const AObject &obj) const
 {
     return !(*this == obj);
+}
+
+void AObject::computeTransformations()
+{
+    Mat4 inverse = Mat4::translate3D(_pos);
+
+    for (auto &trans: _transformations) {
+        for (auto &mat: trans->getMatrices())
+            inverse *= mat;
+    }
+    _transformationsMatrix = inverse;
+    _inverseTransformations = inverse.inverse();
+}
+
+Ray AObject::transformRay(const Ray &ray) const
+{
+    // Manually compute the new direction
+    Vec3 newDir;
+    Vec3 old = ray.getDir();
+    newDir.x = _inverseTransformations[0] * old.x + _inverseTransformations[1] * old.y + _inverseTransformations[2] * old.z;
+    newDir.y = _inverseTransformations[4] * old.x + _inverseTransformations[5] * old.y + _inverseTransformations[6] * old.z;
+    newDir.z = _inverseTransformations[8] * old.x + _inverseTransformations[9] * old.y + _inverseTransformations[10] * old.z;
+
+    // Manually compute the new origin
+    Vec3 newOrigin;
+    old = ray.getOrigin();
+    newOrigin.x = _inverseTransformations[0] * old.x + _inverseTransformations[1] * old.y + _inverseTransformations[2] * old.z + _inverseTransformations[3];
+    newOrigin.y = _inverseTransformations[4] * old.x + _inverseTransformations[5] * old.y + _inverseTransformations[6] * old.z + _inverseTransformations[7];
+    newOrigin.z = _inverseTransformations[8] * old.x + _inverseTransformations[9] * old.y + _inverseTransformations[10] * old.z + _inverseTransformations[11];
+
+    return {newOrigin, newDir};
 }

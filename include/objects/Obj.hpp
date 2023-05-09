@@ -19,9 +19,10 @@ class Obj: public AObject {
         sf::Color emmsionColor = sf::Color::Black, float intensity = 1.0f);
         ~Obj() override = default;
 
-        bool intersect(const Ray &ray) const override;
+        bool intersect(unused const Ray &ray, unused Vec3 &intersection) const override {return false;};
+        bool intersect(const Ray &ray) const; // to rewrite
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
-        Vec3 getIntersection(const Ray &ray) const override;
+        Vec3 getIntersection(const Ray &ray) const; // to rewrite
         void setPath(const std::string &path);
         void createTriangle(unsigned long x, unsigned long y, unsigned long z);
 
@@ -37,5 +38,4 @@ class Obj: public AObject {
         sf::Color emmsionColorInt;
 
         Scene *_scene;
-
 };
