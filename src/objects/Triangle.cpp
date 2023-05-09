@@ -28,7 +28,7 @@ bool Triangle::intersect(const Ray &ray, Vec3 &intersection) const
 
     if (det < 0.0001f)
         return false;
-    Vec3 tvec = origin - points[0];
+    Vec3 tvec = origin - _points[0];
     float u = Math::dot(tvec, pvec);
     if (u < 0.0f || u > det)
         return false;

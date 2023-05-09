@@ -33,7 +33,7 @@ class Scene {
         void setNumberOfBounces(const int &bounces);
         void setRaysPerPixel(const int &rays);
         void setCamera(const std::shared_ptr<Camera> &camera);
-        void setObjects(const std::vector<std::shared_ptr<IObject>> &objects);
+        void addObjects(const std::vector<std::shared_ptr<IObject>> &objects);
         void setLights(const std::vector<std::shared_ptr<ALight>> &lights);
         void setRawConfiguration(const std::string &raw);
 

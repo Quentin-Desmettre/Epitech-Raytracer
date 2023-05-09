@@ -13,7 +13,6 @@ std::regex Obj::_verticesRegex = std::regex("v (-?[0-9]+.[0-9]+) (-?[0-9]+.[0-9]
 std::regex Obj::_trianglesRegex = std::regex("f ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]*");
 std::regex Obj::_squaresRegex = std::regex("f ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
-
 void Obj::createTriangle(unsigned long x, unsigned long y, unsigned long z)
 {
     if (x > _vertices.size())
@@ -22,7 +21,7 @@ void Obj::createTriangle(unsigned long x, unsigned long y, unsigned long z)
         throw std::runtime_error("Invalid vertex index");
     if (z > _vertices.size())
         throw std::runtime_error("Invalid vertex index");
-    Triangle triangle(_vertices[x], _vertices[y], _vertices[z], colorInt, emmsionColorInt, _intensity);
+    Triangle triangle(_vertices[x], _vertices[y], _vertices[z], colorInt, emmsionColorInt, _light.getIntensity());
 
     _triangles.emplace_back(triangle);
     _scene->addObject(std::make_unique<Triangle>(triangle));
@@ -35,7 +34,7 @@ void Obj::setPath(const std::string &path)
     std::smatch match;
     Vec3 pos = _pos;
     colorInt = {sf::Uint8(_color.x * 255), sf::Uint8(_color.y * 255), sf::Uint8(_color.z * 255)};
-    emmsionColorInt = {sf::Uint8(_emmsionColor.x * 255), sf::Uint8(_emmsionColor.y * 255), sf::Uint8(_emmsionColor.z * 255)};
+    emmsionColorInt = {sf::Uint8(_light.getColor().x * 255), sf::Uint8(_light.getColor().y * 255), sf::Uint8(_light.getColor().z * 255)};
     if (!ifs.is_open())
         return;
     std::cout << "Loading obj: " << path << std::endl;
