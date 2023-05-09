@@ -7,6 +7,7 @@
 
 #include "render/Drawer.hpp"
 #include "Print.hpp"
+#include <fstream>
 
 Raytracer::Drawer::Drawer(unsigned x, unsigned y, float antiAliasing):
     _antiAliasing(antiAliasing)
@@ -57,9 +58,22 @@ void Raytracer::Drawer::draw(const PointArray &array)
 void Raytracer::Drawer::saveToFile(const std::string &filename)
 {
     sf::Texture texture;
+    std::ofstream file(filename);
+
     texture.create(_window->getSize().x, _window->getSize().y);
     texture.update(*_window);
-    texture.copyToImage().saveToFile(filename);
+    sf::Image image = texture.copyToImage();
+
+    file << "P3" << std::endl;
+    file << _window->getSize().x << " " << _window->getSize().y << std::endl;
+    file << "255" << std::endl;
+    for (uint i = 0; i < _window->getSize().x; i++) {
+        for (uint j = 0; j < _window->getSize().y; j++) {
+            sf::Color color = image.getPixel(j, i);
+            file << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " ";
+        }
+    }
+    file.close();
 }
 
 bool Raytracer::Drawer::isOpen() const

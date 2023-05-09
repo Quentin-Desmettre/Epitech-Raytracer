@@ -43,9 +43,49 @@ bool Triangle::intersect(const Ray &ray, Vec3 &intersection) const
     return true;
 }
 
-Vec3 Triangle::getNormal(unused const Vec3 &inter, unused const Ray &ray) const
+//    std::array<Vec3, 3> points = getTmpPoints(ray);
+//    Vec3 origin = ray.getOrigin();
+//    Vec3 dir = ray.getDir();
+//    Vec3 edge1 = points[1] - points[0];
+//    Vec3 edge2 = points[2] - points[0];
+
+//Vec3 Triangle::getIntersection(const Ray &ray) const
+//{
+//    Vec3 origin = ray.getOrigin();
+//    Vec3 dir = ray.getDir();
+//    Vec3 edge1 = _points[1] - _points[0];
+//    Vec3 edge2 = _points[2] - _points[0];
+//    Vec3 pvec = Math::cross(dir, edge2);
+//    float det = Math::dot(edge1, pvec);
+
+//    Vec3 tvec = origin - _points[0];
+//    Vec3 qvec = Math::cross(tvec, edge1);
+//    float t = Math::dot(edge2, qvec) / det;
+//    return origin + dir * t;
+//}
+
+//std::array<Vec3, 3> Triangle::getTmpPoints(const Ray &ray) const
+//{
+//    Vec3 edge1 = _points[1] - _points[0];
+//    Vec3 edge2 = _points[2] - _points[0];
+//    Vec3 normal = Math::normalize(Math::cross(edge1, edge2));
+//    float dir = Math::dot(normal, ray.getDir());
+    
+//    if (dir < 0) {
+//        return _points;
+//    } else {
+//        return std::array<Vec3, 3>{_points[2], _points[1], _points[0]};
+//    }
+//}
+
+Vec3 Triangle::getNormal(unused const Vec3 &inter, const Ray &ray) const
 {
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];
-    return Math::normalize(transformDirInverse(Math::cross(edge1, edge2)));
+
+    Vec3 normal = Math::normalize(transformDirInverse(Math::cross(edge1, edge2)));
+    float dir = Math::dot(normal, ray.getDir());
+    if (dir < 0)
+        return normal;
+    return -normal;
 }
