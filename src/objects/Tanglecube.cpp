@@ -7,10 +7,6 @@
 
 #include "objects/Tanglecube.hpp"
 
-#define POW4(x) ((x) * (x) * (x) * (x))
-#define POW3(x) ((x) * (x) * (x))
-#define POW2(x) ((x) * (x))
-
 bool Tanglecube::intersect(const Ray &ray, Vec3 &intersection) const
 {
     // Put ray in local space
@@ -44,18 +40,18 @@ bool Tanglecube::intersect(const Ray &ray, Vec3 &intersection) const
 
     // Compute intersection
     intersection = rOri + rDir * minT;
-    intersection = _transformationsMatrix * intersection; // Put in world space
+    intersection = transformPosInverse(intersection); // Put in world space
     return true;
 }
 
-Vec3 Tanglecube::getNormal(const Vec3 &inter, const Ray &ray) const
+Vec3 Tanglecube::getNormal(const Vec3 &inter, unused const Ray &ray) const
 {
     // Put intersection in local coordinates
-    Vec3 interLocal = _inverseTransformations * inter;
+    Vec3 interLocal = transformPos(inter);
 
-    return Math::normalize({
-        4 * POW3(interLocal.x) - 10 * interLocal.x,
-        4 * POW3(interLocal.y) - 10 * interLocal.y,
-        4 * POW3(interLocal.z) - 10 * interLocal.z
-    });
+    return Math::normalize(transformDirInverse({
+        4 * POW3(interLocal.x) - 2 * interLocal.x,
+        4 * POW3(interLocal.y) - 2 * interLocal.y,
+        4 * POW3(interLocal.z) - 2 * interLocal.z
+    }));
 }

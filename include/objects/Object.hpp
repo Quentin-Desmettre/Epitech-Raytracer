@@ -37,7 +37,7 @@ class IObject {
         virtual void setRoughness(const float &roughness) = 0;
         virtual void setRefractiveIndex(const float &refractiveIndex) = 0;
         virtual void setColor(const sf::Color &color) = 0;
-        virtual void setPosition(const sf::Vector3f &pos) = 0;
+        virtual void setPosition(const Vec3 &pos) = 0;
         virtual void setEmissionColor(const sf::Color &color) = 0;
         virtual void setEmissionIntensity(const float &intensity) = 0;
         virtual void addTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations) = 0;
@@ -90,7 +90,7 @@ class AObject : public IObject {
         void setRoughness(const float &roughness) override;
         void setRefractiveIndex(const float &refractiveIndex) override;
         void setColor(const sf::Color &color) override;
-        void setPosition(const sf::Vector3f &pos) override;
+        void setPosition(const Vec3 &pos) override;
         void setEmissionColor(const sf::Color &color) override;
         void setEmissionIntensity(const float &intensity) override;
         void addTransformations(const std::vector<std::shared_ptr<ITransformation>> &transformations) override;
@@ -98,6 +98,10 @@ class AObject : public IObject {
 
     protected:
         Ray transformRay(const Ray &ray) const;
+        Vec3 transformPos(const Vec3 &pos) const;
+        Vec3 transformDir(const Vec3 &dir) const;
+        Vec3 transformDirInverse(const Vec3 &dir) const;
+        Vec3 transformPosInverse(const Vec3 &dir) const;
 
         std::vector<std::shared_ptr<ITransformation>> _transformations;
         Mat4 _inverseTransformations;

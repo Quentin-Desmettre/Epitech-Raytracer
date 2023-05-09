@@ -105,7 +105,7 @@ void AObject::setColor(const sf::Color &color)
     _color = Vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 }
 
-void AObject::setPosition(const sf::Vector3f &pos)
+void AObject::setPosition(const Vec3 &pos)
 {
     _pos = Vec3(pos.x, pos.y, pos.z);
 }
@@ -154,19 +154,41 @@ void AObject::computeTransformations()
 
 Ray AObject::transformRay(const Ray &ray) const
 {
-    // Manually compute the new direction
-    Vec3 newDir;
-    Vec3 old = ray.getDir();
-    newDir.x = _inverseTransformations[0] * old.x + _inverseTransformations[1] * old.y + _inverseTransformations[2] * old.z;
-    newDir.y = _inverseTransformations[4] * old.x + _inverseTransformations[5] * old.y + _inverseTransformations[6] * old.z;
-    newDir.z = _inverseTransformations[8] * old.x + _inverseTransformations[9] * old.y + _inverseTransformations[10] * old.z;
+    return {transformPos(ray.getOrigin()), transformDir(ray.getDir())};
+}
 
-    // Manually compute the new origin
+Vec3 AObject::transformPos(const Vec3 &pos) const
+{
     Vec3 newOrigin;
-    old = ray.getOrigin();
-    newOrigin.x = _inverseTransformations[0] * old.x + _inverseTransformations[1] * old.y + _inverseTransformations[2] * old.z + _inverseTransformations[3];
-    newOrigin.y = _inverseTransformations[4] * old.x + _inverseTransformations[5] * old.y + _inverseTransformations[6] * old.z + _inverseTransformations[7];
-    newOrigin.z = _inverseTransformations[8] * old.x + _inverseTransformations[9] * old.y + _inverseTransformations[10] * old.z + _inverseTransformations[11];
+    newOrigin.x = _inverseTransformations[0] * pos.x + _inverseTransformations[1] * pos.y + _inverseTransformations[2] * pos.z + _inverseTransformations[3];
+    newOrigin.y = _inverseTransformations[4] * pos.x + _inverseTransformations[5] * pos.y + _inverseTransformations[6] * pos.z + _inverseTransformations[7];
+    newOrigin.z = _inverseTransformations[8] * pos.x + _inverseTransformations[9] * pos.y + _inverseTransformations[10] * pos.z + _inverseTransformations[11];
+    return newOrigin;
+}
 
-    return {newOrigin, newDir};
+Vec3 AObject::transformDir(const Vec3 &dir) const
+{
+    Vec3 newDir;
+    newDir.x = _inverseTransformations[0] * dir.x + _inverseTransformations[1] * dir.y + _inverseTransformations[2] * dir.z;
+    newDir.y = _inverseTransformations[4] * dir.x + _inverseTransformations[5] * dir.y + _inverseTransformations[6] * dir.z;
+    newDir.z = _inverseTransformations[8] * dir.x + _inverseTransformations[9] * dir.y + _inverseTransformations[10] * dir.z;
+    return newDir;
+}
+
+Vec3 AObject::transformDirInverse(const Vec3 &dir) const
+{
+    Vec3 newDir;
+    newDir.x = _transformationsMatrix[0] * dir.x + _transformationsMatrix[1] * dir.y + _transformationsMatrix[2] * dir.z;
+    newDir.y = _transformationsMatrix[4] * dir.x + _transformationsMatrix[5] * dir.y + _transformationsMatrix[6] * dir.z;
+    newDir.z = _transformationsMatrix[8] * dir.x + _transformationsMatrix[9] * dir.y + _transformationsMatrix[10] * dir.z;
+    return newDir;
+}
+
+Vec3 AObject::transformPosInverse(const Vec3 &pos) const
+{
+    Vec3 newOrigin;
+    newOrigin.x = _transformationsMatrix[0] * pos.x + _transformationsMatrix[1] * pos.y + _transformationsMatrix[2] * pos.z + _transformationsMatrix[3];
+    newOrigin.y = _transformationsMatrix[4] * pos.x + _transformationsMatrix[5] * pos.y + _transformationsMatrix[6] * pos.z + _transformationsMatrix[7];
+    newOrigin.z = _transformationsMatrix[8] * pos.x + _transformationsMatrix[9] * pos.y + _transformationsMatrix[10] * pos.z + _transformationsMatrix[11];
+    return newOrigin;
 }
