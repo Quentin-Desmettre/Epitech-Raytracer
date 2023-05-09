@@ -64,14 +64,16 @@ void Raytracer::Drawer::saveToFile(const std::string &filename)
     texture.update(*_window);
     sf::Image image = texture.copyToImage();
 
+    //s ave to ppm format
     file << "P3" << std::endl;
-    file << _window->getSize().x << " " << _window->getSize().y << std::endl;
+    file << image.getSize().x << " " << image.getSize().y << std::endl;
     file << "255" << std::endl;
-    for (uint i = 0; i < _window->getSize().x; i++) {
-        for (uint j = 0; j < _window->getSize().y; j++) {
-            sf::Color color = image.getPixel(j, i);
-            file << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << " ";
+    for (uint y = 0; y < image.getSize().y; y++) {
+        for (uint x = 0; x < image.getSize().x; x++) {
+            sf::Color color = image.getPixel(x, y);
+            file << static_cast<int>(color.r) << " " << static_cast<int>(color.g) << " " << static_cast<int>(color.b) << std::endl;
         }
+        file << std::endl;
     }
     file.close();
 }
