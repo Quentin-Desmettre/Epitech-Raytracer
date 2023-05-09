@@ -39,8 +39,7 @@ bool Triangle::intersect(const Ray &ray, Vec3 &intersection) const
     float t = Math::dot(edge2, qvec) / det;
     if (t < 0.0f)
         return false;
-    intersection = origin + dir * t;
-    intersection = _transformationsMatrix * intersection;
+    intersection = transformPosInverse(origin + dir * t);
     return true;
 }
 
@@ -83,7 +82,8 @@ Vec3 Triangle::getNormal(unused const Vec3 &inter, const Ray &ray) const
 {
     Vec3 edge1 = _points[1] - _points[0];
     Vec3 edge2 = _points[2] - _points[0];
-    Vec3 normal = Math::normalize(Math::cross(edge1, edge2));
+
+    Vec3 normal = Math::normalize(transformDirInverse(Math::cross(edge1, edge2)));
     float dir = Math::dot(normal, ray.getDir());
     if (dir < 0)
         return normal;

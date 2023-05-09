@@ -23,7 +23,6 @@ class Sphere : public AObject {
 
     protected:
     private:
-        float getDelta(const Ray &ray) const;
         float getIntersections(const Ray &ray) const;
 
         float _radius;

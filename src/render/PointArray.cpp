@@ -40,7 +40,7 @@ void PointArray::resize(sf::Vector2u size)
     _pixels = std::make_unique<sf::Uint8 []>(_size.x * _size.y * 3);
 }
 
-void PointArray::setPixel(sf::Vector2u pos, const sf::Vector3f &color)
+void PointArray::setPixel(sf::Vector2u pos, const Vec3 &color)
 {
     std::size_t pixelPos = (pos.x - _start.x) * _size.y + (pos.y - _start.y);
 

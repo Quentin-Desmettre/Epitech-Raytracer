@@ -8,6 +8,7 @@
 #ifndef EPITECH_RAYTRACER_POINTARRAY_HPP
 #define EPITECH_RAYTRACER_POINTARRAY_HPP
 #include <SFML/Graphics.hpp>
+#include "Sfml.hpp"
 #include <memory>
 
 class PointArray {
@@ -23,7 +24,7 @@ public:
     std::size_t getSize() const;
     sf::Vector2u getSizeVector() const;
 
-    void setPixel(sf::Vector2u pos, const sf::Vector3f &color);
+    void setPixel(sf::Vector2u pos, const Vec3 &color);
     void setPixel(sf::Vector2u pos, sf::Color color);
     sf::Color getPixel(sf::Vector2u pos) const;
     sf::Uint8 operator[](unsigned int i) const {
