@@ -52,9 +52,9 @@ void Scene::setCamera(const std::shared_ptr<Camera> &camera)
     _camera = camera;
 }
 
-void Scene::setObjects(const std::vector<std::shared_ptr<IObject>> &objects)
+void Scene::addObjects(const std::vector<std::shared_ptr<IObject>> &objects)
 {
-    _pool = objects;
+    _pool.insert(_pool.end(), objects.begin(), objects.end());
 }
 
 void Scene::setLights(const std::vector<std::shared_ptr<ALight>> &lights)

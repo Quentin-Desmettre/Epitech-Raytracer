@@ -18,6 +18,7 @@ class Triangle : public AObject {
         ~Triangle() override = default;
         bool intersect(const Ray &ray, Vec3 &intersection) const override;
         Vec3 getNormal(const Vec3 &inter, const Ray &ray) const override;
+        std::array<Vec3, 3> getTmpPoints(const Ray &ray) const;
 
         // Setters
         template <size_t N>
