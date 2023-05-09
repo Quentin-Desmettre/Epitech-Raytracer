@@ -11,10 +11,10 @@ PointArray::PointArray(sf::Vector2u size):
     _size(size),
     _start(0, 0)
 {
-    _pixels = std::make_unique<sf::Uint8[]>(_size.x * _size.y * 3);
+    _pixels = std::make_unique<float[]>(_size.x * _size.y * 3);
 }
 
-sf::Uint8 *PointArray::getPixels() const
+float *PointArray::getPixels() const
 {
     return _pixels.get();
 }
@@ -37,16 +37,16 @@ void PointArray::setStartPoint(sf::Vector2u start)
 void PointArray::resize(sf::Vector2u size)
 {
     _size = size;
-    _pixels = std::make_unique<sf::Uint8 []>(_size.x * _size.y * 3);
+    _pixels = std::make_unique<float []>(_size.x * _size.y * 3);
 }
 
 void PointArray::setPixel(sf::Vector2u pos, const Vec3 &color)
 {
     std::size_t pixelPos = (pos.x - _start.x) * _size.y + (pos.y - _start.y);
 
-    _pixels[pixelPos * 3] = static_cast<sf::Uint8>(color.x);
-    _pixels[pixelPos * 3 + 1] = static_cast<sf::Uint8>(color.y);
-    _pixels[pixelPos * 3 + 2] = static_cast<sf::Uint8>(color.z);
+    _pixels[pixelPos * 3] = color.x;
+    _pixels[pixelPos * 3 + 1] = color.y;
+    _pixels[pixelPos * 3 + 2] = color.z;
 }
 
 void PointArray::setPixel(sf::Vector2u pos, sf::Color color)
@@ -58,7 +58,7 @@ void PointArray::setPixel(sf::Vector2u pos, sf::Color color)
     _pixels[pixelPos * 3 + 2] = color.b;
 }
 
-sf::Color PointArray::getPixel(sf::Vector2u pos) const
+Vec3 PointArray::getPixel(sf::Vector2u pos) const
 {
     std::size_t pixelPos = (pos.x - _start.x) * _size.y + (pos.y - _start.y);
 
