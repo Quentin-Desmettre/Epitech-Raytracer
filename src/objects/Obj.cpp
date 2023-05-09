@@ -11,7 +11,7 @@
 
 std::regex Obj::_verticesRegex = std::regex("v (-?[0-9]+.[0-9]+) (-?[0-9]+.[0-9]+) (-?[0-9]+.[0-9]+)");
 std::regex Obj::_trianglesRegex = std::regex("f ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]*");
-std::regex Obj::_squaresRegex = std::regex("f ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
+std::regex Obj::_squaresRegex = std::regex("f ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]* ([0-9]+)/?[0-9]*/?[0-9]*");
 
 void Obj::createTriangle(unsigned long x, unsigned long y, unsigned long z)
 {
@@ -54,7 +54,6 @@ void Obj::setPath(const std::string &path)
         if (std::regex_match(line, _trianglesRegex)) {
             std::regex_search(line, match, _trianglesRegex);
             createTriangle(std::stoul(match[3]) - 1, std::stoul(match[2]) - 1, std::stoul(match[1]) - 1);
-            _scene->test();
             continue;
         }
         std::cout << "Unknown line: " << line << std::endl;

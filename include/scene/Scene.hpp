@@ -37,7 +37,6 @@ class Scene {
         void setLights(const std::vector<std::shared_ptr<ALight>> &lights);
         void setRawConfiguration(const std::string &raw);
 
-        void test() const {std::cout << _pool.size() << std::endl;}
         // Getters
         bool isMultithreadingEnabled() const;
         const std::vector<std::string> &getClusters() const;
