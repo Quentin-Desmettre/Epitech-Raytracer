@@ -33,7 +33,7 @@ SRC = \
 	./src/transformations/Transformation.cpp \
 	./src/objects/Sphere.cpp \
 	./src/objects/Obj.cpp \
-	./src/objects/Square.cpp \
+	./src/objects/Quad.cpp \
 	./src/objects/Torus.cpp \
 	./src/objects/Cone.cpp \
 	./src/objects/Cylinder.cpp \
@@ -50,7 +50,7 @@ SRC = \
 	./src/objects/builders/TanglecubeBuilder.cpp \
 	./src/objects/builders/TriangleBuilder.cpp \
 	./src/objects/builders/PlaneBuilder.cpp \
-	./src/objects/builders/SquareBuilder.cpp \
+	./src/objects/builders/QuadBuilder.cpp \
 	./src/utils/Math.cpp \
 	./src/utils/Matrix.cpp \
 	./src/Raytracer.cpp \

@@ -21,7 +21,7 @@ class Camera {
             DOWN
         };
         Camera(Vec3 pos = Vec3(0, 0, 0), Vec3 rot = Vec3(0, 0, 0), sf::Vector2u size = sf::Vector2u(800, 800)):
-        _pos(pos), _rot(rot), _size(size), _antiAliasing(1) {};
+        _pos(pos), _rot(rot), _size(size), _filter(WHITE), _antiAliasing(1) {};
         ~Camera() = default;
 
         // Setters
@@ -30,6 +30,7 @@ class Camera {
         void setFov(float fov);
         void setResolution(sf::Vector2u size);
         void setAntiAliasing(float antiAliasing);
+        void addFilter(Vec3 new_filter);
 
         // Getters
         sf::Vector2u getResolution() const {return _size;};
@@ -37,6 +38,7 @@ class Camera {
         Vec3 getRot() const {return _rot;};
         float getAntiAliasing() const {return _antiAliasing;};
         Vec3 getRayDir(sf::Vector2f pos) const;
+        Vec3 getFilter() const {return _filter;};
 
         // Methods
         void move(Direction dir, float speed, bool &reset);
@@ -49,6 +51,7 @@ class Camera {
         sf::Vector2u _size;
         sf::Vector2f _view;
         std::vector<Vec3> _rayDirs;
+        Vec3 _filter;
         float _antiAliasing;
         float _fov;
 };
