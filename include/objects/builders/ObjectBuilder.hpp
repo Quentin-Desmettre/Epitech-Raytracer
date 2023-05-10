@@ -61,7 +61,7 @@ class ObjectBuilder: public ABuilder<T> {
             if (!setting.exists("x") || !setting.exists("y") || !setting.exists("z"))
                 throw MissingParameterException(argName + " (x, y, z)");
 
-            sf::Vector3f pos = {
+            Vec3 pos = {
                     ABuilder<T>::getFloat(setting["x"]),
                     ABuilder<T>::getFloat(setting["y"]),
                     ABuilder<T>::getFloat(setting["z"])

@@ -11,6 +11,9 @@
 #include "Matrix.hpp"
 #include <random>
 #include <cmath>
+#define POW4(x) ((x) * (x) * (x) * (x))
+#define POW3(x) ((x) * (x) * (x))
+#define POW2(x) ((x) * (x))
 
 namespace Math
 {

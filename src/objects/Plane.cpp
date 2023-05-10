@@ -41,11 +41,12 @@ void Plane::computeTransformations()
 
 bool Plane::intersect(const Ray &ray, Vec3 &intersection) const
 {
+    // TODO
     Ray r = transformRay(ray);
     float dot = Math::dot(r.getDir(), _dir);
     float t = Math::dot(-r.getOrigin(), _dir) / (dot != 0 ? dot : 1);
     intersection = r.getOrigin() + r.getDir() * t;
-    intersection = _transformationsMatrix * intersection;
+    intersection = transformPosInverse(intersection);
     return dot != 0;
 }
 

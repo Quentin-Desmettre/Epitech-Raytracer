@@ -7,8 +7,6 @@
 
 #include "transformations/TransformationFactory.hpp"
 #include "transformations/Transformation.hpp"
-#include "objects/builders/ObjectBuilder.hpp"
-#include "objects/Triangle.hpp"
 #define getFloat ABuilder<Transformation>::getFloat
 
 const std::map<std::string, TransformationFactory::Builder> TransformationFactory::_builders = {
@@ -51,7 +49,7 @@ SharedITransformation TransformationFactory::buildTranslate(const libconfig::Set
     auto translate = std::make_shared<Transformation>("translate");
 
     translate->setMatrices({Mat4::translate3D(
-        sf::Vector3f{
+        Vec3{
               getFloat(settings["x"]),
               getFloat(settings["y"]),
               getFloat(settings["z"])
@@ -100,7 +98,7 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
     // To do so, we create 3 matrices
     // 1. Translate the object to the origin
     Mat4 translateToOrigin = Mat4::translate3D(
-        sf::Vector3f{
+        Vec3{
                 -_obj.getPos().x,
                 -_obj.getPos().y,
                 -_obj.getPos().z
@@ -115,7 +113,7 @@ SharedITransformation TransformationFactory::buildRotate(const libconfig::Settin
 
     // 3. Translate the object back to its original position
     Mat4 translateBack = Mat4::translate3D(
-        sf::Vector3f{
+        Vec3{
                 _obj.getPos().x,
                 _obj.getPos().y,
                 _obj.getPos().z
@@ -147,7 +145,7 @@ SharedITransformation TransformationFactory::buildScale(
 
     auto scale = std::make_shared<Transformation>("scale");
     scale->setMatrices({Mat4::scale3D(
-        sf::Vector3f{
+        Vec3{
               getFloat(settings["x"]),
               getFloat(settings["y"]),
               getFloat(settings["z"])

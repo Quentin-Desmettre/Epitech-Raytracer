@@ -58,14 +58,14 @@ bool Torus::intersect(unused const Ray &ray, unused Vec3 &intersection) const
     }
     if (!found)
         return false;
-    intersection = _transformationsMatrix * (r.getOrigin() + r.getDir() * t);
+    intersection = transformPosInverse(r.getOrigin() + r.getDir() * t);
     return true;
 }
 
 Vec3 Torus::getNormal(const Vec3 &inter, unused const Ray &ray) const
 {
     // Put intersection in local space
-    Vec3 intersection = _inverseTransformations * inter;
+    Vec3 intersection = transformPos(inter);
     float param_squared = _radius * _radius + _thickness * _thickness;
 
     float
@@ -74,9 +74,9 @@ Vec3 Torus::getNormal(const Vec3 &inter, unused const Ray &ray) const
         z = intersection.z;
     float sum_squared = x * x + y * y + z * z;
 
-    return Math::normalize({
+    return Math::normalize(transformDirInverse({
            4.0f * x * (sum_squared - param_squared),
            4.0f * y * (sum_squared - param_squared + 2.0f * _radius * _radius),
            4.0f * z * (sum_squared - param_squared)
-   });
+    }));
 }
