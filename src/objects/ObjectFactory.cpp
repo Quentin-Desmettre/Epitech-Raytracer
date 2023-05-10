@@ -16,7 +16,7 @@
 #include "objects/builders/TriangleBuilder.hpp"
 #include "objects/builders/TanglecubeBuilder.hpp"
 #include "objects/builders/ObjBuilder.hpp"
-#include "objects/builders/SquareBuilder.hpp"
+#include "objects/builders/QuadBuilder.hpp"
 
 ObjectFactory::ObjectFactory(Scene &scene)
 {
@@ -28,5 +28,5 @@ ObjectFactory::ObjectFactory(Scene &scene)
     this->_builders["triangle"] =   std::make_shared<TriangleBuilder>();
     this->_builders["tanglecube"] = std::make_shared<TanglecubeBuilder>();
     this->_builders["obj"] =        std::make_shared<ObjBuilder>(scene);
-    this->_builders["square"] =     std::make_shared<SquareBuilder>();
+    this->_builders["quad"] =       std::make_shared<QuadBuilder>();
 }

@@ -11,7 +11,7 @@ PointArray::PointArray(sf::Vector2u size):
     _size(size),
     _start(0, 0)
 {
-    _pixels = std::make_unique<float[]>(_size.x * _size.y * 3);
+    resize(size);
 }
 
 float *PointArray::getPixels() const

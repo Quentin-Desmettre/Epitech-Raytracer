@@ -85,13 +85,14 @@ Vec3 Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &sce
     }
 
     // Lumière ambiante
+    Vec3 ambient = scene.getAmbientLight();
     if (lightIntensity == 1 || !old) // if no object was hit
-        light += ray.getColor() * scene.getBackgroundLight();
+        light += ray.getColor() * scene.getBackgroundLight() * ambient;
     else if (!obj && (old->isReflective() || old->isTransparent())) // if the last object was reflective or transparent
-        light += ray.getColor() * scene.getBackgroundLight() * (1.0f - old->getRoughness());
+        light += ray.getColor() * scene.getBackgroundLight() * (1.0f - old->getRoughness()) * ambient;
     else if (old) // if the last object was not reflective or transparent
-        light += ray.getColor();
-    light *= scene.getAmbientLight();
+        light += ray.getColor() * ambient;
+    light *= scene.getCamera().getFilter();
     return light;
 }
 

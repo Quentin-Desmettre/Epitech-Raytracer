@@ -120,6 +120,9 @@ const libconfig::Setting &setting)
             getFloat(setting["rotation"]["y"]),
             getFloat(setting["rotation"]["z"])
     };
+    std::vector<Vec3> filters;
+    if (setting.exists("filters"))
+        filters = getFilters(setting["filters"]);
 
     // Fetch antiAliasing
     float antiAliasing = setting.exists("antiAliasing") ? getFloat(setting["antiAliasing"]) : 1;
@@ -135,7 +138,26 @@ const libconfig::Setting &setting)
     auto cam = std::make_shared<Camera>(position, rot, resolution);
     cam->setAntiAliasing(antiAliasing);
     cam->setFov(fov);
+    for (auto &filter: filters)
+        cam->addFilter(filter);
     setParameter(scene, param, cam);
+}
+
+std::vector<Vec3> SceneBuilder::getFilters(const libconfig::Setting &filters)
+{
+
+    std::vector<Vec3> new_filters;
+
+    for (int i = 0; i < filters.getLength(); i++) {
+        if (filters[i].getType() != libconfig::Setting::TypeGroup)
+            throw InvalidParameterValueException("Invalid type for filters");
+
+        float r = getFloat(filters[i]["r"]);
+        float g = getFloat(filters[i]["g"]);
+        float b = getFloat(filters[i]["b"]);
+        new_filters.emplace_back(r, g, b);
+    }
+    return new_filters;
 }
 
 void SceneBuilder::setClusters(Scene &scene, const std::string &param,

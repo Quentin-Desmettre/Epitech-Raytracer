@@ -38,14 +38,14 @@ Network::PacketWriter &Network::PacketWriter::operator<<(const std::string &stri
 
 Network::PacketWriter &Network::PacketWriter::operator<<(const PointArray &array)
 {
-    const std::size_t arraySize = array.getSize();
-    const auto *pixels = array.getPixels();
+    const std::size_t arraySizeInBytes = array.getSize() * sizeof(float);
+    const auto *pixels = reinterpret_cast<const std::byte *>(array.getPixels());
     auto &vecData = _packet.getData();
 
-    *this << arraySize;
-    _packet.resize(vecData.size() + arraySize);
-    const std::size_t offset = vecData.size() - arraySize;
-    for (std::size_t i = 0; i < arraySize; i++)
-        vecData[offset + i] = std::byte(pixels[i]);
+    *this << arraySizeInBytes;
+    _packet.resize(vecData.size() + arraySizeInBytes);
+    const std::size_t offset = vecData.size() - arraySizeInBytes;
+    for (std::size_t i = 0; i < arraySizeInBytes; i++)
+        vecData[offset + i] = pixels[i];
     return *this;
 }
