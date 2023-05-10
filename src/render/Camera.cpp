@@ -95,6 +95,12 @@ void Camera::setAntiAliasing(float antiAliasing)
     _size = sf::Vector2u(_size.x * _antiAliasing, _size.y * _antiAliasing);
 }
 
+void Camera::addFilter(Vec3 new_filter)
+{
+    Vec3 float_filter = Vec3(new_filter.x / 255.0f, new_filter.y / 255.0f, new_filter.z / 255.0f);
+    _filter *= float_filter;
+}
+
 Vec3 Camera::getRayDir(sf::Vector2f pos) const
 {
     return _rayDirs[(int)pos.x * _size.y + (int)pos.y];

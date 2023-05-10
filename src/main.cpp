@@ -9,7 +9,7 @@
 #include "Raytracer.hpp"
 #include "objects/Sphere.hpp"
 #include "objects/Triangle.hpp"
-#include "objects/Square.hpp"
+#include "objects/Quad.hpp"
 #include "objects/Plane.hpp"
 #include "objects/Cone.hpp"
 #include "objects/Cylinder.hpp"

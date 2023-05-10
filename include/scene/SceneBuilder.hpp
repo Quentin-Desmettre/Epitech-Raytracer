@@ -42,6 +42,7 @@ private:
 
     // Utils
     static std::string getFileContent(const std::string &path);
+    std::vector<Vec3> getFilters(const libconfig::Setting &filters);
 
 };
 
