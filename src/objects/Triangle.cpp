@@ -81,4 +81,7 @@ Vec3 Triangle::getNormal(unused const Vec3 &inter, const Ray &ray) const
     if (dir < 0)
         return normal;
     return -normal;
+
+
+
 }
