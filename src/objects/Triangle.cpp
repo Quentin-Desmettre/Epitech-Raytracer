@@ -37,7 +37,7 @@ bool Triangle::intersect(const Ray &ray, Vec3 &intersection) const
     float t = Math::dot(edge2, qvec) / det;
     if (t < 0.0f)
         return false;
-    intersection = transformPosInverse(origin + dir * t);
+    intersection = (origin + dir * t);
     return true;
 }
 
