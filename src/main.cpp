@@ -159,17 +159,17 @@
 
 int main(int ac, char **av)
 {
-//#ifndef DEBUG
-//    try {
-//        Raytracer::Raytracer raytracer(ac, av);
-//        raytracer.run();
-//    } catch (std::exception &e) {
-//        std::cerr << e.what() << std::endl;
-//        return 84;
-//    }
-//#else
+#ifndef DEBUG
+   try {
+       Raytracer::Raytracer raytracer(ac, av);
+       raytracer.run();
+   } catch (std::exception &e) {
+       std::cerr << e.what() << std::endl;
+       return 84;
+   }
+#else
     Raytracer::Raytracer raytracer(ac, av);
     raytracer.run();
-//#endif
+#endif
     return 0;
 }

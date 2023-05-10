@@ -41,19 +41,13 @@ void Raytracer::LocalRenderer::render(const Scene &scene, PointArray &array, sf:
 void Raytracer::LocalRenderer::addPixel(sf::Vector2u pos, Vec3 color)
 {
     color *= 255.0f;
+    if (_nbFrames != 0) {
+        float weight = 1.0f / (_nbFrames + 1);
+        color = _array->getPixel(pos) * (1 - weight) + color * weight;
+    }
     color.x = std::min(color.x, 255.0f);
     color.y = std::min(color.y, 255.0f);
     color.z = std::min(color.z, 255.0f);
-    if (_nbFrames != 0) {
-        sf::Color old = _array->getPixel(pos);
-        Vec3 oldColor = Vec3(old.r, old.g, old.b);
-        if (oldColor == VEC3_ZERO || color == VEC3_ZERO)
-            color += oldColor;
-        else {
-            float weight = 1.0f / (_nbFrames + 1);
-            color = oldColor * (1 - weight) + color * weight;
-        }
-    }
     _array->setPixel(pos, color);
 }
 
@@ -67,7 +61,7 @@ Vec3 Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &sce
     const int nbBounces = scene.isPreRenderEnabled() ? 0 : scene.getNbBounces();
 
     for (int bounces = 0; bounces <= nbBounces; bounces++) {
-        const IObject *obj = scene.getClosest(ray, old);
+        obj = scene.getClosest(ray, old);
 
         if (!obj)
             break;
@@ -91,13 +85,11 @@ Vec3 Raytracer::LocalRenderer::getPixelFColor(sf::Vector2f pos, const Scene &sce
     }
 
     // Lumière ambiante
-    if (lightIntensity == 1 || !old)
+    if (lightIntensity == 1 || !old) // if no object was hit
         light += ray.getColor() * scene.getBackgroundLight();
-    else if (old->isReflective() || old->isTransparent()) {
-        light += ray.getColor() * old->getRoughness();
-        if (!obj)
-            light += ray.getColor() * scene.getBackgroundLight() * (1.0f - old->getRoughness());
-    } else
+    else if (!obj && (old->isReflective() || old->isTransparent())) // if the last object was reflective or transparent
+        light += ray.getColor() * scene.getBackgroundLight() * (1.0f - old->getRoughness());
+    else if (old) // if the last object was not reflective or transparent
         light += ray.getColor();
     light *= scene.getAmbientLight();
     return light;

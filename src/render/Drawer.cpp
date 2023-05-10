@@ -29,7 +29,7 @@ void Raytracer::Drawer::draw(const PointArray &array)
     for (unsigned i = 0; i < array.getSize(); i += 3) {
         vertexArray[i / 3].position.x = x / _antiAliasing;
         vertexArray[i / 3].position.y = y / _antiAliasing;
-        vertexArray[i / 3].color = sf::Color(array[i], array[i + 1], array[i + 2]);
+        vertexArray[i / 3].color = sf::Color((sf::Uint8)array[i], (sf::Uint8)array[i + 1], (sf::Uint8)array[i + 2]);
         y++;
         if (y >= maxY) {
             y = 0;
@@ -64,7 +64,6 @@ void Raytracer::Drawer::saveToFile(const std::string &filename)
     texture.update(*_window);
     sf::Image image = texture.copyToImage();
 
-    //s ave to ppm format
     file << "P3" << std::endl;
     file << image.getSize().x << " " << image.getSize().y << std::endl;
     file << "255" << std::endl;

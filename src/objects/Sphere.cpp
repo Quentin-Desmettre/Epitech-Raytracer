@@ -29,7 +29,7 @@ bool Sphere::intersect(const Ray &ray, Vec3 &intersection) const
     Ray r = transformRay(ray);
     float t = getIntersections(r);
 
-    if (t < 0 || t != t) // t != t is a check for NaN
+    if (t < 0 || t != t)
         return false;
     // Get the intersection point, and put it back in the world space
     intersection = transformPosInverse(r.getOrigin() + r.getDir() * t);

@@ -7,8 +7,8 @@
 
 #include "objects/builders/ObjBuilder.hpp"
 
-ObjBuilder::ObjBuilder(Scene &scene):
-    _scene(scene)
+ObjBuilder::ObjBuilder(Scene &scene) :
+_scene(scene)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
