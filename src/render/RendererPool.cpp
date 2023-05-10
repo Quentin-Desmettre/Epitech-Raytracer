@@ -84,6 +84,7 @@ void Raytracer::RendererPool::render(const Scene &scene, PointArray &array, sf::
     *timeTaken = clock.getElapsedTime();
     Raytracer::cout << "Time taken: " << timeTaken->asSeconds() << std::endl;
 
+    return;
     if (!_updateRangeOnRender)
         return;
 

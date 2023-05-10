@@ -37,8 +37,8 @@ void Raytracer::Clustering::Client::run()
 
     while (true) {
         Raytracer::cout << "Waiting for connection..." << std::endl;
-        _listener.accept(socket);
         try {
+            _listener.accept(socket);
             while (true) {
                 // Handle request
                 Network::Packet message = socket.receive();
